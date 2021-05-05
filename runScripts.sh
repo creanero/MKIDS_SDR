@@ -8,8 +8,11 @@ sudo /etc/init.d/nfs-kernel-server start
 
 #telnet MKIDS1 7147 &
 
+# Finds the path the current script is running from - OC
 SCRIPT_ROOT=$(dirname "$(readlink -f "$0")")
 
+# Runs the configuration scripts in order 
+# Will want to comment these further - OC
 source $SCRIPT_ROOT/fermi-bashrc
 source $SCRIPT_ROOT/DataReadout/setEnvironment.sh
 #source $SCRIPT_ROOT/DataReadout/ReadoutControls/startPulseServers.sh
