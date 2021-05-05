@@ -1,4 +1,7 @@
 #!/bin/bash
+# identifies the directory the current script is running in
+SCRIPT_ROOT=$(dirname "$(readlink -f "$0")")
+
 #ROACHES=(0 1 2 3 4 5 6 7)
 ROACHES=$MKID_ROACHES
 CLK="512"
@@ -15,6 +18,17 @@ CLK="512"
 #BOF="chan_sm1_2013_Nov_26_2220.bof" #baseline threshold has on/off switch. added many snaps in capture. deadline bug fixed. DDS lag: 194
 
 BOF=$BOFFILE     #uncomment this
+
+# Sets the base of the IP address for the roach boards
+# Is there a way to make this dynamic? - OC
+IP_BASE="root@192.168.4.1"
+
+# Sets the data readout directory
+DATA_READOUT_DIR=${SCRIPT_ROOT}/DataReadout
+
+# Sets the Channeliser Control directory
+CHANNELIZER_CONTROLS_DIR=${DATA_READOUT_DIR}/ChannelizerControls
+
 
 #BOF=chan_snap_v4_20_12_2018_May_29_1235.bof #delete this
 #BOF=chan_snap_v3_2012_Oct_30_1216.bof
@@ -44,23 +58,24 @@ check_status()
 
 for i in ${ROACHES[*]}
 do
+    CURRENT_IP=${IP_BASE}${i}
     echo "Roach $i"
     echo -n "Killing running firmware ... "
-	ssh root@192.168.4.1$i "killall -q -r \.bof"
+	ssh ${CURRENT_IP} "killall -q -r \.bof"
     sleep 2s
     echo " done"
     echo -n "Copying latest $BOF to roach ... "
-	scp Desktop/SDR-master/DataReadout/ChannelizerControls/boffiles/$BOF root@192.168.4.1$i:/boffiles/
+	scp ${CHANNELIZER_CONTROLS_DIR}/boffiles/$BOF ${CURRENT_IP}:/boffiles/
 	check_status $i
     echo " done"
     sleep 2s
     echo -n "Setting clock rates to $CLK MHz ... "
-	python Desktop/SDR-master/DataReadout/ChannelizerControls/lib/clock_pll_setup_$CLK.py 192.168.4.1$i > /dev/null
+	python ${CHANNELIZER_CONTROLS_DIR}/lib/clock_pll_setup_$CLK.py ${CURRENT_IP} > /dev/null
 	check_status $i
     sleep 2s
     echo " done"
     echo -n "Programing firmware on roach ... "
-	python Desktop/SDR-master/DataReadout/ChannelizerControls/lib/program_fpga.py 192.168.4.1$i $BOF > /dev/null
+	python ${CHANNELIZER_CONTROLS_DIR}/lib/program_fpga.py ${CURRENT_IP} $BOF > /dev/null
 	check_status $i
     echo " done"
 done
