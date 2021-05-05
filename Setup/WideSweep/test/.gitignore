@@ -1,0 +1,7 @@
+.DS_Store
+*~*
+*#*
+*.pyc
+*.png
+*pdf
+ucsb_100mK_24db_1-good.txt-*
