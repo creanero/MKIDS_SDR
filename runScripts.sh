@@ -8,7 +8,9 @@ sudo /etc/init.d/nfs-kernel-server start
 
 #telnet MKIDS1 7147 &
 
-source ~/Desktop/SDR-master/fermi-bashrc
-source ~/Desktop/SDR-master/DataReadout/setEnvironment.sh
-#source ~/Desktop/SDR-master/DataReadout/ReadoutControls/startPulseServers.sh
-source ~/Desktop/SDR-master/DataReadout/ChannelizerControls/startSeqFirmware.sh
+SCRIPT_ROOT=$(dirname "$(readlink -f "$0")")
+
+source $SCRIPT_ROOT/fermi-bashrc
+source $SCRIPT_ROOT/DataReadout/setEnvironment.sh
+#source $SCRIPT_ROOT/DataReadout/ReadoutControls/startPulseServers.sh
+source $SCRIPT_ROOT/DataReadout/ChannelizerControls/startSeqFirmware.sh
