@@ -1,4 +1,6 @@
-export SDR_DIR=/home/mkids/stoughto-devel/SDR/
+SCRIPT_ROOT=$(dirname "$(readlink -f "$0")")
+
+export SDR_DIR=${SCRIPT_ROOT}
 export PYTHONPATH=$SDR_DIR/Setup/WideSweep
 alias WideSweep="python $SDR_DIR/Setup/WideSweep/WideAna.py"
 alias autofit="python $SDR_DIR/Setup/WideSweep/autofit.py"
