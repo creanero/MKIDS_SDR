@@ -13,9 +13,13 @@ alias cleanUpLowAtten='python $SDR_DIR/Setup/cleanUpLowAtten.py'
 alias channelizerCustom='python $SDR_DIR/DataReadout/ChannelizerControls/channelizerCustom.py'
 alias arconsDashboard='cd $SDR_DIR/DataReadout/ReadoutControls; python ArconsDashboard.py'
 
+
+# NOT CLEAR WHAT IS DONE WITH THIS - TO BE FIXED OR CULLED - OC ###########################################################
 export MKID_DATA_DIR=/mkids/data/2014-07-22
 export MKID_FILTER_WHEEL_PATH=$MKID_DATA_DIR/filter.txt
 export MKID_MIRROR_ANGLE_PATH=$MKID_DATA_DIR/mirror.txt
+# END OF DEAD-END DATA ####################################################################################################
+
 #The filename of the current compiled firmware.  Should be stored in SDR/DataReadout/ChannelizerControls/boffiles/
 export BOFFILE=snap_raw_iq_4chan_2021_Feb_01_1548.bof
 #working boffile as of 16/12/2020: chan_snap_v3_2012_Oct_30_1216.bof
@@ -43,8 +47,10 @@ export MKID_CUSTOM_FIR=matched_30us.txt
 #Default phase level for photon triggering
 export MKID_THRESHOLD_LEVEL=2.1
 
+# this uses the dead path as well #########################################################################################
 # The path to the beammap h5 file, identifying frequencies with pixel locations for each readout unit (roach board)
 export MKID_BEAMMAP_PATH=$MKID_DATA_DIR/beammap-3x10-new.h5
+# END OF DEAD-END DATA ####################################################################################################
 
 ##Variables added to help port to new hardware configurations
 export MKID_BEAM_ROWS=3
@@ -55,6 +61,8 @@ export MKID_OBSERVATORY=Broida
 export MKID_NROACHES=1  # no. roaches per feedline -- 1 roach on 1 feedline
 #export MKID_NROACHES="4 4"  # no. roaches per feedline -- 4 roaches on a total of two feedlines
 export MKID_ROACH_MATRIX="[[0]]"
+
+# TO BRING UP IN MEETING ###################################################################################################
 # I bet there is a  way to use sed or awk or some other bash shell magic to
 # calculate MKID_ROACHES from MKID_ROACHES_MATRIX.  For now, just copy.
 export MKID_ROACHES=(0)
