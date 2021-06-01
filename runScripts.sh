@@ -16,4 +16,4 @@ SCRIPT_ROOT=$(dirname "$(readlink -f "$0")")
 source $SCRIPT_ROOT/fermi-bashrc
 source $SCRIPT_ROOT/setEnvironment.sh
 #source $SCRIPT_ROOT/DataReadout/ReadoutControls/startPulseServers.sh
-source $SCRIPT_ROOT/DataReadout/ChannelizerControls/startSeqFirmware.sh
+source $SCRIPT_ROOT/startSeqFirmware.sh
