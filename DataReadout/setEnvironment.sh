@@ -14,20 +14,23 @@ export FILTER_WHEEL_PATH=~/SDR/DataReadout/ReadoutControls/bin/filter.txt
 # A file to store the current state of the calibration mirror arm
 export MIRROR_ANGLE_PATH=~/SDR/DataReadout/ReadoutControls/bin/mirror.txt
 #The filename of the current compiled firmware.  Should be stored in SDR/DataReadout/ChannelizerControls/boffiles/
-export BOFFILE=snap_raw_iq_2018_Dec_11_1630.bof
-#working boffile as of 16/12/2020: chan_snap_v3_2012_Oct_30_1216.bof
-#trying on 16/12/2020: snap_rawIQ.bof and snap_raw_iq_2018_Dec_11_1630.bof
+export BOFFILE=chan_snap_v3_2012_Oct_30_1216.bof       
+#own boffiles: chan_snap_v4_20_12_2018_May_29_1235.bof, chan_snap_v4_20_12_2018_Jun_07_1106.bof
+#original boffile: chan_snap_v3_2012_Oct_30_1216.bof working as of 16/12/2020
+#trying snap_rawIQ.bof and snap_raw_iq_2018_Dec_11_1630.bof on 16/12/2020 
+
+
 #The git commit of the model file for the boffile above
-export FIRMWARE_COMMIT=75f17828098b0d3c57acf07f9b3188b39794f666
+export FIRMWARE_COMMIT=75f17828098b0d3c57acf07f9b3188b39794f666     #need to look at this later 
 
 ##Variables used by templar 
 
 #The delay in the firmware between reading the dds values from dram and using them (Determined by which firmware is listed above).
-export DDS_LAG=154
+export DDS_LAG=154 #originally 154
 #boolean switch to indicate whether the current firmware makes use of a threshold in computing baseline phase
 export B_BASE_THRESH=0
 # The directory where the current frequency/attenuation files are stored (EX: ps_freq0.txt). Also where roachConfig.txt is.
-export FREQ_PATH=~/opt/software/colin1/LUT
+export FREQ_PATH=~/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT
 
 ##Variables used by channelizerCustom
 

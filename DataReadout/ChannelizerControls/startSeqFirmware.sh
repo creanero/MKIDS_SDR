@@ -50,17 +50,17 @@ do
     sleep 2s
     echo " done"
     echo -n "Copying latest $BOF to roach ... "
-	scp Desktop/SDR-master/DataReadout/ChannelizerControls/boffiles/$BOF root@192.168.4.1$i:/boffiles/
+	scp /home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/boffiles/$BOF root@192.168.4.1$i:/boffiles/
 	check_status $i
     echo " done"
     sleep 2s
     echo -n "Setting clock rates to $CLK MHz ... "
-	python Desktop/SDR-master/DataReadout/ChannelizerControls/lib/clock_pll_setup_$CLK.py 192.168.4.1$i > /dev/null
+	python /home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/lib/clock_pll_setup_$CLK.py 192.168.4.1$i > /dev/null
 	check_status $i
     sleep 2s
     echo " done"
     echo -n "Programing firmware on roach ... "
-	python Desktop/SDR-master/DataReadout/ChannelizerControls/lib/program_fpga.py 192.168.4.1$i $BOF > /dev/null
+	python /home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/lib/program_fpga.py 192.168.4.1$i $BOF > /dev/null
 	check_status $i
     echo " done"
 done
