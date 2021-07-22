@@ -1,4 +1,4 @@
-SCRIPT_ROOT=$(dirname "$(readlink -f "$0")")
+SCRIPT_ROOT="$(dirname -- "$(readlink -f -- "$0")")"
 
 export SDR_DIR=${SCRIPT_ROOT}
 export PYTHONPATH=$SDR_DIR/Setup/WideSweep

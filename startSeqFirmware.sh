@@ -1,6 +1,6 @@
 #!/bin/bash
 # identifies the directory the current script is running in
-SCRIPT_ROOT=$(dirname "$(readlink -f "$0")")
+SCRIPT_ROOT="$(dirname -- "$(readlink -f -- "$0")")"
 
 #ROACHES=(0 1 2 3 4 5 6 7)
 ROACHES=$MKID_ROACHES
