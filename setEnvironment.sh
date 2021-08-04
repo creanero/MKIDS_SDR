@@ -15,6 +15,7 @@ export FILTER_WHEEL_PATH=~/SDR/DataReadout/ReadoutControls/bin/filter.txt
 export MIRROR_ANGLE_PATH=~/SDR/DataReadout/ReadoutControls/bin/mirror.txt
 #The filename of the current compiled firmware.  Should be stored in SDR/DataReadout/ChannelizerControls/boffiles/
 #export BOFFILE=snap_raw_iq_2018_Dec_11_1630.bof
+#export BOFFILE=chan_snap_v3_2012_Oct_30_1216.bof
 export BOFFILE=chan_snap_v3_2012_Oct_30_1216.bof
 #working boffile as of 16/12/2020: chan_snap_v3_2012_Oct_30_1216.bof
 #trying on 16/12/2020: snap_rawIQ.bof and snap_raw_iq_2018_Dec_11_1630.bof
