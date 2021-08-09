@@ -8,7 +8,12 @@ sudo /etc/init.d/nfs-kernel-server start
 
 #telnet MKIDS1 7147 &
 
-source ~/Desktop/SDR-master/fermi-bashrc
-source ~/Desktop/SDR-master/DataReadout/setEnvironment.sh
-#source ~/Desktop/SDR-master/DataReadout/ReadoutControls/startPulseServers.sh
-source ~/Desktop/SDR-master/DataReadout/ChannelizerControls/startSeqFirmware.sh
+# Finds the path the current script is running from - OC
+SCRIPT_ROOT=$(dirname -- "$(readlink -f -- "$0")")
+
+# Runs the configuration scripts in order 
+# Will want to comment these further - OC
+source $SCRIPT_ROOT/fermi-bashrc
+source $SCRIPT_ROOT/setEnvironment.sh
+#source $SCRIPT_ROOT/DataReadout/ReadoutControls/startPulseServers.sh
+source $SCRIPT_ROOT/startSeqFirmware.sh
