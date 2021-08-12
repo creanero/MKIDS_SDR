@@ -20,6 +20,7 @@ BOF=$BOFFILE     #uncomment this
 
 # Sets the base of the IP address for the roach boards
 # Is there a way to make this dynamic? - OC
+#IP_BASE="root@192.168.4.1"
 IP_BASE="root@10.0.0.1"
 
 # Sets the data readout directory
