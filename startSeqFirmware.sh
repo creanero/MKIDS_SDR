@@ -79,13 +79,13 @@ do
     echo " done"
 done
 
-if [ "$BOFFILE" == "chan_snap_v3_2012_Oct_30_1216.bof" ]; then
-    echo -n "Setting alpha registers ... "
-    python ${CHANNELIZER_CONTROLS_DIR}/lib/set_alpha.py
-fi
-if [ "$BOFFILE" == "chan_svf_2014_Aug_06_1839.bof" ]; then
-    echo -n "Setting svf baseline parameters ... "
-    python ${CHANNELIZER_CONTROLS_DIR}/lib/set_svf.py
-fi
+#if [ "$BOFFILE" == "chan_snap_v3_2012_Oct_30_1216.bof" ]; then
+    #echo -n "Setting alpha registers ... "
+    #python ${CHANNELIZER_CONTROLS_DIR}/lib/set_alpha.py
+#fi
+#if [ "$BOFFILE" == "chan_svf_2014_Aug_06_1839.bof" ]; then
+    #echo -n "Setting svf baseline parameters ... "
+    #python ${CHANNELIZER_CONTROLS_DIR}/lib/set_svf.py
+#fi
 check_status -1
 echo "DONE"
