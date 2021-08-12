@@ -20,8 +20,8 @@ BOF=$BOFFILE     #uncomment this
 
 # Sets the base of the IP address for the roach boards
 # Is there a way to make this dynamic? - OC
-IP_BASE_192="root@192.168.4.1"
-IP_BASE_10="root@10.0.0.1"
+IP_BASE_192="192.168.4.1"
+IP_BASE_10="10.0.0.1"
 
 # Sets the data readout directory
 DATA_READOUT_DIR=${SCRIPT_ROOT}/DataReadout
@@ -61,11 +61,11 @@ do
 
     echo "Roach $i"
     echo -n "Killing running firmware ... "
-	ssh ${CURRENT_IP_192} "killall -q -r \.bof"
+	ssh root@${CURRENT_IP_192} "killall -q -r \.bof"
     sleep 2s
     echo " done"
     echo -n "Copying latest $BOF to roach ... "
-	scp ${CHANNELIZER_CONTROLS_DIR}/boffiles/$BOF ${CURRENT_IP_192}:/boffiles/
+	scp ${CHANNELIZER_CONTROLS_DIR}/boffiles/$BOF root@${CURRENT_IP_192}:/boffiles/
 	check_status $i
     echo " done"
     echo -n "Setting clock rates to $CLK MHz ... "
