@@ -20,8 +20,8 @@ BOF=$BOFFILE     #uncomment this
 
 # Sets the base of the IP address for the roach boards
 # Is there a way to make this dynamic? - OC
-#IP_BASE="root@192.168.4.1"
-IP_BASE="root@10.0.0.1"
+IP_BASE_192="root@192.168.4.1"
+IP_BASE_10="root@10.0.0.1"
 
 # Sets the data readout directory
 DATA_READOUT_DIR=${SCRIPT_ROOT}/DataReadout
@@ -56,42 +56,36 @@ check_status()
 
 for i in ${ROACHES[*]}
 do
-    CURRENT_IP=${IP_BASE}${i}
+    CURRENT_IP_192=${IP_BASE_192}${i}
+    CURRENT_IP_10=${IP_BASE_10}${i}
+
     echo "Roach $i"
     echo -n "Killing running firmware ... "
-	ssh ${CURRENT_IP} "killall -q -r \.bof"
+	ssh ${CURRENT_IP_192} "killall -q -r \.bof"
     sleep 2s
     echo " done"
     echo -n "Copying latest $BOF to roach ... "
-	scp ${CHANNELIZER_CONTROLS_DIR}/boffiles/$BOF ${CURRENT_IP}:/boffiles/
+	scp ${CHANNELIZER_CONTROLS_DIR}/boffiles/$BOF ${CURRENT_IP_192}:/boffiles/
 	check_status $i
     echo " done"
     echo -n "Setting clock rates to $CLK MHz ... "
-#<<<<<<< HEAD
-#	python lib/clock_pll_setup_$CLK.py 10.0.0.1$i > /dev/null
-#=======
-	python ${CHANNELIZER_CONTROLS_DIR}/lib/clock_pll_setup_$CLK.py ${CURRENT_IP} > /dev/null
-#>>>>>>> path_cleanup
+	python ${CHANNELIZER_CONTROLS_DIR}/lib/clock_pll_setup_$CLK.py ${CURRENT_IP_192} > /dev/null
 	check_status $i
     sleep 2s
     echo " done"
     echo -n "Programing firmware on roach ... "
-#<<<<<<< HEAD
-#	python lib/program_fpga.py 10.0.0.1$i $BOF > /dev/null
-#=======
-	python ${CHANNELIZER_CONTROLS_DIR}/lib/program_fpga.py ${CURRENT_IP} $BOF > /dev/null
-#>>>>>>> path_cleanup
+	python ${CHANNELIZER_CONTROLS_DIR}/lib/program_fpga.py ${CURRENT_IP_192} $BOF > /dev/null
 	check_status $i
     echo " done"
 done
 
 if [ "$BOFFILE" == "chan_snap_v3_2012_Oct_30_1216.bof" ]; then
     echo -n "Setting alpha registers ... "
-    python lib/set_alpha.py
+    python ${CHANNELIZER_CONTROLS_DIR}/lib/set_alpha.py
 fi
 if [ "$BOFFILE" == "chan_svf_2014_Aug_06_1839.bof" ]; then
     echo -n "Setting svf baseline parameters ... "
-    python lib/set_svf.py
+    python ${CHANNELIZER_CONTROLS_DIR}/lib/set_svf.py
 fi
 check_status -1
 echo "DONE"
