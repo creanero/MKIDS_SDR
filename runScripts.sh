@@ -1,5 +1,5 @@
-sudo /etc/init.d/dnsmasq start
-sudo /etc/init.d/nfs-kernel-server start
+#sudo /etc/init.d/dnsmasq start
+#sudo /etc/init.d/nfs-kernel-server start
 
 #Start tcp borph server on MKIDS1
 # Pretty sure next two lines don't work. But maybe they do
