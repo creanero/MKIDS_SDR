@@ -15,9 +15,9 @@ alias arconsDashboard='cd $SDR_DIR/DataReadout/ReadoutControls; python ArconsDas
 
 
 # NOT CLEAR WHAT IS DONE WITH THIS - TO BE FIXED OR CULLED - OC ###########################################################
-export MKID_DATA_DIR=/mkids/data/2014-07-22
-export MKID_FILTER_WHEEL_PATH=$MKID_DATA_DIR/filter.txt
-export MKID_MIRROR_ANGLE_PATH=$MKID_DATA_DIR/mirror.txt
+#export MKID_DATA_DIR=/mkids/data/2014-07-22
+#export MKID_FILTER_WHEEL_PATH=$MKID_DATA_DIR/filter.txt
+#export MKID_MIRROR_ANGLE_PATH=$MKID_DATA_DIR/mirror.txt
 # END OF DEAD-END DATA ####################################################################################################
 
 #The filename of the current compiled firmware.  Should be stored in SDR/DataReadout/ChannelizerControls/boffiles/
