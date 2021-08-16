@@ -103,7 +103,7 @@ class AppForm(QtG.QMainWindow):
     def programRFswitches(self, regStr = '10110'):
         #    5 bit word: LO_int/ext, RF_loop, LO_source(doubler), BB_loop, Ck_int/ext
         #regStr = self.textbox_rfSwReg.text()
-        print int(regStr[0]), int(regStr[1]), int(regStr[2]),int(regStr[3]), int(regStr[4])
+        #print int(regStr[0]), int(regStr[1]), int(regStr[2]),int(regStr[3]), int(regStr[4])
 
         self.roach.write_int('regs', (1<<4)+(1<<3)+(0<<2)+(0<<1)+(0<<0))
         self.roach.write_int('if_switch', 1)
@@ -507,7 +507,7 @@ class AppForm(QtG.QMainWindow):
                 self.Q_dds[j*512+2*((m+ch_shift)%256)] = Q[2*j]
                 self.Q_dds[j*512+2*((m+ch_shift)%256)+1] = Q[2*j+1]
 
-        print "done defing dds freqs. "
+        print "done defining dds freqs. "
 
     def select_bins(self, readout_freqs):
         fft_len = 2**9
@@ -668,7 +668,7 @@ class AppForm(QtG.QMainWindow):
         atten_in = float(self.textbox_atten_in.text())
         saveDir = str(self.textbox_saveDir.text())
         savefile = os.path.join(saveDir,'COLM%d_'%roachNo + time.strftime("%Y%m%d-%H%M%S",time.localtime())+'.h5')
-        print "in sweelLOready:  savefile=",savefile
+        #print "in sweelLOready:  savefile=",savefile
         dac_freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split()) 
         
         self.N_freqs = len(dac_freqs)
@@ -686,11 +686,14 @@ class AppForm(QtG.QMainWindow):
         loSpan = float(self.textbox_loSpan.text())
         df = float(self.textbox_df.text())
         steps = int(loSpan/df)
-        print "LO steps: ", steps
+        #print "LO steps: ", steps
         lo_freqs = [f_base+i*df-0.5*steps*df for i in range(steps)]
         
         atten_start = int(self.textbox_powerSweepStart.text())
-        atten_stop = int(self.textbox_powerSweepStop.text())
+        #atten_stop = int(self.textbox_powerSweepStop.text())
+
+	atten_stop = atten_start #setting stop attenuation to be start attenuation
+
         if atten_start <= atten_stop:
             attens = [i for i in range(atten_start, atten_stop+1)]
         else:
@@ -712,7 +715,10 @@ class AppForm(QtG.QMainWindow):
                 self.f_span[l] = [f-0.5*steps*df+n*df for n in range(steps)]  
                 l = l + 1
 
-            if self.I != None:
+
+	    #print 'self.I = ', self.I               #debugging 
+	    Iarray = numpy.array(self.I)                  #debugging
+            if Iarray.any() != None:                  #was getting error when doing more than one sweep, changing to self.I to Iarray.any()
                self.last_I = numpy.array(self.I) 
                self.last_Q = numpy.array(self.Q) 
                self.last_I_on_res = numpy.array(self.I_on_res) 
@@ -758,7 +764,9 @@ class AppForm(QtG.QMainWindow):
             
             N = steps*self.N_freqs
             #calculate IQ velocities (distances between points in IQ loop)
-            if self.IQ_vels != None:
+		
+	    IQ_vels_array = numpy.array(self.IQ_vels)                  #debugging            
+            if IQ_vels_array.any() != None:           #was getting error when doing more than one sweep, changing to self.I to Iarray.any()
                 self.last_IQ_vels = self.IQ_vels
             self.IQ_vels = numpy.zeros([self.N_freqs,steps-1])
             for ch in range(self.N_freqs):
@@ -1106,7 +1114,7 @@ class AppForm(QtG.QMainWindow):
         self.connect(self.button_openClient, QtC.SIGNAL('clicked()'), self.openClient)
         
         # LO frequency.
-        self.textbox_loFreq = QtG.QLineEdit('5.88e9')
+        self.textbox_loFreq = QtG.QLineEdit('4.75e9')
         self.textbox_loFreq.setMaximumWidth(100)
         label_loFreq = QtG.QLabel('LO frequency:')
 
@@ -1123,7 +1131,7 @@ class AppForm(QtG.QMainWindow):
 	# Sweep resolution
         self.textbox_df = QtG.QLineEdit('1e4')
         self.textbox_df.setMaximumWidth(50)
-        label_df = QtG.QLabel('Sweep Resolution (df):')
+        label_df = QtG.QLabel('Sweep Resolution (df) (Hz):')
         
         # Frequency span shift
         # A span shift of 0.75 shifts 75% of sweep span to the lower portion of the range.
@@ -1159,10 +1167,10 @@ class AppForm(QtG.QMainWindow):
         # Power sweep range. 
         self.textbox_powerSweepStart = QtG.QLineEdit('0')
         self.textbox_powerSweepStart.setMaximumWidth(50)
-        label_powerSweepStart = QtG.QLabel('Start atten.:')
-        self.textbox_powerSweepStop = QtG.QLineEdit('0')
-        self.textbox_powerSweepStop.setMaximumWidth(50)
-        label_powerSweepStop = QtG.QLabel('Stop atten:')
+        label_powerSweepStart = QtG.QLabel('Output atten.:')
+        #self.textbox_powerSweepStop = QtG.QLineEdit('0')
+        #self.textbox_powerSweepStop.setMaximumWidth(50)
+        #label_powerSweepStop = QtG.QLabel('Stop atten:')
 
         # Save directory
         self.textbox_saveDir = QtG.QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT')
@@ -1331,8 +1339,8 @@ class AppForm(QtG.QMainWindow):
         hbox20.addWidget(self.textbox_atten_in)
         hbox20.addWidget(label_powerSweepStart)
         hbox20.addWidget(self.textbox_powerSweepStart)
-        hbox20.addWidget(label_powerSweepStop)
-        hbox20.addWidget(self.textbox_powerSweepStop)
+        #hbox20.addWidget(label_powerSweepStop)
+        #hbox20.addWidget(self.textbox_powerSweepStop)
         gbox2.addLayout(hbox20)
 	hbox220 = QtG.QHBoxLayout()
         hbox220.addWidget(label_df)
