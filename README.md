@@ -52,7 +52,7 @@ Environment Variables
 ---------------------
 
 These are set in a script.  The reference scripts are in
-`SDR/DataReadout/setEnvironment.sh` and `setEnvironmentFNAL.sh`.
+`setEnvironment.sh` and `setEnvironmentFNAL.sh`.
 These are the environment variables used:
 
   1.  `MKID_DATA_DIR`: where data live.  
