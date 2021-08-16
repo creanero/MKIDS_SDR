@@ -25,9 +25,9 @@ from lib import iqsweep
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-	#print len(sys.argv) 
-	#print sys.argv[0] 
-	print 'Usage: ',sys.argv[0],' roachNo'
+        #print len(sys.argv) 
+        #print sys.argv[0] 
+        print 'Usage: ',sys.argv[0],' roachNo'
         exit(1)
     roachNo = int(sys.argv[1])
     #datadir = os.environ['MKID_FREQ_PATH']#'/opt/software/colin1/'
@@ -44,15 +44,15 @@ if __name__ == '__main__':
     #defaultLOFreq = defaultLOFreqs[roachNo]
    #defaultAtten = int(defaultAttens[roachNo])
 
-	
+        
     MAX_ATTEN = 99
 
 class AppForm(QtG.QMainWindow):
     def __init__(self, parent=None):
         QtG.QMainWindow.__init__(self, parent)           #added QtG. before QMainWindow
         self.setWindowTitle('DIAS_MKID_Readout_1_0')
-	label = QtGui.QLabel('DIAS', self)
-	label.setFont(QtG.QFont('Arial', 20))
+        label = QtGui.QLabel('DIAS', self)
+        label.setFont(QtG.QFont('Arial', 20))
         self.create_menu()
         self.create_main_frame()
         self.create_status_bar()
@@ -68,7 +68,7 @@ class AppForm(QtG.QMainWindow):
         N_lut_entries = 2**16
         self.freqRes = self.sampleRate/N_lut_entries
         #self.iq_centers = numpy.array([0.+0j]*256)
-        self.customResonators=numpy.array([[0.0,-1]]*256)	#customResonator[ch]=[freq,atten]
+        self.customResonators=numpy.array([[0.0,-1]]*256)        #customResonator[ch]=[freq,atten]
         self.last_I_on_res = None
         self.last_Q_on_res = None
         self.last_I = None
@@ -91,9 +91,10 @@ class AppForm(QtG.QMainWindow):
         #self.QApplication.processEvents()
         print 'connecting...'
         self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
-	self.roach.progdev('chan_snap_v3_2012_Oct_30_1216.bof') # 'chan_512_2012_Jul_30_1754.bof' original boffile. 
-									#Last working: chan_snap_v3_2012_Oct_30_1216.bof
-                                                                        #trying chan_snap_v4_20_12_2018_May_29_1235.bof and chan_snap_v4_20_12_2018_Jun_07_1106.bof
+        self.roach.progdev('chan_snap_v3_2012_Oct_30_1216.bof') 
+        #'chan_512_2012_Jul_30_1754.bof' original boffile. 
+        #Last working: chan_snap_v3_2012_Oct_30_1216.bof
+        #trying chan_snap_v4_20_12_2018_May_29_1235.bof and chan_snap_v4_20_12_2018_Jun_07_1106.bof
 
         time.sleep(2)
         self.status_text.setText('connection established')
@@ -283,7 +284,7 @@ class AppForm(QtG.QMainWindow):
         #print 'LO programmed. '
 
     def programLOrev2board(self, freq=3.2e9, sweep_freq=0, enable = 1):  #ensured that all frequency values here were in Hz, not MHz, enable changed to 0
-	
+        
         f_pfd = 5e6
         #5MHz PFD freq on the rev2 Board
         if sweep_freq:
@@ -304,12 +305,12 @@ class AppForm(QtG.QMainWindow):
         elif (div >= 1): div = 1;
         else: div = 0;
         myfreq = myfreq * (2**div)
-	#print 'freq = ', freq   #added for debugging
+        #print 'freq = ', freq   #added for debugging
 
         integer_part = int(myfreq/5.0e6)
-	#print 'integer_part = ', integer_part    #added for debugging
+        #print 'integer_part = ', integer_part    #added for debugging
 
-	
+        
 
         fractional_part = int(((myfreq - 5e6 * integer_part)/5e6)*2**24)  
         print "PLL values", myfreq, integer_part, fractional_part, div
@@ -346,22 +347,22 @@ class AppForm(QtG.QMainWindow):
         reg2 = 0x00000052   
         #reg 1
         reg1 = (fractional_part<<4) | 1 
-	
+        
 
         #reg 0
         #reg0 = 0x00200000 | (integer_part<<4)   #this reg is causing errors - value too large            
         #hard coding reg0 to value given by music_if_control_v03.py
-	#reg0 = 0x00204b00	
-	#print 'integer_part = ', integer_part         
-	reg0 = 0x00200000 | (integer_part<<4)         #code here calculating reg0 taking from music_if_control_v03.py
-	
-	regs = [reg12, reg11, reg10, reg9, reg8, reg7, reg6, reg5, reg4, reg3, reg2, reg1, reg0]   
+        #reg0 = 0x00204b00
+        #print 'integer_part = ', integer_part         
+        reg0 = 0x00200000 | (integer_part<<4)         #code here calculating reg0 taking from music_if_control_v03.py
+        
+        regs = [reg12, reg11, reg10, reg9, reg8, reg7, reg6, reg5, reg4, reg3, reg2, reg1, reg0]   
 
         #i = 12          #added for debugging
-        for r in regs:	    
+        for r in regs:
 
             self.roach.write_int('SER_DI', r)
-	 #   print 'Reg', i, ' = ', r 	           #added for debugging
+         #   print 'Reg', i, ' = ', r                    #added for debugging
             self.roach.write_int('LO_SLE', 1)
             self.roach.write_int('start', 1)
             self.roach.write_int('start', 0)
@@ -426,7 +427,7 @@ class AppForm(QtG.QMainWindow):
         a = numpy.array([abs(I).max(), abs(Q).max()])
         scale_factor = a.max()
 
-	 
+         
 
         scaleFudgeFactor = 1.1 #don't scale to the max value, but get close
         if echo == 'yes':
@@ -456,16 +457,16 @@ class AppForm(QtG.QMainWindow):
         freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
         f_base = float(self.textbox_loFreq.text())
 
-	
-	#print(freqs)
-	
-	n = 0
-	for f in freqs:                             #need this to stop giving wrong frequencies - not sure why it works but it does 
-		freqs[n] = f_base + (f_base - f)
-		n = n + 1
+        
+        #print(freqs)
+        
+        n = 0
+        for f in freqs:                             #need this to stop giving wrong frequencies - not sure why it works but it does 
+            freqs[n] = f_base + (f_base - f)
+            n = n + 1
 
-	#print()
-	#print(freqs)
+        #print()
+        #print(freqs)
 
 
         for n in range(len(freqs)):
@@ -529,7 +530,7 @@ class AppForm(QtG.QMainWindow):
     
     def write_LUTs(self):
         if self.dacStatus == 'off':
-            self.roach.write_int('startDAC', 0)		#make sure it's actually off
+            self.roach.write_int('startDAC', 0) #make sure it's actually off
         else:
             self.toggleDAC()
             
@@ -614,7 +615,7 @@ class AppForm(QtG.QMainWindow):
         print "Calculating loop rotations..."
         self.status_text.setText('Calculating loop rotations...')
         dac_freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
-	
+        
 
         N_freqs = len(dac_freqs)
         phase = [0.]*256
@@ -675,7 +676,7 @@ class AppForm(QtG.QMainWindow):
         f_base = float(self.textbox_loFreq.text())
         
 
-	
+        
 
         #if f_base >= 4.4e9:                  #new board does not have frequency doubler
         #    self.programRFswitches('10010')     
@@ -692,7 +693,7 @@ class AppForm(QtG.QMainWindow):
         atten_start = int(self.textbox_powerSweepStart.text())
         #atten_stop = int(self.textbox_powerSweepStop.text())
 
-	atten_stop = atten_start #setting stop attenuation to be start attenuation
+        atten_stop = atten_start #setting stop attenuation to be start attenuation
 
         if atten_start <= atten_stop:
             attens = [i for i in range(atten_start, atten_stop+1)]
@@ -716,8 +717,8 @@ class AppForm(QtG.QMainWindow):
                 l = l + 1
 
 
-	    #print 'self.I = ', self.I               #debugging 
-	    Iarray = numpy.array(self.I)                  #debugging
+            #print 'self.I = ', self.I               #debugging 
+            Iarray = numpy.array(self.I)                  #debugging
             if Iarray.any() != None:                  #was getting error when doing more than one sweep, changing to self.I to Iarray.any()
                self.last_I = numpy.array(self.I) 
                self.last_Q = numpy.array(self.Q) 
@@ -764,8 +765,8 @@ class AppForm(QtG.QMainWindow):
             
             N = steps*self.N_freqs
             #calculate IQ velocities (distances between points in IQ loop)
-		
-	    IQ_vels_array = numpy.array(self.IQ_vels)                  #debugging            
+                
+            IQ_vels_array = numpy.array(self.IQ_vels)                  #debugging            
             if IQ_vels_array.any() != None:           #was getting error when doing more than one sweep, changing to self.I to Iarray.any()
                 self.last_IQ_vels = self.IQ_vels
             self.IQ_vels = numpy.zeros([self.N_freqs,steps-1])
@@ -804,34 +805,34 @@ class AppForm(QtG.QMainWindow):
                     w.Save(savefile,'r0', 'a')
         self.axes0.clear()
         self.axes1.clear()
-	self.axes2.clear()
+        self.axes2.clear()
         self.axes3.clear()
         try:
             self.axes0.plot(f_span, (I**2 + Q**2)**.5, '.-')
-	    self.axes0.set_xlabel('Freq [Hz]')
+            self.axes0.set_xlabel('Freq [Hz]')
             self.axes0.set_ylabel('Transmission [uV (rms)]')
         except ValueError:
             pass
             
         self.axes1.plot(I, Q, '.-', self.iq_centers.real[0:self.N_freqs], self.iq_centers.imag[0:self.N_freqs], '.', self.I_on_res, self.Q_on_res, '.')
-	self.axes1.set_xlabel('I (In-Phase)')
-	self.axes1.set_ylabel('Q (In-Quadrature)')
+        self.axes1.set_xlabel('I (In-Phase)')
+        self.axes1.set_ylabel('Q (In-Quadrature)')
 
-	self.axes2.plot(f_span, numpy.arctan2(Q, I) * 180 / numpy.pi, '.')
-	self.axes2.set_xlabel('Freq [Hz]')
-	self.axes2.set_ylabel('Transmission (Phase)')
+        self.axes2.plot(f_span, numpy.arctan2(Q, I) * 180 / numpy.pi, '.')
+        self.axes2.set_xlabel('Freq [Hz]')
+        self.axes2.set_ylabel('Transmission (Phase)')
 
-	self.axes3.plot(f_span, I, '.-')
-	self.axes3.plot(f_span, Q, '.-')
-	self.axes3.set_xlabel('Freq [Hz]')
-	self.axes3.set_ylabel('I (green) Q (blue)')
+        self.axes3.plot(f_span, I, '.-')
+        self.axes3.plot(f_span, Q, '.-')
+        self.axes3.set_xlabel('Freq [Hz]')
+        self.axes3.set_ylabel('I (green) Q (blue)')
 
-	#saveDir = str('/home/cbracken/Desktop/SDR-master/DataReadout/LO_Sweep_Data') #saves data here
+        #saveDir = str('/home/cbracken/Desktop/SDR-master/DataReadout/LO_Sweep_Data') #saves data here
         #if saveDir != '':
             #phasefilename = saveDir + '/IQdata_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + str(self.textbox_roachIP.text())+'.txt'
             #numpy.savetxt(phasefilename,f_span,fmt='%.8f')                       #saves phase data #changed %e to %f
         
-	self.canvas.draw()
+        self.canvas.draw()
 
 
 
@@ -937,32 +938,32 @@ class AppForm(QtG.QMainWindow):
             ch = int(self.textbox_channel.text())
         self.axes0.clear()
         self.axes1.clear()
-	self.axes2.clear()
+        self.axes2.clear()
         self.axes3.clear()
 
         self.axes0.plot(self.f_span[ch], (self.I[ch]**2 + self.Q[ch]**2)**.5, '.-')
         self.axes0.plot(self.f_span[ch][0:-1], self.IQ_vels[ch],'g.-')
-	self.axes0.set_xlabel('Freq (Hz)')
-	self.axes0.set_ylabel('Transmission [uV (rms)]')
-	if self.last_IQ_vels != None and self.showPrevious:
+        self.axes0.set_xlabel('Freq (Hz)')
+        self.axes0.set_ylabel('Transmission [uV (rms)]')
+        if self.last_IQ_vels != None and self.showPrevious:
             self.axes0.semilogy(self.last_f_span[ch][0:-1], self.last_IQ_vels[ch],'c.-',alpha=0.5)
 
-	self.axes1.plot(self.I[ch], self.Q[ch], '.-', self.iq_centers.real[ch], self.iq_centers.imag[ch], '.', self.I_on_res[ch], self.Q_on_res[ch], '.')
-	self.axes1.set_xlabel('I (In-Phase)')
-	self.axes1.set_ylabel('Q (In-Quadrature)')
+        self.axes1.plot(self.I[ch], self.Q[ch], '.-', self.iq_centers.real[ch], self.iq_centers.imag[ch], '.', self.I_on_res[ch], self.Q_on_res[ch], '.')
+        self.axes1.set_xlabel('I (In-Phase)')
+        self.axes1.set_ylabel('Q (In-Quadrature)')
         if self.last_I != None and self.showPrevious:
             self.axes1.plot(self.last_I[ch], self.last_Q[ch], 'c.-', self.last_iq_centers.real[ch], self.last_iq_centers.imag[ch], '.', self.last_I_on_res[ch], self.last_Q_on_res[ch], '.',alpha=0.5)
 
-	self.axes2.plot(self.f_span[ch], numpy.arctan2(self.Q[ch],self.I[ch]) * 180 / numpy.pi, '.-')
-	self.axes2.set_xlabel('Freq (Hz)')
-	self.axes2.set_ylabel('Transmission (Phase)')
-	if self.last_IQ_vels != None and self.showPrevious:
+        self.axes2.plot(self.f_span[ch], numpy.arctan2(self.Q[ch],self.I[ch]) * 180 / numpy.pi, '.-')
+        self.axes2.set_xlabel('Freq (Hz)')
+        self.axes2.set_ylabel('Transmission (Phase)')
+        if self.last_IQ_vels != None and self.showPrevious:
             self.axes2.plot(self.last_f_span[ch][0:-1], self.last_IQ_vels[ch],'c.-',alpha=0.5)
 
-	self.axes3.plot(self.f_span[ch], self.I[ch], 'g.-')
-	self.axes3.plot(self.f_span[ch], self.Q[ch], 'b.-')
-	self.axes3.set_xlabel('Freq (Hz)')
-	self.axes3.set_ylabel('Baseband Amplitude')
+        self.axes3.plot(self.f_span[ch], self.I[ch], 'g.-')
+        self.axes3.plot(self.f_span[ch], self.Q[ch], 'b.-')
+        self.axes3.set_xlabel('Freq (Hz)')
+        self.axes3.set_ylabel('Baseband Amplitude')
         if self.last_I != None and self.showPrevious:
             self.axes3.plot(self.last_I[ch], self.last_Q[ch], 'c.-', self.last_iq_centers.real[ch], self.last_iq_centers.imag[ch], '.', self.last_I_on_res[ch], self.last_Q_on_res[ch], '.',alpha=0.5)
 
@@ -995,8 +996,8 @@ class AppForm(QtG.QMainWindow):
         self.iq_centers.real[ch] = I
         self.iq_centers.imag[ch] = Q
         self.axes1.plot(I, Q, '.')
-	self.axes1.set_xlabel('I (In-Phase)')
-	self.axes1.set_ylabel('Q (In-Quadrature)')
+        self.axes1.set_xlabel('I (In-Phase)')
+        self.axes1.set_ylabel('Q (In-Quadrature)')
         self.canvas.draw()
 
     def snapResFreq(self):
@@ -1090,7 +1091,7 @@ class AppForm(QtG.QMainWindow):
         self.canvas.setParent(self.main_frame)
         self.axes0 = self.fig.add_subplot(221)
         self.axes1 = self.fig.add_subplot(222)
-	self.axes2 = self.fig.add_subplot(223)
+        self.axes2 = self.fig.add_subplot(223)
         self.axes3 = self.fig.add_subplot(224)
         
         cid=self.canvas.mpl_connect('button_press_event', self.changeCenter)
@@ -1128,7 +1129,7 @@ class AppForm(QtG.QMainWindow):
         self.textbox_loSpan.setMaximumWidth(50)
         label_loSpan = QtG.QLabel('LO Sweep Span:')
 
-	# Sweep resolution
+        # Sweep resolution
         self.textbox_df = QtG.QLineEdit('1e4')
         self.textbox_df.setMaximumWidth(50)
         label_df = QtG.QLabel('Sweep Resolution (df) (Hz):')
@@ -1156,10 +1157,10 @@ class AppForm(QtG.QMainWindow):
         label_offset = QtG.QLabel('DAC sync. lag:')
 
         # offset in lut
-        #self.textbox_dds_shift = QLineEdit('140')	#chan_512_packet_2012_Aug_20_1207.bof
-        #self.textbox_dds_shift = QLineEdit('149')	#chan_512_nodead_2012_Sep_05_1346.bof
-        #self.textbox_dds_shift = QLineEdit('147')	#chan_if_acc_x_2011_Aug_02_0713.bof
-        #self.textbox_dds_shift = QLineEdit('153')	#chan_dtrig_2012_Aug_28_1204.bof
+        #self.textbox_dds_shift = QLineEdit('140') #chan_512_packet_2012_Aug_20_1207.bof
+        #self.textbox_dds_shift = QLineEdit('149') #chan_512_nodead_2012_Sep_05_1346.bof
+        #self.textbox_dds_shift = QLineEdit('147') #chan_if_acc_x_2011_Aug_02_0713.bof
+        #self.textbox_dds_shift = QLineEdit('153') #chan_dtrig_2012_Aug_28_1204.bof
         #self.textbox_dds_shift = QLineEdit(os.environ['MKID_DDS_LAG'])       
         #self.textbox_dds_shift.setMaximumWidth(50)
         #label_dds_shift = QLabel('DDS sync. lag:')
@@ -1342,7 +1343,7 @@ class AppForm(QtG.QMainWindow):
         #hbox20.addWidget(label_powerSweepStop)
         #hbox20.addWidget(self.textbox_powerSweepStop)
         gbox2.addLayout(hbox20)
-	hbox220 = QtG.QHBoxLayout()
+        hbox220 = QtG.QHBoxLayout()
         hbox220.addWidget(label_df)
         hbox220.addWidget(self.textbox_df)
         gbox2.addLayout(hbox220)
