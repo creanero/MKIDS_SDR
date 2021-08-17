@@ -15,7 +15,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 from matplotlib import style
 
-style.use('fivethirtyeight')
+#style.use('fivethirtyeight')
 
 
 #import libraries for doing animations
@@ -728,9 +728,13 @@ class AppForm(QMainWindow):
 		#ani = animation.FuncAnimation(self.fig, self.animate, interval=100)
 		#self.canvas.show()
 		
-		ani = animation.FuncAnimation(fig, animate, interval=100)
-		#self.mpl.show()
-		self.canvas.show()
+		#print 'Before animation'
+		ani = animation.FuncAnimation(self.fig, self.animate(bob_array), interval=10)
+		#print 'After animation'
+
+		#self.canvas.draw()
+		#mpl.show()
+		#self.canvas.draw()
 
 		#time.sleep(10)
 				
@@ -740,8 +744,9 @@ class AppForm(QMainWindow):
 		if failsafe > (maxloops - 1):
 			#print 'Too many loops.'
 			break 
-			
-        
+	print 'Before Draw'	
+        self.canvas.draw()
+	print 'After Draw'
 	print "Finished!"
 
 
@@ -1071,12 +1076,19 @@ class AppForm(QMainWindow):
     
 
     #add animation function
-    def animate(self):
-    	graph_data = bob_array
+    def animate(self, graph_data):
+    	#graph_data = self.bob_array
 	
-    	#self.axes0.clear()
+	#print 'Test 1'
+    	self.axes0.clear()
+	#print 'Test 2'
 	self.axes0.plot(graph_data, 'b.')
-	self.axes0.show()
+	#print 'Test 3'
+	#self.canvas.draw()
+	#print 'Test 4'
+	#self.axes0.show()
+	
+	#print 'Graph Data: ', graph_data
 
 	print 'Animation done!'
 
