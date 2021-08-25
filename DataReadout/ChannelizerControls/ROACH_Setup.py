@@ -1172,15 +1172,25 @@ class AppForm(QtG.QMainWindow):
         #self.textbox_powerSweepStop = QtG.QLineEdit('0')
         #self.textbox_powerSweepStop.setMaximumWidth(50)
         #label_powerSweepStop = QtG.QLabel('Stop atten:')
+        
+        #gets the environment variable 
+        #try:
+        SCRIPT_ROOT=os.environ.get('SCRIPT_ROOT')
+        if SCRIPT_ROOT is None:
+            this_script= os.path.abspath(__file__)
+            print(this_script)
+            this_script_dir=os.path.dirname(this_script)
+            SCRIPT_ROOT=os.path.dirname(os.path.dirname(this_script_dir))
+        
 
         # Save directory
-        self.textbox_saveDir = QtG.QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT')
+        self.textbox_saveDir = QtG.QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT')
         self.textbox_saveDir.setMaximumWidth(250)
         label_saveDir = QtG.QLabel('Save directory:')
         label_saveDir.setMaximumWidth(150)
     
         # File with frequencies/attens
-        self.textbox_freqFile = QtG.QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/1tones.txt')
+        self.textbox_freqFile = QtG.QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/1tones.txt')
         self.textbox_freqFile.setMaximumWidth(200)
 
         # Load freqs and attens from file.
