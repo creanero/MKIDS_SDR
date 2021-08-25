@@ -1174,12 +1174,14 @@ class AppForm(QtG.QMainWindow):
         #label_powerSweepStop = QtG.QLabel('Stop atten:')
         
         #gets the environment variable 
-        #try:
         SCRIPT_ROOT=os.environ.get('SCRIPT_ROOT')
+        #If the environment variable is not defined
         if SCRIPT_ROOT is None:
+            #Gets the path to this script
             this_script= os.path.abspath(__file__)
-            print(this_script)
+            #Gets the directory of the current file
             this_script_dir=os.path.dirname(this_script)
+            #Gets the directory two up from the current one
             SCRIPT_ROOT=os.path.dirname(os.path.dirname(this_script_dir))
         
 
