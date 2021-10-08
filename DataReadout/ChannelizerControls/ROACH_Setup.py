@@ -880,8 +880,8 @@ class AppForm(QtG.QMainWindow):
             self.square_DACindicate.setText('off')       
 
     def loadCustomAtten(self):
-        freqFile =str(self.textbox_freqFile.text())
-        newFreqFile = freqFile[:-4] + '_NEW.txt'
+        # freqFile =str(self.textbox_freqFile.text())
+        # newFreqFile = freqFile[:-4] + '_NEW.txt'
         self.customResonators=numpy.array([[0.0,-1]]*256)
         try:
             y=numpy.loadtxt(newFreqFile)
@@ -897,7 +897,7 @@ class AppForm(QtG.QMainWindow):
 
     def loadFreqsAttens(self):
         f_base = float(self.textbox_loFreq.value())
-        freqFile =str(self.textbox_freqFile.text())
+        # freqFile =str(self.textbox_freqFile.text())
         #print freqFile
         #newFreqFile = freqFile[:-4] + '_NEW.txt'
         #print newFreqFile
@@ -1048,8 +1048,8 @@ class AppForm(QtG.QMainWindow):
                 self.updateResFreq(ch=ch,freq=newFreq)
 
     def updateResFreq(self,ch,freq):
-        freqFile =str(self.textbox_freqFile.text())
-        freqFile=freqFile[:-4] + '_NEW.txt'
+        # freqFile =str(self.textbox_freqFile.text())
+        # freqFile=freqFile[:-4] + '_NEW.txt'
         try:
             f=open(freqFile,'a')
             atten = self.attens[ch]
@@ -1062,8 +1062,8 @@ class AppForm(QtG.QMainWindow):
             print 'IOERROR! Trouble opening',freqFile
 
     def updateResonator(self,atten=-1,ch=None):
-        freqFile =str(self.textbox_freqFile.text())
-        freqFile=freqFile[:-4] + '_NEW.txt'
+        # freqFile =str(self.textbox_freqFile.text())
+        # freqFile=freqFile[:-4] + '_NEW.txt'
         if ch == None:
             ch = int(self.textbox_channel.text())
         try:
@@ -1119,7 +1119,7 @@ class AppForm(QtG.QMainWindow):
 
         # Start connection to roach.
         self.button_openClient = QtG.QPushButton("(1)Open Client")
-        self.button_openClient.setMaximumWidth(100)
+        self.button_openClient.setMaximumWidth(200)
         self.connect(self.button_openClient, QtC.SIGNAL('clicked()'), self.openClient)
         
         # LO frequency.
@@ -1187,7 +1187,7 @@ class AppForm(QtG.QMainWindow):
         self.textedit_DACfreqs = QtG.QTextEdit()
         self.textedit_DACfreqs.setMaximumWidth(170)
         self.textedit_DACfreqs.setMaximumHeight(100)
-        label_DACfreqs = QtG.QLabel('DAC Freqs:')
+        label_DACfreqs = QtG.QLabel('Centre Freqs:')
 
         # Input attenuation.
         # self.textbox_atten_in = QtG.QLineEdit('5')
@@ -1214,8 +1214,11 @@ class AppForm(QtG.QMainWindow):
         #self.textbox_dds_shift.setMaximumWidth(50)
         #label_dds_shift = QLabel('DDS sync. lag:')
 
-        # Power sweep range. 
-        self.textbox_powerSweepStart = QtG.QLineEdit('0')
+        # Power sweep range.
+        # This really looks like it's doing the job of output attenuation
+        # There are some elements here that are defined in the code that should be
+        # pushed to a user-level decision on the front end. - OC
+        # self.textbox_powerSweepStart = QtG.QLineEdit('0')
         self.textbox_powerSweepStart = QtG.QDoubleSpinBox ()
         self.textbox_powerSweepStart.setRange(-100,100)
         self.textbox_powerSweepStart.setSingleStep(1e-1)
@@ -1252,13 +1255,14 @@ class AppForm(QtG.QMainWindow):
         label_saveDir.setMaximumWidth(250)
     
         # File with frequencies/attens
-        self.textbox_freqFile = QtG.QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/1tones.txt')
-        self.textbox_freqFile.setMaximumWidth(200)
+        # self.textbox_freqFile = QtG.QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/1tones.txt')
+        # self.textbox_freqFile = QtG.QFileDialog.getOpenFileName()
+        # self.textbox_freqFile.setMaximumWidth(600)
 
         # Load freqs and attens from file.
-        self.button_loadFreqsAttens = QtG.QPushButton("(2)Load freqs/attens")
-        self.button_loadFreqsAttens.setMaximumWidth(200)
-        self.connect(self.button_loadFreqsAttens, QtC.SIGNAL('clicked()'), self.loadFreqsAttens)
+        # self.button_loadFreqsAttens = QtG.QPushButton("(2)Load freqs/attens")
+        # self.button_loadFreqsAttens.setMaximumWidth(300)
+        # self.connect(self.button_loadFreqsAttens, QtC.SIGNAL('clicked()'), self.loadFreqsAttens)
         
         # Rotate IQ loops.
         self.button_rotateLoops = QtG.QPushButton("(6)Rot. Loops")
@@ -1367,8 +1371,8 @@ class AppForm(QtG.QMainWindow):
         hbox00.addWidget(self.button_openClient)
         gbox0.addLayout(hbox00)
         hbox01 = QtG.QHBoxLayout()
-        hbox01.addWidget(self.textbox_freqFile)
-        hbox01.addWidget(self.button_loadFreqsAttens)
+        # hbox01.addWidget(self.textbox_freqFile)
+        # hbox01.addWidget(self.button_loadFreqsAttens)
         gbox0.addLayout(hbox01)
         hbox02 = QtG.QHBoxLayout()
         hbox02.addWidget(label_saveDir)
