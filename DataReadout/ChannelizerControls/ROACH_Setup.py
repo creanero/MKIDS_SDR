@@ -692,7 +692,7 @@ class AppForm(QtG.QMainWindow):
         #else:
         self.programRFswitches('10110')          #only need this setting 
         #    print 'LO normal operation.'
-        loSpan = float(self.textbox_loSpan.text())
+        loSpan = float(self.textbox_loSpan.value())
         df = float(self.textbox_df.text())
         steps = int(loSpan/df)
         #print "LO steps: ", steps
@@ -1146,8 +1146,14 @@ class AppForm(QtG.QMainWindow):
         label_freqOffset = QtG.QLabel('Freq Offset:')
 
         # Sweep span
-        self.textbox_loSpan = QtG.QLineEdit('0.5e6')
-        self.textbox_loSpan.setMaximumWidth(100)
+        # self.textbox_loSpan = QtG.QLineEdit('0.5e6')
+        self.textbox_loSpan = QtG.QDoubleSpinBox ()
+        self.textbox_loSpan.setRange(-1e6,1e6)
+        self.textbox_loSpan.setSingleStep(1e3)
+        self.textbox_loSpan.setValue(0.5e6)
+        self.textbox_loSpan.setSuffix('Hz')
+        self.textbox_loSpan.setDecimals(0)
+        self.textbox_loSpan.setMaximumWidth(200)
         label_loSpan = QtG.QLabel('LO Sweep Span:')
 
         # Sweep resolution
