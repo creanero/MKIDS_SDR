@@ -155,7 +155,7 @@ class AppForm(QtG.QMainWindow):
         #    There are eight settings for each attenuator:
         #    0db, -0.5, -1, -2, -4, -8, -16, and -31.5, which
         #    are listed in order in "attenuations."    
-        #atten_in_desired = float(self.textbox_atten_in.text())
+        #atten_in_desired = float(self.textbox_atten_in.value())
         atten_in = 10 - int(atten_in_desired*2)
         
         #atten_out_desired = float(self.textbox_atten_out.text())
@@ -674,7 +674,7 @@ class AppForm(QtG.QMainWindow):
         print "in toggleShowPrevious:  showPrevious=",self.showPrevious
 
     def sweepLOready(self):
-        atten_in = float(self.textbox_atten_in.text())
+        atten_in = float(self.textbox_atten_in.value())
         saveDir = str(self.textbox_saveDir.text())
         savefile = os.path.join(saveDir,'COLM%d_'%roachNo + time.strftime("%Y%m%d-%H%M%S",time.localtime())+'.h5')
         #print "in sweelLOready:  savefile=",savefile
@@ -698,7 +698,7 @@ class AppForm(QtG.QMainWindow):
         #print "LO steps: ", steps
         lo_freqs = [f_base+i*df-0.5*steps*df for i in range(steps)]
         
-        atten_start = int(self.textbox_powerSweepStart.text())
+        atten_start = int(self.textbox_powerSweepStart.value())
         #atten_stop = int(self.textbox_powerSweepStop.text())
 
         atten_stop = atten_start #setting stop attenuation to be start attenuation
@@ -1128,13 +1128,14 @@ class AppForm(QtG.QMainWindow):
         self.textbox_loFreq = QtG.QDoubleSpinBox ()
         self.textbox_loFreq.setRange(4e9,5e9)
         self.textbox_loFreq.setSingleStep(1e6)
-        self.textbox_loFreq.setMaximumWidth(300)
+        self.textbox_loFreq.setMaximumWidth(300) # retain this even for text
         self.textbox_loFreq.setValue(4.75e9)
         self.textbox_loFreq.setSuffix('Hz')
         self.textbox_loFreq.setDecimals(0)
         label_loFreq = QtG.QLabel('LO frequency:')
 
         # Global freq offset.
+        # keeping old text version for rollback if needed
         # self.textbox_freqOffset = QtG.QLineEdit('0e3')
         self.textbox_freqOffset = QtG.QDoubleSpinBox ()
         self.textbox_freqOffset.setRange(-1e6,1e6)
@@ -1142,10 +1143,11 @@ class AppForm(QtG.QMainWindow):
         self.textbox_freqOffset.setValue(0)
         self.textbox_freqOffset.setSuffix('Hz')
         self.textbox_freqOffset.setDecimals(0)
-        self.textbox_freqOffset.setMaximumWidth(200)
+        self.textbox_freqOffset.setMaximumWidth(200) # retain this even for text
         label_freqOffset = QtG.QLabel('Freq Offset:')
 
         # Sweep span
+        # keeping old text version for rollback if needed
         # self.textbox_loSpan = QtG.QLineEdit('0.5e6')
         self.textbox_loSpan = QtG.QDoubleSpinBox ()
         self.textbox_loSpan.setRange(-1e6,1e6)
@@ -1153,18 +1155,32 @@ class AppForm(QtG.QMainWindow):
         self.textbox_loSpan.setValue(0.5e6)
         self.textbox_loSpan.setSuffix('Hz')
         self.textbox_loSpan.setDecimals(0)
-        self.textbox_loSpan.setMaximumWidth(200)
+        self.textbox_loSpan.setMaximumWidth(200) # retain this even for text
         label_loSpan = QtG.QLabel('LO Sweep Span:')
 
         # Sweep resolution
-        self.textbox_df = QtG.QLineEdit('1e4')
-        self.textbox_df.setMaximumWidth(50)
+        # keeping old text version for rollback if needed
+        # self.textbox_df = QtG.QLineEdit('1e4')
+        self.textbox_df = QtG.QDoubleSpinBox ()
+        self.textbox_df.setRange(-1e6,1e6)
+        self.textbox_df.setSingleStep(1e2)
+        self.textbox_df.setValue(1e4)
+        self.textbox_df.setSuffix('Hz')
+        self.textbox_df.setDecimals(0)
+        self.textbox_df.setMaximumWidth(200) # retain this even for text
         label_df = QtG.QLabel('Sweep Resolution (df) (Hz):')
         
         # Frequency span shift
         # A span shift of 0.75 shifts 75% of sweep span to the lower portion of the range.
-        self.textbox_spanShift = QtG.QLineEdit('0.5')
-        self.textbox_spanShift.setMaximumWidth(50)
+        # I don't see this being used anywhere - OC
+        # self.textbox_spanShift = QtG.QLineEdit('0.5')
+        self.textbox_spanShift = QtG.QDoubleSpinBox()
+        self.textbox_spanShift.setRange(-1, 1)
+        self.textbox_spanShift.setSingleStep(1e-2)
+        self.textbox_spanShift.setValue(0.5)
+        # self.textbox_spanShift.setSuffix('\%') MIGHT BE NICE TO MAKE THIS HAPPEN
+        self.textbox_spanShift.setDecimals(0)
+        self.textbox_spanShift.setMaximumWidth(100)  # retain this even for text
         label_spanShift = QtG.QLabel('Span shift')
         
         # DAC Frequencies.
@@ -1174,8 +1190,14 @@ class AppForm(QtG.QMainWindow):
         label_DACfreqs = QtG.QLabel('DAC Freqs:')
 
         # Input attenuation.
-        self.textbox_atten_in = QtG.QLineEdit('5')
-        self.textbox_atten_in.setMaximumWidth(50)
+        # self.textbox_atten_in = QtG.QLineEdit('5')
+        self.textbox_atten_in = QtG.QDoubleSpinBox ()
+        self.textbox_atten_in.setRange(-100,100)
+        self.textbox_atten_in.setSingleStep(1e-1)
+        self.textbox_atten_in.setValue(5)
+        self.textbox_atten_in.setSuffix('dB')
+        self.textbox_atten_in.setDecimals(1)
+        self.textbox_atten_in.setMaximumWidth(150) # retain this even for text
         label_atten_in = QtG.QLabel('Input atten.:')
 
         # offset in lut
@@ -1194,7 +1216,13 @@ class AppForm(QtG.QMainWindow):
 
         # Power sweep range. 
         self.textbox_powerSweepStart = QtG.QLineEdit('0')
-        self.textbox_powerSweepStart.setMaximumWidth(50)
+        self.textbox_powerSweepStart = QtG.QDoubleSpinBox ()
+        self.textbox_powerSweepStart.setRange(-100,100)
+        self.textbox_powerSweepStart.setSingleStep(1e-1)
+        self.textbox_powerSweepStart.setValue(0)
+        self.textbox_powerSweepStart.setSuffix('dB')
+        self.textbox_powerSweepStart.setDecimals(1)
+        self.textbox_powerSweepStart.setMaximumWidth(150)
         label_powerSweepStart = QtG.QLabel('Output atten.:')
         #self.textbox_powerSweepStop = QtG.QLineEdit('0')
         #self.textbox_powerSweepStop.setMaximumWidth(50)
