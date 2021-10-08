@@ -913,7 +913,7 @@ class AppForm(QtG.QMainWindow):
         
             self.previous_scale_factor = x[0,0] 
             N_freqs = len(x[1:,0])
-            f_offset = float(self.textbox_freqOffset.text())
+            f_offset = float(self.textbox_freqOffset.value())
             for l in x[1:,0]:
                 x_string = x_string + str(l*1e9+f_offset) + '\n'
             
@@ -1123,6 +1123,7 @@ class AppForm(QtG.QMainWindow):
         self.connect(self.button_openClient, QtC.SIGNAL('clicked()'), self.openClient)
         
         # LO frequency.
+        # keeping old text version for rollback if needed
         # self.textbox_loFreq = QtG.QLineEdit('4.75e9')
         self.textbox_loFreq = QtG.QDoubleSpinBox ()
         self.textbox_loFreq.setRange(4e9,5e9)
@@ -1131,18 +1132,22 @@ class AppForm(QtG.QMainWindow):
         self.textbox_loFreq.setValue(4.75e9)
         self.textbox_loFreq.setSuffix('Hz')
         self.textbox_loFreq.setDecimals(0)
-        # self.textbox_loFreq.set
-        # print self.textbox_loFreq.value()
         label_loFreq = QtG.QLabel('LO frequency:')
 
         # Global freq offset.
-        self.textbox_freqOffset = QtG.QLineEdit('0e3')
-        self.textbox_freqOffset.setMaximumWidth(100)
+        # self.textbox_freqOffset = QtG.QLineEdit('0e3')
+        self.textbox_freqOffset = QtG.QDoubleSpinBox ()
+        self.textbox_freqOffset.setRange(-1e6,1e6)
+        self.textbox_freqOffset.setSingleStep(1e3)
+        self.textbox_freqOffset.setValue(0)
+        self.textbox_freqOffset.setSuffix('Hz')
+        self.textbox_freqOffset.setDecimals(0)
+        self.textbox_freqOffset.setMaximumWidth(200)
         label_freqOffset = QtG.QLabel('Freq Offset:')
 
         # Sweep span
         self.textbox_loSpan = QtG.QLineEdit('0.5e6')
-        self.textbox_loSpan.setMaximumWidth(50)
+        self.textbox_loSpan.setMaximumWidth(100)
         label_loSpan = QtG.QLabel('LO Sweep Span:')
 
         # Sweep resolution
