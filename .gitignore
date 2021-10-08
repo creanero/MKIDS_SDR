@@ -4,4 +4,6 @@
 *.pyc
 *.png
 mkid-environment.h
+.idea/*
+DataReadout/ChannelizerControls/LUT/1tones_NEW.txt
 

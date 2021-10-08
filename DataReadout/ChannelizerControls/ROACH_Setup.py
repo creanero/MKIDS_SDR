@@ -24,12 +24,18 @@ from lib import iqsweep
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) == 1:
+        print 'Preferred Usage: ', sys.argv[0], ' roachNo'
+        roachNo = 10
+        print 'Defaulting to roachNo = ', roachNo
+
+    elif len(sys.argv) != 2:
         #print len(sys.argv) 
         #print sys.argv[0] 
         print 'Usage: ',sys.argv[0],' roachNo'
         exit(1)
-    roachNo = int(sys.argv[1])
+    else:
+        roachNo = int(sys.argv[1])
     #datadir = os.environ['MKID_FREQ_PATH']#'/opt/software/colin1/'
    # print datadir
     #configFile = numpy.loadtxt(os.path.join(datadir,'roachConfig.txt'))
@@ -85,7 +91,7 @@ class AppForm(QtG.QMainWindow):
         self.f_span = None
         self.last_scale_factor = None
 
-        
+    # This opens the connection to the Roach Board
     def openClient(self):
         self.status_text.setText('connecting...')
         #self.QApplication.processEvents()
@@ -245,7 +251,7 @@ class AppForm(QtG.QMainWindow):
   #      if sweep_freq:
   #          f = freq
   #      else:
-  #          f = float(self.textbox_loFreq.text())
+  #          f = float(self.textbox_loFreq.value())
   #      if f >= 4.4e9:
   #          f = f/2
   #          
@@ -290,7 +296,7 @@ class AppForm(QtG.QMainWindow):
         if sweep_freq:
             myfreq = freq
         else:
-            myfreq = float(self.textbox_loFreq.text())
+            myfreq = float(self.textbox_loFreq.value())
         #On the rev2 board the max freq of the ADF4355 chip is 6.8GHz
         #There is no freq doubler on the board, so don't divide by two
         if myfreq >= 6.8e9:
@@ -455,7 +461,7 @@ class AppForm(QtG.QMainWindow):
         
     def define_DAC_LUT(self):
         freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
-        f_base = float(self.textbox_loFreq.text())
+        f_base = float(self.textbox_loFreq.value())
 
         
         #print(freqs)
@@ -486,7 +492,7 @@ class AppForm(QtG.QMainWindow):
         fft_len=2**9
         ch_shift = 154  # This number should be verified in the firmware file. For the current .bof file being used (chan_snap_v3_2012_Oct_30_1216.bof), set it to 154.
         freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
-        f_base = float(self.textbox_loFreq.text())
+        f_base = float(self.textbox_loFreq.value())
         for n in range(len(freqs)):
             if freqs[n] < f_base:
                 freqs[n] = freqs[n] + self.sampleRate  #512e6
@@ -587,6 +593,8 @@ class AppForm(QtG.QMainWindow):
             
         numpy.savetxt(os.path.join(saveDir,'centers.dat'), centers_for_file)
 
+    # Calculates midpoint between minimum and maximum value for I and Q
+    # and returns it as a complex number in the form (I+Qj)
     def findIQcenters(self, I, Q):
         I_0 = (I.max()+I.min())/2.
         Q_0 = (Q.max()+Q.min())/2.
@@ -673,7 +681,7 @@ class AppForm(QtG.QMainWindow):
         dac_freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split()) 
         
         self.N_freqs = len(dac_freqs)
-        f_base = float(self.textbox_loFreq.text())
+        f_base = float(self.textbox_loFreq.value())
         
 
         
@@ -888,7 +896,7 @@ class AppForm(QtG.QMainWindow):
             pass
 
     def loadFreqsAttens(self):
-        f_base = float(self.textbox_loFreq.text())
+        f_base = float(self.textbox_loFreq.value())
         freqFile =str(self.textbox_freqFile.text())
         #print freqFile
         #newFreqFile = freqFile[:-4] + '_NEW.txt'
@@ -1080,7 +1088,7 @@ class AppForm(QtG.QMainWindow):
         #print 'removed resonator by flagging attenuation as -1'
 
 
- 
+    # Creates the main frame of the GUI window and all the widgets within it
     def create_main_frame(self):
         self.main_frame = QtG.QWidget()
         
@@ -1115,8 +1123,16 @@ class AppForm(QtG.QMainWindow):
         self.connect(self.button_openClient, QtC.SIGNAL('clicked()'), self.openClient)
         
         # LO frequency.
-        self.textbox_loFreq = QtG.QLineEdit('4.75e9')
-        self.textbox_loFreq.setMaximumWidth(100)
+        # self.textbox_loFreq = QtG.QLineEdit('4.75e9')
+        self.textbox_loFreq = QtG.QDoubleSpinBox ()
+        self.textbox_loFreq.setRange(4e9,5e9)
+        self.textbox_loFreq.setSingleStep(1e6)
+        self.textbox_loFreq.setMaximumWidth(300)
+        self.textbox_loFreq.setValue(4.75e9)
+        self.textbox_loFreq.setSuffix('Hz')
+        self.textbox_loFreq.setDecimals(0)
+        # self.textbox_loFreq.set
+        # print self.textbox_loFreq.value()
         label_loFreq = QtG.QLabel('LO frequency:')
 
         # Global freq offset.
@@ -1172,24 +1188,29 @@ class AppForm(QtG.QMainWindow):
         #self.textbox_powerSweepStop = QtG.QLineEdit('0')
         #self.textbox_powerSweepStop.setMaximumWidth(50)
         #label_powerSweepStop = QtG.QLabel('Stop atten:')
-        
-        #gets the environment variable 
+
+        # this identifies where the SDR scripts are based.
+        # This should work in a configured environment, but will work in this project's
+        # configuration assuming the structure doesn't change
+
+        # gets the environment variable
         SCRIPT_ROOT=os.environ.get('SCRIPT_ROOT')
-        #If the environment variable is not defined
+
+        # If the environment variable is not defined
         if SCRIPT_ROOT is None:
-            #Gets the path to this script
+            # Gets the path to this script
             this_script= os.path.abspath(__file__)
-            #Gets the directory of the current file
+            # Gets the directory of the current file
             this_script_dir=os.path.dirname(this_script)
-            #Gets the directory two up from the current one
+            # Gets the directory two up from the current one (i.e. PWD/../..)
             SCRIPT_ROOT=os.path.dirname(os.path.dirname(this_script_dir))
         
 
         # Save directory
         self.textbox_saveDir = QtG.QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT')
-        self.textbox_saveDir.setMaximumWidth(250)
+        self.textbox_saveDir.setMaximumWidth(500)
         label_saveDir = QtG.QLabel('Save directory:')
-        label_saveDir.setMaximumWidth(150)
+        label_saveDir.setMaximumWidth(250)
     
         # File with frequencies/attens
         self.textbox_freqFile = QtG.QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/1tones.txt')
@@ -1404,11 +1425,12 @@ class AppForm(QtG.QMainWindow):
         self.setCentralWidget(self.main_frame)
 
 
-  
+    # Creates the status bar at the bottom of the window that shows current progress in the gui
     def create_status_bar(self):
         self.status_text = QtG.QLabel("Awaiting orders.")
         self.statusBar().addWidget(self.status_text, 1)
-        
+
+    # creates the menubar at the top of the window
     def create_menu(self):        
         self.file_menu = self.menuBar().addMenu("&File")
         
