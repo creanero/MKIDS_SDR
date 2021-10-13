@@ -879,59 +879,59 @@ class AppForm(QtG.QMainWindow):
             self.square_DACindicate.setFrameShadow(QtGui.QFrame.Raised)
             self.square_DACindicate.setText('off')       
 
-    def loadCustomAtten(self):
-        # freqFile =str(self.textbox_freqFile.text())
-        # newFreqFile = freqFile[:-4] + '_NEW.txt'
-        self.customResonators=numpy.array([[0.0,-1]]*256)
-        try:
-            y=numpy.loadtxt(newFreqFile)
-            #self.customResonators=numpy.array([[0.0,-1]]*256)
-            if type(y[0]) == numpy.ndarray:
-                for arr in y:
-                    self.customResonators[int(arr[0])]=arr[1:3]
-            else:
-                self.customResonators[int(y[0])]=y[1:3]
-            print 'Loaded custom resonator freq/atten from',newFreqFile
-        except IOError:
-            pass
+    # def loadCustomAtten(self):
+    #     # freqFile =str(self.textbox_freqFile.text())
+    #     # newFreqFile = freqFile[:-4] + '_NEW.txt'
+    #     self.customResonators=numpy.array([[0.0,-1]]*256)
+    #     try:
+    #         y=numpy.loadtxt(newFreqFile)
+    #         #self.customResonators=numpy.array([[0.0,-1]]*256)
+    #         if type(y[0]) == numpy.ndarray:
+    #             for arr in y:
+    #                 self.customResonators[int(arr[0])]=arr[1:3]
+    #         else:
+    #             self.customResonators[int(y[0])]=y[1:3]
+    #         print 'Loaded custom resonator freq/atten from',newFreqFile
+    #     except IOError:
+    #         pass
 
-    def loadFreqsAttens(self):
-        f_base = float(self.textbox_loFreq.value())
-        # freqFile =str(self.textbox_freqFile.text())
-        #print freqFile
-        #newFreqFile = freqFile[:-4] + '_NEW.txt'
-        #print newFreqFile
-        self.loadCustomAtten()
-
-        try:
-            x = numpy.loadtxt(freqFile) 
-            x_string = ''
-            for i in range(len(self.customResonators)):
-                if self.customResonators[i][1]!=-1:
-                    x[i+1,0]=self.customResonators[i][0]
-                    x[i+1,3]=self.customResonators[i][1]
-        
-            self.previous_scale_factor = x[0,0] 
-            N_freqs = len(x[1:,0])
-            f_offset = float(self.textbox_freqOffset.value())
-            for l in x[1:,0]:
-                x_string = x_string + str(l*1e9+f_offset) + '\n'
-            
-            self.iq_centers = numpy.array([0.+0j]*256)
-            for n in range(N_freqs):
-                #for n in range(256):
-                self.iq_centers[n] = complex(x[n+1,1], x[n+1,2])
-            
-            self.attens = x[1:,3]
-            #print 'attens list',self.attens
-            #print self.attens[4]
-            self.minimumAttenuation = numpy.array(x[1:,3]).min()
-            self.textedit_DACfreqs.setText(x_string)
-            print 'Freq/Atten loaded from',freqFile
-            self.status_text.setText('Freq/Atten loaded')
-        except IOError:
-            print 'No such file or directory:',freqFile
-            self.status_text.setText('IOError')
+    # def loadFreqsAttens(self):
+    #     f_base = float(self.textbox_loFreq.value())
+    #     # freqFile =str(self.textbox_freqFile.text())
+    #     #print freqFile
+    #     #newFreqFile = freqFile[:-4] + '_NEW.txt'
+    #     #print newFreqFile
+    #     self.loadCustomAtten()
+    #
+    #     try:
+    #         x = numpy.loadtxt(freqFile)
+    #         x_string = ''
+    #         for i in range(len(self.customResonators)):
+    #             if self.customResonators[i][1]!=-1:
+    #                 x[i+1,0]=self.customResonators[i][0]
+    #                 x[i+1,3]=self.customResonators[i][1]
+    #
+    #         self.previous_scale_factor = x[0,0]
+    #         N_freqs = len(x[1:,0])
+    #         f_offset = float(self.textbox_freqOffset.value())
+    #         for l in x[1:,0]:
+    #             x_string = x_string + str(l*1e9+f_offset) + '\n'
+    #
+    #         self.iq_centers = numpy.array([0.+0j]*256)
+    #         for n in range(N_freqs):
+    #             #for n in range(256):
+    #             self.iq_centers[n] = complex(x[n+1,1], x[n+1,2])
+    #
+    #         self.attens = x[1:,3]
+    #         #print 'attens list',self.attens
+    #         #print self.attens[4]
+    #         self.minimumAttenuation = numpy.array(x[1:,3]).min()
+    #         self.textedit_DACfreqs.setText(x_string)
+    #         # print 'Freq/Atten loaded from',freqFile
+    #         self.status_text.setText('Freq/Atten loaded')
+    #     except IOError:
+    #         # print 'No such file or directory:',freqFile
+    #         self.status_text.setText('IOError')
         
 
     def channelIncUp(self):
@@ -1047,45 +1047,45 @@ class AppForm(QtG.QMainWindow):
             if (abs(newFreq-currentFreq) <= maxJump):
                 self.updateResFreq(ch=ch,freq=newFreq)
 
-    def updateResFreq(self,ch,freq):
-        # freqFile =str(self.textbox_freqFile.text())
-        # freqFile=freqFile[:-4] + '_NEW.txt'
-        try:
-            f=open(freqFile,'a')
-            atten = self.attens[ch]
-            f.write(str(int(ch))+'\t'+str(freq)+'\t'+str(atten)+'\n')
-            f.close()
+    # def updateResFreq(self,ch,freq):
+    #     # freqFile =str(self.textbox_freqFile.text())
+    #     # freqFile=freqFile[:-4] + '_NEW.txt'
+    #     try:
+    #         f=open(freqFile,'a')
+    #         atten = self.attens[ch]
+    #         f.write(str(int(ch))+'\t'+str(freq)+'\t'+str(atten)+'\n')
+    #         f.close()
+    #
+    #         self.customResonators[ch]=[freq,atten]
+    #         print 'ch:',ch,'freq:',freq,'atten:',atten
+    #     except IOError:
+    #         print 'IOERROR! Trouble opening',freqFile
 
-            self.customResonators[ch]=[freq,atten]
-            print 'ch:',ch,'freq:',freq,'atten:',atten
-        except IOError:
-            print 'IOERROR! Trouble opening',freqFile
-
-    def updateResonator(self,atten=-1,ch=None):
-        # freqFile =str(self.textbox_freqFile.text())
-        # freqFile=freqFile[:-4] + '_NEW.txt'
-        if ch == None:
-            ch = int(self.textbox_channel.text())
-        try:
-            
-            f=open(freqFile,'a')
-            if atten == -1:
-                atten=self.spinbox_attenuation.value()
-            freq=float(self.textbox_freq.text())
-            if atten == -1:
-                atten=self.spinbox_attenuation.value()
-            f.write(str(int(ch))+'\t'+str(freq)+'\t'+str(atten)+'\n')
-            f.close()
-            self.customResonators[ch]=[freq,atten]
-            print 'ch:',ch,'freq:',freq,'atten:',atten
-        except IOError:
-            print 'IOERROR! Trouble opening',freqFile
+    # def updateResonator(self,atten=-1,ch=None):
+    #     # freqFile =str(self.textbox_freqFile.text())
+    #     # freqFile=freqFile[:-4] + '_NEW.txt'
+    #     if ch == None:
+    #         ch = int(self.textbox_channel.text())
+    #     try:
+    #
+    #         f=open(freqFile,'a')
+    #         if atten == -1:
+    #             atten=self.spinbox_attenuation.value()
+    #         freq=float(self.textbox_freq.text())
+    #         if atten == -1:
+    #             atten=self.spinbox_attenuation.value()
+    #         f.write(str(int(ch))+'\t'+str(freq)+'\t'+str(atten)+'\n')
+    #         f.close()
+    #         self.customResonators[ch]=[freq,atten]
+    #         print 'ch:',ch,'freq:',freq,'atten:',atten
+    #     except IOError:
+    #         print 'IOERROR! Trouble opening',freqFile
 
 
-    def deleteResonator(self):
-        self.updateResonator(MAX_ATTEN)
-        print 'Set attenuation on ch',self.textbox_channel.text(),'really high'
-        #print 'removed resonator by flagging attenuation as -1'
+    # def deleteResonator(self):
+    #     self.updateResonator(MAX_ATTEN)
+    #     print 'Set attenuation on ch',self.textbox_channel.text(),'really high'
+    #     #print 'removed resonator by flagging attenuation as -1'
 
 
     # Creates the main frame of the GUI window and all the widgets within it
@@ -1344,16 +1344,16 @@ class AppForm(QtG.QMainWindow):
         self.button_autoFreq.setMaximumWidth(170)
         self.connect(self.button_autoFreq, QtC.SIGNAL('clicked()'), self.snapResFreq)
 
-        #button to submit frequency and attenuation changes
-        self.button_updateResonator = QtG.QPushButton("Submit")
-        self.button_updateResonator.setMaximumWidth(170)
-        self.connect(self.button_updateResonator, QtC.SIGNAL('clicked()'), self.updateResonator)
+        # #button to submit frequency and attenuation changes
+        # self.button_updateResonator = QtG.QPushButton("Submit")
+        # self.button_updateResonator.setMaximumWidth(170)
+        # self.connect(self.button_updateResonator, QtC.SIGNAL('clicked()'), self.updateResonator)
         
  
         #button to 'delete' resonator by setting attenuation really high
-        self.button_deleteResonator = QtG.QPushButton('Remove')
-        self.button_deleteResonator.setMaximumWidth(170)
-        self.connect(self.button_deleteResonator, QtC.SIGNAL('clicked()'), self.deleteResonator)
+        # self.button_deleteResonator = QtG.QPushButton('Remove')
+        # self.button_deleteResonator.setMaximumWidth(170)
+        # self.connect(self.button_deleteResonator, QtC.SIGNAL('clicked()'), self.deleteResonator)
         
         #button to snap resonant frequency to peak IQ velocity
         self.button_autoFreqs = QtG.QPushButton("Auto All Freqs")
@@ -1440,9 +1440,9 @@ class AppForm(QtG.QMainWindow):
         hbox23.addWidget(self.spinbox_attenuation)
         hbox23.addWidget(label_freq)
         hbox23.addWidget(self.textbox_freq)
-        hbox23.addWidget(self.button_updateResonator)
+        # hbox23.addWidget(self.button_updateResonator)
         hbox23.addWidget(self.button_autoFreq)
-        hbox23.addWidget(self.button_deleteResonator)
+        # hbox23.addWidget(self.button_deleteResonator)
         gbox2.addLayout(hbox23)
         hbox24 = QtG.QHBoxLayout()
         hbox24.addWidget(label_freqAutoLimit)
