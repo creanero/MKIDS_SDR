@@ -5,4 +5,6 @@
 *.png
 mkid-environment.h
 *.npz
+.idea/*
+DataReadout/ChannelizerControls/LUT/1tones_NEW.txt
 
