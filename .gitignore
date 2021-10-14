@@ -4,4 +4,5 @@
 *.pyc
 *.png
 mkid-environment.h
+*.npz
 
