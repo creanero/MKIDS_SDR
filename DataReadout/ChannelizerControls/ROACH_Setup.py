@@ -90,10 +90,12 @@ class AppForm(QtG.QMainWindow):
         self.IQ_vels = None
         self.f_span = None
         self.last_scale_factor = None
-        # Initialising to zero to be used with default states
-        self.minimumAttenuation = 0.0
 
-    # This opens the connection to the Roach Board
+        # Initialising to values to be used with default states
+        self.minimumAttenuation = 0.0
+        self.previous_scale_factor = 1.0
+
+        # This opens the connection to the Roach Board
     def openClient(self):
         self.status_text.setText('connecting...')
         #self.QApplication.processEvents()
