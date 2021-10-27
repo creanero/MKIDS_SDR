@@ -102,12 +102,13 @@ class AppForm(QtG.QMainWindow):
         print 'connecting...'
         self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
         time.sleep(2)
+        print 'programming roach...'
         self.roach.progdev('chan_snap_v3_2012_Oct_30_1216.bof') 
         #'chan_512_2012_Jul_30_1754.bof' original boffile. 
         #Last working: chan_snap_v3_2012_Oct_30_1216.bof
         #trying chan_snap_v4_20_12_2018_May_29_1235.bof and chan_snap_v4_20_12_2018_Jun_07_1106.bof
 
-        time.sleep(2)
+        # time.sleep(2)
         self.status_text.setText('connection established')
         print 'connection established to',self.textbox_roachIP.text()
         self.button_openClient.setDisabled(True)
