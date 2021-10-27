@@ -101,6 +101,7 @@ class AppForm(QtG.QMainWindow):
         #self.QApplication.processEvents()
         print 'connecting...'
         self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
+        time.sleep(2)
         self.roach.progdev('chan_snap_v3_2012_Oct_30_1216.bof') 
         #'chan_512_2012_Jul_30_1754.bof' original boffile. 
         #Last working: chan_snap_v3_2012_Oct_30_1216.bof
