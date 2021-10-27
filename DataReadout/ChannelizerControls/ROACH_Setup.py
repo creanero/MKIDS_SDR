@@ -697,7 +697,7 @@ class AppForm(QtG.QMainWindow):
         self.programRFswitches('10110')          #only need this setting 
         #    print 'LO normal operation.'
         loSpan = float(self.textbox_loSpan.value())
-        df = float(self.textbox_df.text())
+        df = float(self.textbox_df.value())
         steps = int(loSpan/df)
         #print "LO steps: ", steps
         lo_freqs = [f_base+i*df-0.5*steps*df for i in range(steps)]
