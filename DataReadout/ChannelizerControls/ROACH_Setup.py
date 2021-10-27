@@ -1189,7 +1189,7 @@ class AppForm(QtG.QMainWindow):
         label_spanShift = QtG.QLabel('Span shift')
         
         # DAC Frequencies.
-        self.textedit_DACfreqs = QtG.QTextEdit()
+        self.textedit_DACfreqs = QtG.QTextEdit('0.0')
         self.textedit_DACfreqs.setMaximumWidth(170)
         self.textedit_DACfreqs.setMaximumHeight(100)
         label_DACfreqs = QtG.QLabel('Centre Freqs:')
