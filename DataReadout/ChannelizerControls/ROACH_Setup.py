@@ -406,8 +406,8 @@ class AppForm(QtG.QMainWindow):
         
     def freqCombLUT(self, echo, freq, sampleRate, resolution, amplitude=[1.]*256, phase=[0.]*256, random_phase = 'yes'):
         offset = int(self.textbox_offset.text())
-        bKeepOldScale = self.cbox_keepScaleFactor.isChecked()
-        bUseCustomScale = self.cbox_useScaleFactor.isChecked()
+        bKeepOldScale = False # self.cbox_keepScaleFactor.isChecked()
+        bUseCustomScale = False #  self.cbox_useScaleFactor.isChecked()
         amp_full_scale = 2**15-1
         N_freqs = len(freq)
         size = int(sampleRate/resolution)
@@ -447,7 +447,7 @@ class AppForm(QtG.QMainWindow):
             if bKeepOldScale == True and self.last_scale_factor != None:
                 scale_factor = self.last_scale_factor
             if bUseCustomScale == True:
-                scale_factor = float(self.textbox_customScale.text())
+                scale_factor = 1.0 # float(self.textbox_customScale.text())
             self.scale_factor = scale_factor
         I = numpy.array([int(i*amp_full_scale/scale_factor) for i in I])
         Q = numpy.array([int(q*amp_full_scale/scale_factor) for q in Q])
@@ -1297,10 +1297,10 @@ class AppForm(QtG.QMainWindow):
         self.square_DACindicate.setText('off')
         
 
-        self.cbox_keepScaleFactor = QtG.QCheckBox("Keep Last Scale")
-        self.cbox_useScaleFactor = QtG.QCheckBox("Use Scale")
-        self.textbox_customScale = QtG.QLineEdit('1')
-        self.textbox_customScale.setMaximumWidth(60)
+        # self.cbox_keepScaleFactor = QtG.QCheckBox("Keep Last Scale")
+        # self.cbox_useScaleFactor = QtG.QCheckBox("Use Scale")
+        # self.textbox_customScale = QtG.QLineEdit('1')
+        # self.textbox_customScale.setMaximumWidth(60)
 
         # define DAC/DDS frequencies and load LUTs. 
         self.button_define_LUTs= QtG.QPushButton("(3)Define LUTs")
@@ -1405,10 +1405,10 @@ class AppForm(QtG.QMainWindow):
         #hbox11.addWidget(self.textbox_dds_shift)
         gbox1.addLayout(hbox10)
         gbox1.addLayout(hbox11)
-        gbox1.addWidget(self.cbox_keepScaleFactor)
+        # gbox1.addWidget(self.cbox_keepScaleFactor)
         hbox111 = QtG.QHBoxLayout()
-        hbox111.addWidget(self.cbox_useScaleFactor)
-        hbox111.addWidget(self.textbox_customScale)
+        # hbox111.addWidget(self.cbox_useScaleFactor)
+        # hbox111.addWidget(self.textbox_customScale)
         gbox1.addLayout(hbox111)
         gbox1.addWidget(self.button_define_LUTs)
         #gbox1.addWidget(self.button_startDAC)
