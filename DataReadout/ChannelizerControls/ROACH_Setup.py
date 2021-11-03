@@ -1144,14 +1144,14 @@ class AppForm(QtG.QMainWindow):
         # Global freq offset.
         # keeping old text version for rollback if needed
         # self.textbox_freqOffset = QtG.QLineEdit('0e3')
-        self.textbox_freqOffset = QtG.QDoubleSpinBox ()
-        self.textbox_freqOffset.setRange(-1e6,1e6)
-        self.textbox_freqOffset.setSingleStep(1e3)
-        self.textbox_freqOffset.setValue(0)
-        self.textbox_freqOffset.setSuffix('Hz')
-        self.textbox_freqOffset.setDecimals(0)
-        self.textbox_freqOffset.setMaximumWidth(200) # retain this even for text
-        label_freqOffset = QtG.QLabel('Freq Offset:')
+        # self.textbox_freqOffset = QtG.QDoubleSpinBox ()
+        # self.textbox_freqOffset.setRange(-1e6,1e6)
+        # self.textbox_freqOffset.setSingleStep(1e3)
+        # self.textbox_freqOffset.setValue(0)
+        # self.textbox_freqOffset.setSuffix('Hz')
+        # self.textbox_freqOffset.setDecimals(0)
+        # self.textbox_freqOffset.setMaximumWidth(200) # retain this even for text
+        # label_freqOffset = QtG.QLabel('Freq Offset:')
 
         # Sweep span
         # keeping old text version for rollback if needed
@@ -1389,10 +1389,10 @@ class AppForm(QtG.QMainWindow):
         hbox03.addWidget(label_loFreq)
         hbox03.addWidget(self.textbox_loFreq)
         gbox0.addLayout(hbox03)
-        hbox04 = QtG.QHBoxLayout()
-        hbox04.addWidget(label_freqOffset)
-        hbox04.addWidget(self.textbox_freqOffset)
-        gbox0.addLayout(hbox04)
+        # hbox04 = QtG.QHBoxLayout()
+        # hbox04.addWidget(label_freqOffset)
+        # hbox04.addWidget(self.textbox_freqOffset)
+        # gbox0.addLayout(hbox04)
 
         gbox1 = QtG.QVBoxLayout()
         gbox1.addWidget(label_DACfreqs)
