@@ -671,13 +671,13 @@ class AppForm(QtG.QMainWindow):
             self.sweepLOready()
             self.status_text.setText('Sweeping...DONE')
 
-    def toggleShowPrevious(self):
-        self.showPrevious = not self.showPrevious
-        if self.showPrevious:
-            self.button_showPrevious.setStyleSheet("background-color: #00ff00")
-        else:
-            self.button_showPrevious.setStyleSheet("background-color: #ff0000")
-        print "in toggleShowPrevious:  showPrevious=",self.showPrevious
+    # def toggleShowPrevious(self):
+    #     self.showPrevious = not self.showPrevious
+    #     if self.showPrevious:
+    #         self.button_showPrevious.setStyleSheet("background-color: #00ff00")
+    #     else:
+    #         self.button_showPrevious.setStyleSheet("background-color: #ff0000")
+    #     print "in toggleShowPrevious:  showPrevious=",self.showPrevious
 
     def sweepLOready(self):
         atten_in = float(self.textbox_atten_in.value())
@@ -941,16 +941,17 @@ class AppForm(QtG.QMainWindow):
     #         self.status_text.setText('IOError')
         
 
-    def channelIncUp(self):
-        ch = int(self.textbox_channel.text())
-        ch = ch + 1
-        ch = ch%self.N_freqs
-        self.textbox_channel.setText(str(ch))
-        self.showChannel(ch)
+    # def channelIncUp(self):
+    #     ch = int(self.textbox_channel.text())
+    #     ch = ch + 1
+    #     ch = ch%self.N_freqs
+    #     self.textbox_channel.setText(str(ch))
+    #     self.showChannel(ch)
 
     def showChannel(self,ch=None):
-        if ch == None:
-            ch = int(self.textbox_channel.text())
+        # if ch == None:
+        #     ch = int(self.textbox_channel.text())
+        ch = 0
         self.axes0.clear()
         self.axes1.clear()
         self.axes2.clear()
@@ -960,27 +961,27 @@ class AppForm(QtG.QMainWindow):
         self.axes0.plot(self.f_span[ch][0:-1], self.IQ_vels[ch],'g.-')
         self.axes0.set_xlabel('Freq (Hz)')
         self.axes0.set_ylabel('Transmission [uV (rms)]')
-        if self.last_IQ_vels != None and self.showPrevious:
-            self.axes0.semilogy(self.last_f_span[ch][0:-1], self.last_IQ_vels[ch],'c.-',alpha=0.5)
+        # if self.last_IQ_vels != None and self.showPrevious:
+        #     self.axes0.semilogy(self.last_f_span[ch][0:-1], self.last_IQ_vels[ch],'c.-',alpha=0.5)
 
         self.axes1.plot(self.I[ch], self.Q[ch], '.-', self.iq_centers.real[ch], self.iq_centers.imag[ch], '.', self.I_on_res[ch], self.Q_on_res[ch], '.')
         self.axes1.set_xlabel('I (In-Phase)')
         self.axes1.set_ylabel('Q (In-Quadrature)')
-        if self.last_I != None and self.showPrevious:
-            self.axes1.plot(self.last_I[ch], self.last_Q[ch], 'c.-', self.last_iq_centers.real[ch], self.last_iq_centers.imag[ch], '.', self.last_I_on_res[ch], self.last_Q_on_res[ch], '.',alpha=0.5)
+        # if self.last_I != None and self.showPrevious:
+        #     self.axes1.plot(self.last_I[ch], self.last_Q[ch], 'c.-', self.last_iq_centers.real[ch], self.last_iq_centers.imag[ch], '.', self.last_I_on_res[ch], self.last_Q_on_res[ch], '.',alpha=0.5)
 
         self.axes2.plot(self.f_span[ch], numpy.arctan2(self.Q[ch],self.I[ch]) * 180 / numpy.pi, '.-')
         self.axes2.set_xlabel('Freq (Hz)')
         self.axes2.set_ylabel('Transmission (Phase)')
-        if self.last_IQ_vels != None and self.showPrevious:
-            self.axes2.plot(self.last_f_span[ch][0:-1], self.last_IQ_vels[ch],'c.-',alpha=0.5)
+        # if self.last_IQ_vels != None and self.showPrevious:
+        #     self.axes2.plot(self.last_f_span[ch][0:-1], self.last_IQ_vels[ch],'c.-',alpha=0.5)
 
         self.axes3.plot(self.f_span[ch], self.I[ch], 'g.-')
         self.axes3.plot(self.f_span[ch], self.Q[ch], 'b.-')
         self.axes3.set_xlabel('Freq (Hz)')
         self.axes3.set_ylabel('Baseband Amplitude')
-        if self.last_I != None and self.showPrevious:
-            self.axes3.plot(self.last_I[ch], self.last_Q[ch], 'c.-', self.last_iq_centers.real[ch], self.last_iq_centers.imag[ch], '.', self.last_I_on_res[ch], self.last_Q_on_res[ch], '.',alpha=0.5)
+        # if self.last_I != None and self.showPrevious:
+        #     self.axes3.plot(self.last_I[ch], self.last_Q[ch], 'c.-', self.last_iq_centers.real[ch], self.last_iq_centers.imag[ch], '.', self.last_I_on_res[ch], self.last_Q_on_res[ch], '.',alpha=0.5)
 
 
         self.canvas.draw()
@@ -996,17 +997,18 @@ class AppForm(QtG.QMainWindow):
         self.textbox_freq.setText(str(freq))
         self.spinbox_attenuation.setValue(int(atten))
 
-    def channelIncDown(self):
-        ch = int(self.textbox_channel.text())
-        ch = ch - 1
-        ch = ch%self.N_freqs
-        self.textbox_channel.setText(str(ch))
-        self.showChannel(ch)
+    # def channelIncDown(self):
+    #     ch = int(self.textbox_channel.text())
+    #     ch = ch - 1
+    #     ch = ch%self.N_freqs
+    #     self.textbox_channel.setText(str(ch))
+    #     self.showChannel(ch)
 
     def changeCenter(self, event):
         I = event.xdata
         Q = event.ydata
-        ch = int(self.textbox_channel.text())
+        # ch = int(self.textbox_channel.text())
+        ch = 0
         print ch
         self.iq_centers.real[ch] = I
         self.iq_centers.imag[ch] = Q
@@ -1016,7 +1018,8 @@ class AppForm(QtG.QMainWindow):
         self.canvas.draw()
 
     def snapResFreq(self):
-        ch = int(self.textbox_channel.text())
+        # ch = int(self.textbox_channel.text())
+        ch = 0
         iMaxIQVel = numpy.argmax(self.IQ_vels[ch])
         #The longest edge is identified, choose which vertex of the edge
         #is the resonant frequency by checking the neighboring edges
@@ -1034,7 +1037,8 @@ class AppForm(QtG.QMainWindow):
         self.updateResFreq(ch=ch,freq=newFreq)
 
     def snapAllResFreqs(self):
-        ch = int(self.textbox_channel.text())
+        # ch = int(self.textbox_channel.text())
+        ch = 0
         for ch in range(self.N_freqs):
             iMaxIQVel = numpy.argmax(self.IQ_vels[ch])
             #The longest edge is identified, choose which vertex of the edge
@@ -1312,28 +1316,28 @@ class AppForm(QtG.QMainWindow):
         self.button_sweepLO.setMaximumWidth(340)
         self.connect(self.button_sweepLO, QtC.SIGNAL('clicked()'), self.sweepLO)    
         # Toggle whether to show previous or not
-        self.button_showPrevious = QtG.QPushButton("Show Prev")
-        self.button_showPrevious.setMaximumWidth(200)
-        self.connect(self.button_showPrevious, QtC.SIGNAL('clicked()'),
-                     self.toggleShowPrevious)
-        self.showPrevious = False
-        self.toggleShowPrevious()
+        # self.button_showPrevious = QtG.QPushButton("Show Prev")
+        # self.button_showPrevious.setMaximumWidth(200)
+        # self.connect(self.button_showPrevious, QtC.SIGNAL('clicked()'),
+        #             self.toggleShowPrevious)
+        # self.showPrevious = False
+        # self.toggleShowPrevious()
 
-        # Channel increment up 1.
-        self.button_channelIncUp = QtG.QPushButton("+")
-        self.button_channelIncUp.setMaximumWidth(50)
-        self.connect(self.button_channelIncUp, QtC.SIGNAL('clicked()'), self.channelIncUp)
+        # # Channel increment up 1.
+        # self.button_channelIncUp = QtG.QPushButton("+")
+        # self.button_channelIncUp.setMaximumWidth(50)
+        # self.connect(self.button_channelIncUp, QtC.SIGNAL('clicked()'), self.channelIncUp)
+        #
+        # # Channel increment down 1.
+        # self.button_channelIncDown = QtG.QPushButton("-")
+        # self.button_channelIncDown.setMaximumWidth(50)
+        # self.connect(self.button_channelIncDown, QtC.SIGNAL('clicked()'), self.channelIncDown)
         
-        # Channel increment down 1.
-        self.button_channelIncDown = QtG.QPushButton("-")
-        self.button_channelIncDown.setMaximumWidth(50)
-        self.connect(self.button_channelIncDown, QtC.SIGNAL('clicked()'), self.channelIncDown)
-        
-        # Channel to measure
-        self.textbox_channel = QtG.QLineEdit('0')
-        self.textbox_channel.setMaximumWidth(40)
-        label_channel = QtG.QLabel('Ch:')
-        label_channel.setMaximumWidth(50)
+        # # Channel to measure
+        # self.textbox_channel = QtG.QLineEdit('0')
+        # self.textbox_channel.setMaximumWidth(40)
+        # label_channel = QtG.QLabel('Ch:')
+        # label_channel.setMaximumWidth(50)
 
         #Spinbox adjustment of Attenuation of current resonater
         self.spinbox_attenuation = QtG.QSpinBox()
@@ -1434,14 +1438,14 @@ class AppForm(QtG.QMainWindow):
         hbox21.addWidget(label_loSpan)
         hbox21.addWidget(self.textbox_loSpan)
         hbox21.addWidget(self.button_sweepLO)
-        hbox21.addWidget(self.button_showPrevious)
+        # hbox21.addWidget(self.button_showPrevious)
         gbox2.addLayout(hbox21)
-        hbox22 = QtG.QHBoxLayout()
-        hbox22.addWidget(label_channel)
-        hbox22.addWidget(self.textbox_channel)
-        hbox22.addWidget(self.button_channelIncDown)
-        hbox22.addWidget(self.button_channelIncUp)
-        gbox2.addLayout(hbox22)
+        # hbox22 = QtG.QHBoxLayout()
+        # # hbox22.addWidget(label_channel)
+        # # hbox22.addWidget(self.textbox_channel)
+        # # hbox22.addWidget(self.button_channelIncDown)
+        # # hbox22.addWidget(self.button_channelIncUp)
+        # gbox2.addLayout(hbox22)
         hbox23 = QtG.QHBoxLayout()
         hbox23.addWidget(label_attenuation)
         hbox23.addWidget(self.spinbox_attenuation)
