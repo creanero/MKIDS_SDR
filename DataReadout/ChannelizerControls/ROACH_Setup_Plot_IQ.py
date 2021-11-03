@@ -91,13 +91,15 @@ class AppForm(QtG.QMainWindow):
         #self.QApplication.processEvents()
         print 'connecting...'
         self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
-	self.roach.progdev('snap_raw_iq_0303_2021_Mar_03_1222.bof') 
+	time.sleep(2)
+	print 'programming roach...'
+	self.roach.progdev('snap_raw_iq_4chan_2021_Feb_01_1548.bof') 
 	# 'chan_512_2012_Jul_30_1754.bof' original boffile. 
 	#Last working: chan_snap_v3_2012_Oct_30_1216.bof as of 16/12/2020
 	#trying snap_rawIQ.bof and snap_raw_iq_2018_Dec_11_1630.bof 16/12/2020
         #trying chan_snap_v4_20_12_2018_May_29_1235.bof and chan_snap_v4_20_12_2018_Jun_07_1106.bof
 
-        time.sleep(2)
+        #time.sleep(2)
         self.status_text.setText('connection established')
         print 'connection established to',self.textbox_roachIP.text()
         self.button_openClient.setDisabled(True)
@@ -1113,7 +1115,7 @@ class AppForm(QtG.QMainWindow):
         self.connect(self.button_openClient, QtC.SIGNAL('clicked()'), self.openClient)
         
         # LO frequency.
-        self.textbox_loFreq = QtG.QLineEdit('5.88e9')
+        self.textbox_loFreq = QtG.QLineEdit('4.75e9')
         self.textbox_loFreq.setMaximumWidth(100)
         label_loFreq = QtG.QLabel('LO frequency:')
 
@@ -1178,7 +1180,7 @@ class AppForm(QtG.QMainWindow):
         label_saveDir.setMaximumWidth(150)
     
         # File with frequencies/attens
-        self.textbox_freqFile = QtG.QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/1tones.txt')
+        self.textbox_freqFile = QtG.QLineEdit('/home/labuser/MKIDS/MKIDS_SDR/DataReadout/ChannelizerControls/LUT/1tones.txt')
         self.textbox_freqFile.setMaximumWidth(200)
 
         # Load freqs and attens from file.
