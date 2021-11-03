@@ -405,7 +405,7 @@ class AppForm(QtG.QMainWindow):
             print "AttributeError: 'AppForm' object has no attribute 'roach'"
         
     def freqCombLUT(self, echo, freq, sampleRate, resolution, amplitude=[1.]*256, phase=[0.]*256, random_phase = 'yes'):
-        offset = int(self.textbox_offset.text())
+        offset = 0 # int(self.textbox_offset.text())
         bKeepOldScale = False # self.cbox_keepScaleFactor.isChecked()
         bUseCustomScale = False #  self.cbox_useScaleFactor.isChecked()
         amp_full_scale = 2**15-1
@@ -994,8 +994,8 @@ class AppForm(QtG.QMainWindow):
         if self.customResonators[ch][1]!=-1:
             #freq=self.customResonators[ch][0]
             atten=self.customResonators[ch][1]
-        self.textbox_freq.setText(str(freq))
-        self.spinbox_attenuation.setValue(int(atten))
+        # self.textbox_freq.setText(str(freq))
+        # self.spinbox_attenuation.setValue(int(atten))
 
     # def channelIncDown(self):
     #     ch = int(self.textbox_channel.text())
@@ -1050,7 +1050,7 @@ class AppForm(QtG.QMainWindow):
             else:
                 iNewResFreq = iMaxIQVel
 
-            maxJump = float(self.textbox_freqAutoLimit.text())#10e-5# don't jump further than 100kHz/10 points
+            maxJump = 10e-5 # float(self.textbox_freqAutoLimit.text())#10e-5# don't jump further than 100kHz/10 points
             freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
             currentFreq=freqs[ch]/10**9
             newFreq = self.f_span[ch][iNewResFreq]
@@ -1211,10 +1211,10 @@ class AppForm(QtG.QMainWindow):
         self.textbox_atten_in.setMaximumWidth(150) # retain this even for text
         label_atten_in = QtG.QLabel('Input atten.:')
 
-        # offset in lut
-        self.textbox_offset = QtG.QLineEdit('0')
-        self.textbox_offset.setMaximumWidth(50)
-        label_offset = QtG.QLabel('DAC sync. lag:')
+        # # offset in lut
+        # self.textbox_offset = QtG.QLineEdit('0')
+        # self.textbox_offset.setMaximumWidth(50)
+        # label_offset = QtG.QLabel('DAC sync. lag:')
 
         # offset in lut
         #self.textbox_dds_shift = QLineEdit('140') #chan_512_packet_2012_Aug_20_1207.bof
@@ -1340,14 +1340,14 @@ class AppForm(QtG.QMainWindow):
         # label_channel.setMaximumWidth(50)
 
         #Spinbox adjustment of Attenuation of current resonater
-        self.spinbox_attenuation = QtG.QSpinBox()
-        self.spinbox_attenuation.setMaximum(MAX_ATTEN)
-        label_attenuation = QtG.QLabel('Atten:')
+        # self.spinbox_attenuation = QtG.QSpinBox()
+        # self.spinbox_attenuation.setMaximum(MAX_ATTEN)
+        # label_attenuation = QtG.QLabel('Atten:')
         
         #textbox for adjusting frequency
-        self.textbox_freq = QtG.QLineEdit('0')
-        self.textbox_freq.setMaximumWidth(90)
-        label_freq = QtG.QLabel('Freq (Hz):')
+        # self.textbox_freq = QtG.QLineEdit('0')
+        # self.textbox_freq.setMaximumWidth(90)
+        # label_freq = QtG.QLabel('Freq (Hz):')
         
 
         #button to snap resonant frequency to peak IQ velocity
@@ -1371,9 +1371,9 @@ class AppForm(QtG.QMainWindow):
         self.button_autoFreqs.setMaximumWidth(170)
         self.connect(self.button_autoFreqs, QtC.SIGNAL('clicked()'), self.snapAllResFreqs)
 
-        self.textbox_freqAutoLimit = QtG.QLineEdit('10e-5')
-        self.textbox_freqAutoLimit.setMaximumWidth(70)
-        label_freqAutoLimit = QtG.QLabel('Max Freq Jump (Hz):')
+        # self.textbox_freqAutoLimit = QtG.QLineEdit('10e-5')
+        # self.textbox_freqAutoLimit.setMaximumWidth(70)
+        # label_freqAutoLimit = QtG.QLabel('Max Freq Jump (Hz):')
         
         # Add widgets to window.
         gbox0 = QtG.QVBoxLayout()
@@ -1401,14 +1401,14 @@ class AppForm(QtG.QMainWindow):
         gbox1 = QtG.QVBoxLayout()
         gbox1.addWidget(label_DACfreqs)
         gbox1.addWidget(self.textedit_DACfreqs)
-        hbox10 = QtG.QHBoxLayout()
-        hbox10.addWidget(label_offset)
-        hbox10.addWidget(self.textbox_offset)
-        hbox11 = QtG.QHBoxLayout()
+        # hbox10 = QtG.QHBoxLayout()
+        # hbox10.addWidget(label_offset)
+        # hbox10.addWidget(self.textbox_offset)
+        # hbox11 = QtG.QHBoxLayout()
         #hbox11.addWidget(label_dds_shift)
         #hbox11.addWidget(self.textbox_dds_shift)
-        gbox1.addLayout(hbox10)
-        gbox1.addLayout(hbox11)
+        #gbox1.addLayout(hbox10)
+        # gbox1.addLayout(hbox11)
         # gbox1.addWidget(self.cbox_keepScaleFactor)
         hbox111 = QtG.QHBoxLayout()
         # hbox111.addWidget(self.cbox_useScaleFactor)
@@ -1446,20 +1446,20 @@ class AppForm(QtG.QMainWindow):
         # # hbox22.addWidget(self.button_channelIncDown)
         # # hbox22.addWidget(self.button_channelIncUp)
         # gbox2.addLayout(hbox22)
-        hbox23 = QtG.QHBoxLayout()
-        hbox23.addWidget(label_attenuation)
-        hbox23.addWidget(self.spinbox_attenuation)
-        hbox23.addWidget(label_freq)
-        hbox23.addWidget(self.textbox_freq)
-        # hbox23.addWidget(self.button_updateResonator)
-        hbox23.addWidget(self.button_autoFreq)
+        # hbox23 = QtG.QHBoxLayout()
+        # hbox23.addWidget(label_attenuation)
+        # hbox23.addWidget(self.spinbox_attenuation)
+        # hbox23.addWidget(label_freq)
+        # hbox23.addWidget(self.textbox_freq)
+        # # hbox23.addWidget(self.button_updateResonator)
+        # hbox23.addWidget(self.button_autoFreq)
         # hbox23.addWidget(self.button_deleteResonator)
-        gbox2.addLayout(hbox23)
-        hbox24 = QtG.QHBoxLayout()
-        hbox24.addWidget(label_freqAutoLimit)
-        hbox24.addWidget(self.textbox_freqAutoLimit)
-        hbox24.addWidget(self.button_autoFreqs)
-        gbox2.addLayout(hbox24)
+        # gbox2.addLayout(hbox23)
+        # hbox24 = QtG.QHBoxLayout()
+        # hbox24.addWidget(label_freqAutoLimit)
+        # hbox24.addWidget(self.textbox_freqAutoLimit)
+        # hbox24.addWidget(self.button_autoFreqs)
+        # gbox2.addLayout(hbox24)
         hbox25 = QtG.QHBoxLayout()
         hbox25.addWidget(self.button_rotateLoops)
         hbox25.addWidget(self.button_translateLoops)
