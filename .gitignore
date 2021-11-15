@@ -7,4 +7,5 @@ mkid-environment.h
 *.npz
 .idea/*
 DataReadout/ChannelizerControls/LUT/1tones_NEW.txt
-
+DataReadout/ChannelizerControls/LUT/centers.dat
+DataReadout/ChannelizerControls/LUT/luts.dat
