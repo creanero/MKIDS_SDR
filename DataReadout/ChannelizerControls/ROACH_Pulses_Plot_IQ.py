@@ -54,7 +54,7 @@ class AppForm(QMainWindow):
 	time.sleep(2)
 	print 'programming roach...'
 	
-        self.roach.progdev('snap_raw_iq_4chan_2021_Feb_01_1548.bof')
+        self.roach.progdev('snap_raw_iq_32b_2021_Mar_09_1646.bof')
 	#working boffile as of 16/12/2020: chan_snap_v3_2012_Oct_30_1216.bof
 	#trying snap_rawIQ.bof and snap_raw_iq_2018_Dec_11_1630.bof on 16/12/2020
         #time.sleep(2)
@@ -372,6 +372,7 @@ class AppForm(QMainWindow):
         steps = int(self.textbox_snapSteps.text())
         L = 2**10
         bin_data_phase = ''
+	bin_data_I = ''
 	bin_data_I0 = ''
 	bin_data_I1 = ''
 	bin_data_Q0 = ''
@@ -389,14 +390,15 @@ class AppForm(QMainWindow):
         	
 	for n in range(steps):
 	    #self.roach.write_int('startSnap', 0)
-            self.roach.write_int('snapI0_ctrl', 1)
-            self.roach.write_int('snapI0_ctrl', 0)	
+            self.roach.write_int('conv_phase_snapI_ctrl', 1)
+            self.roach.write_int('conv_phase_snapI_ctrl', 0)	
 	    #self.roach.write_int('startSnap', 1)
 	    time.sleep(0.001)
-	    #bin_data_I0 = bin_data_I0 + self.roach.read('snapI0_bram', 4*L)
+	    #bin_data_I = bin_data_I + self.roach.read('conv_phase_snapI_bram', 4*L)
+	    bin_data_I = bin_data_I + self.roach.read('conv_phase_snapI_bram', 4*L)
 	    #bin_data_I0 = bin_data_I0 + str(self.roach.read_uint('snapI0_bram'))
-	    bin_data_I0 = str(self.roach.read_int('snapI0_bram'))
-	    print('bin_data_I0 = ', bin_data_I0) 
+	    #bin_data_I = bin_data_I + str(self.roach.read_int('conv_phase_snapI_bram'))
+	    #print('bin_data_I = ', bin_data_I0) 
 
 	#print('bin_data_I0 = ', bin_data_I0)
 
@@ -447,14 +449,16 @@ class AppForm(QMainWindow):
 	phase = numpy.array(phase)*360./2**16*4/numpy.pi
 	#phase = numpy.array(phase)
 	print 'phase: ', phase
+	
 
-	#I0 = []
-        #for m in range(steps*L):
-        #    I0.append(struct.unpack('>h', bin_data_I0[m*4+2:m*4+4])[0])
-        #    I0.append(struct.unpack('>h', bin_data_I0[m*4+0:m*4+2])[0])
-	#I0 = numpy.array(I0)/2**16
-	#I0 = numpy.array(I0)
-	#print 'I0: ', I0	
+	Iraw = []
+        for m in range(steps*L):
+            Iraw.append(struct.unpack('>l', bin_data_I[m:m+4])[0])
+            #Iraw.append(struct.unpack('>h', bin_data_I[m*4+0:m*4+2])[0])
+	#I = numpy.array(I)/2**16
+	Iraw = numpy.array(Iraw)
+	print('Iraw = ', Iraw)	
+	print('Iraw length = ', len(Iraw))
 
 	#I1 = []
         #for m in range(steps*L):
@@ -531,7 +535,7 @@ class AppForm(QMainWindow):
        	    self.axes0.plot(phase, 'b.', markersize=1) #changed to plot I0 versus time
 	    #self.axes0.axis([0, len(I0), 0, 10])
 
-	    #self.axes1.plot(I0, 'b.', markersize=1) #changed to plot I0 versus time
+	    self.axes1.plot(Iraw, 'b.', markersize=1) #changed to plot I0 versus time
 	    #self.axes1.axis([0, len(I1), 0, 10])
 
 	    #self.axes1.plot(I1, 'b.', markersize=1) #changed to plot I1 versus time
