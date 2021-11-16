@@ -222,7 +222,7 @@ class AppForm(QMainWindow):
         L = 2**10
         scale_to_angle = 360./2**16*4/numpy.pi
         threshInfo = {}
-        threshInfo['roachNum'] = roachNum
+        threshInfo['roachNo'] = roachNo
         threshInfo['scaleToAngle'] = scale_to_angle
         threshInfo['N_freqs'] = N_freqs
         now = datetime.datetime.now()
@@ -289,7 +289,7 @@ class AppForm(QMainWindow):
         threshInfo['medians'] = self.medians.copy()
         threshInfo['thresholds'] = self.thresholds.copy()
         nowStr = datetime.datetime.strftime(now,"%Y%m%d-%H%M%S")
-        pklFileName = "thresh_%d_%s.pkl"%(roachNum,nowStr)
+        pklFileName = "thresh_%d_%s.pkl"%(roachNo,nowStr)
         #print 'Dump threshold infomation to ',os.path.join(os.environ['MKID_DATA_DIR'],pklFileName)
         #pickle.dump(threshInfo,open(os.path.join(os.environ['MKID_DATA_DIR'],pklFileName),'wb'))
         self.status_text.setText('Thresholds loaded and written to %s'%pklFileName)
@@ -376,7 +376,21 @@ class AppForm(QMainWindow):
 
         self.axes1.clear()
         #self.axes1.plot(phase, '.-', [self.thresholds[ch_we]]*2*L*steps, 'r.', [self.medians[ch_we]]*2*L*steps, 'g.')
-        saveDir = str('/home/labuser/Desktop/SDR-master/DataReadout/NewData/') #saves phase data here
+
+        # gets the environment variable
+        SCRIPT_ROOT=os.environ.get('SCRIPT_ROOT')
+
+        # If the environment variable is not defined
+        if SCRIPT_ROOT is None:
+            # Gets the path to this script
+            this_script= os.path.abspath(__file__)
+            # Gets the directory of the current file
+            this_script_dir=os.path.dirname(this_script)
+            # Gets the directory two up from the current one (i.e. PWD/../..)
+            SCRIPT_ROOT=os.path.dirname(os.path.dirname(this_script_dir))
+
+
+        saveDir = str(SCRIPT_ROOT+'/DataReadout/NewData/') #saves phase data here
         if saveDir != '':
             phasefilename = saveDir + 'shot_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + str(self.textbox_roachIP.text())+'.txt'
             #numpy.savetxt(phasefilename,phase,fmt='%.8e')
@@ -810,7 +824,7 @@ class AppForm(QMainWindow):
         base = base/2.0**9-4.0
         base = base*180.0/numpy.pi
         times = numpy.array(timestamp[ch],dtype='float')/1e6
-	timesCh = times/1
+        timesCh = times/1
         peaksCh = numpy.array(peaks[ch],dtype = 'float')
         peaksCh = peaksCh/2.0**9-4.0
         peaksCh = peaksCh*180.0/numpy.pi
@@ -852,7 +866,20 @@ class AppForm(QMainWindow):
         self.axes1.bar(center, hgPeakSubBase, width, alpha=0.5, linewidth=0, color='r')
         self.axes1.set_xlabel("peak phase (degrees)")
         self.axes1.set_title(hTitle)
-	saveDir = str('/home/labuser/Desktop/SDR-master/DataReadout/NewData/') #saves phase data here
+
+        # gets the environment variable
+        SCRIPT_ROOT = os.environ.get('SCRIPT_ROOT')
+
+        # If the environment variable is not defined
+        if SCRIPT_ROOT is None:
+            # Gets the path to this script
+            this_script = os.path.abspath(__file__)
+            # Gets the directory of the current file
+            this_script_dir = os.path.dirname(this_script)
+            # Gets the directory two up from the current one (i.e. PWD/../..)
+            SCRIPT_ROOT = os.path.dirname(os.path.dirname(this_script_dir))
+
+        saveDir = str(SCRIPT_ROOT+'/DataReadout/NewData/') #saves phase data here
         if saveDir != '':
             phasefilename1 = saveDir + 'Pulse_histogram_'+time.strftime("%Y%m%d-%H%M%S",time.localtime())+'.txt'
 	    phasefilename2 = saveDir + 'Pulse_times_'+time.strftime("%Y%m%d-%H%M%S",time.localtime())+'.txt'
@@ -1059,7 +1086,7 @@ class AppForm(QMainWindow):
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
         
         # Roach board's IP address
-        self.textbox_roachIP = QLineEdit('192.168.4.%d'%roachNum)
+        self.textbox_roachIP = QLineEdit('192.168.4.%d'%roachNo)
         self.textbox_roachIP.setMaximumWidth(200)
         label_roachIP = QLabel('Roach IP Address:')
 
@@ -1070,13 +1097,25 @@ class AppForm(QMainWindow):
         
         # DAC Frequencies.
         self.textedit_DACfreqs = QTextEdit()
-	self.textedit_DACfreqs.setMinimumWidth(150) #added this, box was appearing too small
+        self.textedit_DACfreqs.setMinimumWidth(150) #added this, box was appearing too small
         self.textedit_DACfreqs.setMaximumWidth(170) #changed from 170 to 200
         self.textedit_DACfreqs.setMaximumHeight(100)
         label_DACfreqs = QLabel('DAC Freqs:')
     
         # File with frequencies/attens
-        self.textbox_freqFile = QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file 
+        # gets the environment variable
+        SCRIPT_ROOT = os.environ.get('SCRIPT_ROOT')
+
+        # If the environment variable is not defined
+        if SCRIPT_ROOT is None:
+            # Gets the path to this script
+            this_script = os.path.abspath(__file__)
+            # Gets the directory of the current file
+            this_script_dir = os.path.dirname(this_script)
+            # Gets the directory two up from the current one (i.e. PWD/../..)
+            SCRIPT_ROOT = os.path.dirname(os.path.dirname(this_script_dir))
+
+        self.textbox_freqFile = QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file
         self.textbox_freqFile.setMaximumWidth(200) 
 
         # Import freqs from file.
@@ -1085,7 +1124,7 @@ class AppForm(QMainWindow):
         self.connect(self.button_importFreqs, SIGNAL('clicked()'), self.importFreqs)   
 
         # File with FIR coefficients
-        self.textbox_coeffsFile = QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/BlackmanFilter_250kHz.txt')
+        self.textbox_coeffsFile = QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/BlackmanFilter_250kHz.txt')
         self.textbox_coeffsFile.setMaximumWidth(200)
 
         # Import FIR coefficients from file.
@@ -1107,15 +1146,15 @@ class AppForm(QMainWindow):
         self.button_loadThresholds = QPushButton("(5)Load thresholds")
         self.button_loadThresholds.setMaximumWidth(170)
         self.connect(self.button_loadThresholds, SIGNAL('clicked()'), self.loadThresholds)
-
-	# File with save path for pulses
-	
-	#getdate
-	default_save_path = '/home/labuser/Data/' + datetime.utcnow().strftime('%Y') + '/' + datetime.utcnow().strftime('%Y_%m_%d') + '/'
+        # File with save path for pulses
+        # getdate
+        # gets the directory one up from the script root
+        MKIDS_ROOT=os.path.dirname(SCRIPT_ROOT)
+        default_save_path = MKIDS_ROOT+'/Data/' + datetime.utcnow().strftime('%Y') + '/' + datetime.utcnow().strftime('%Y_%m_%d') + '/'
 
         self.textbox_pulsesavepath = QLineEdit(default_save_path) #changed file 
-        self.textbox_pulsesavepath.setMaximumWidth(200) 
-	label_pulsesavepath = QLabel('Phase Data Save Path')
+        self.textbox_pulsesavepath.setMaximumWidth(200)
+        label_pulsesavepath = QLabel('Phase Data Save Path')
 
         # remove custom threshold button
         self.button_rmCustomThreshold = QPushButton("Remove custom threshold")
@@ -1388,10 +1427,22 @@ def main():
     app.exec_()
 
 if __name__=='__main__':
-    if len(sys.argv)!= 2:
-        print 'Usage: ',sys.argv[0],' roachNum'
+    if len(sys.argv) == 1:
+        print 'Preferred Usage: ', sys.argv[0], ' roachNo'
+        roachNo = 10
+        print 'Defaulting to roachNo = ', roachNo
+
+    elif len(sys.argv) != 2:
+        #print len(sys.argv)
+        #print sys.argv[0]
+        print 'Usage: ',sys.argv[0],' roachNo'
         exit(1)
-    roachNum = int(sys.argv[1])
-    datadir = '/opt/software/colin1/LUT/freqTest.txt'
+    else:
+        roachNo = int(sys.argv[1])
+    # if len(sys.argv)!= 2:
+    #     print 'Usage: ',sys.argv[0],' roachNum'
+    #     exit(1)
+    # roachNum = int(sys.argv[1])
+    # datadir = '/opt/software/colin1/LUT/freqTest.txt'
     main()
 
