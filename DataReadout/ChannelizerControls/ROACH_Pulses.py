@@ -210,7 +210,7 @@ class AppForm(QMainWindow):
                 median is used instead of mean.
                 """
         x = raw_input('Is the lamp off? ')
-        Nsigma = float(self.textbox_Nsigma.text())
+        Nsigma = 2.5 #float(self.textbox_Nsigma.text())
         N_freqs = len(map(float, unicode(self.textedit_DACfreqs.toPlainText()).split()))
         self.thresholds, self.medians = numpy.array([0.]*N_freqs), numpy.array([0.]*N_freqs)
 
@@ -218,7 +218,7 @@ class AppForm(QMainWindow):
             #print 'attempting to load channel: ',ch
         #    self.loadSingleThreshold(ch)
 
-        steps = int(self.textbox_timeLengths.text())
+        steps = 10 # int(self.textbox_timeLengths.text())
         L = 2**10
         scale_to_angle = 360./2**16*4/numpy.pi
         threshInfo = {}
@@ -299,9 +299,9 @@ class AppForm(QMainWindow):
         #print 'ch: ',ch
         L = 2**10
         scale_to_angle = 360./2**16*4/numpy.pi
-        Nsigma = float(self.textbox_Nsigma.text())
+        Nsigma = 2.5 #float(self.textbox_Nsigma.text())
         bin_data_phase = ''
-        steps = int(self.textbox_timeLengths.text())
+        steps = 10# int(self.textbox_timeLengths.text())
         for n in range(steps):
             self.roach.write_int('ch_we', ch)
             self.roach.write_int('startSnap', 0)
@@ -521,7 +521,7 @@ class AppForm(QMainWindow):
          	nSamplesPerFFT = nLongsnapSamples/nFFTAverages
           	noiseFFT = numpy.zeros(nSamplesPerFFT)
           	noiseFFTFreqs = numpy.fft.fftfreq(nSamplesPerFFT)
-	  	norm1 = float(self.textbox_normalisation.text()) #This normalisation factor is the input signal to the ADCs, in (Volts [V]). 
+	  	norm1 = 50.0 # float(self.textbox_normalisation.text()) #This normalisation factor is the input signal to the ADCs, in (Volts [V]).
           	for iAvg in xrange(nFFTAverages):
           		noise = numpy.fft.fft(qdr_phase_values[iAvg*nSamplesPerFFT:(iAvg+1)*nSamplesPerFFT])
           		noise = numpy.abs(noise)
@@ -1057,7 +1057,19 @@ class AppForm(QMainWindow):
 
         
     def importFIRcoeffs(self):
-        coeffsFile =str(self.textbox_coeffsFile.text())
+        # gets the environment variable
+        SCRIPT_ROOT = os.environ.get('SCRIPT_ROOT')
+
+        # If the environment variable is not defined
+        if SCRIPT_ROOT is None:
+            # Gets the path to this script
+            this_script = os.path.abspath(__file__)
+            # Gets the directory of the current file
+            this_script_dir = os.path.dirname(this_script)
+            # Gets the directory two up from the current one (i.e. PWD/../..)
+            SCRIPT_ROOT = os.path.dirname(os.path.dirname(this_script_dir))
+
+        coeffsFile = SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/BlackmanFilter_250kHz.txt' # str(self.textbox_coeffsFile.text())
         self.fir = numpy.loadtxt(coeffsFile)
         print self.fir
   
@@ -1123,29 +1135,29 @@ class AppForm(QMainWindow):
         self.button_importFreqs.setMaximumWidth(200)
         self.connect(self.button_importFreqs, SIGNAL('clicked()'), self.importFreqs)   
 
-        # File with FIR coefficients
-        self.textbox_coeffsFile = QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/BlackmanFilter_250kHz.txt')
-        self.textbox_coeffsFile.setMaximumWidth(200)
+        # # File with FIR coefficients
+        # self.textbox_coeffsFile = QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/BlackmanFilter_250kHz.txt')
+        # self.textbox_coeffsFile.setMaximumWidth(200)
 
-        # Import FIR coefficients from file.
-        self.button_importFIRcoeffs = QPushButton("(3)Import FIR coeffs.")
-        self.button_importFIRcoeffs.setMaximumWidth(200)
-        self.connect(self.button_importFIRcoeffs, SIGNAL('clicked()'), self.importFIRcoeffs) 
+        # # Import FIR coefficients from file.
+        # self.button_importFIRcoeffs = QPushButton("(3)Import FIR coeffs.")
+        # self.button_importFIRcoeffs.setMaximumWidth(200)
+        # self.connect(self.button_importFIRcoeffs, SIGNAL('clicked()'), self.importFIRcoeffs)
 
-        # Channel increment by 1.
-        self.button_channelInc = QPushButton("Channel++")
-        self.button_channelInc.setMaximumWidth(100)
-        self.connect(self.button_channelInc, SIGNAL('clicked()'), self.channelInc)
+        # # Channel increment by 1.
+        # self.button_channelInc = QPushButton("Channel++")
+        # self.button_channelInc.setMaximumWidth(100)
+        # self.connect(self.button_channelInc, SIGNAL('clicked()'), self.channelInc)
 
-        # Load FIR coefficients.
-        self.button_loadFIRcoeffs = QPushButton("(4)Load FIR")
-        self.button_loadFIRcoeffs.setMaximumWidth(170)
-        self.connect(self.button_loadFIRcoeffs, SIGNAL('clicked()'), self.loadFIRcoeffs)
+        # # Load FIR coefficients.
+        # self.button_loadFIRcoeffs = QPushButton("(4)Load FIR")
+        # self.button_loadFIRcoeffs.setMaximumWidth(170)
+        # self.connect(self.button_loadFIRcoeffs, SIGNAL('clicked()'), self.loadFIRcoeffs)
 
         # Load thresholds.
-        self.button_loadThresholds = QPushButton("(5)Load thresholds")
-        self.button_loadThresholds.setMaximumWidth(170)
-        self.connect(self.button_loadThresholds, SIGNAL('clicked()'), self.loadThresholds)
+        # self.button_loadThresholds = QPushButton("(5)Load thresholds")
+        # self.button_loadThresholds.setMaximumWidth(170)
+        # self.connect(self.button_loadThresholds, SIGNAL('clicked()'), self.loadThresholds)
         # File with save path for pulses
         # getdate
         # gets the directory one up from the script root
@@ -1156,21 +1168,21 @@ class AppForm(QMainWindow):
         self.textbox_pulsesavepath.setMaximumWidth(200)
         label_pulsesavepath = QLabel('Phase Data Save Path')
 
-        # remove custom threshold button
-        self.button_rmCustomThreshold = QPushButton("Remove custom threshold")
-        self.button_rmCustomThreshold.setMaximumWidth(200) #changed from 170
-        self.connect(self.button_rmCustomThreshold, SIGNAL('clicked()'), self.rmCustomThreshold)
+        # # remove custom threshold button
+        # self.button_rmCustomThreshold = QPushButton("Remove custom threshold")
+        # self.button_rmCustomThreshold.setMaximumWidth(200) #changed from 170
+        # self.connect(self.button_rmCustomThreshold, SIGNAL('clicked()'), self.rmCustomThreshold)
         
         # Channel to measure
         self.textbox_channel = QLineEdit('0')
         self.textbox_channel.setMaximumWidth(50)
 
         # threshold N*sigma
-        self.textbox_Nsigma = QLineEdit('2.5')
-        self.textbox_Nsigma.setMaximumWidth(50)
-        label_Nsigma = QLabel('Sigma       ')
+        # self.textbox_Nsigma = QLineEdit('2.5')
+        # self.textbox_Nsigma.setMaximumWidth(50)
+        # label_Nsigma = QLabel('Sigma       ')
 
-	# phase threshold - new 
+        # phase threshold - new
         self.textbox_phasethreshold = QLineEdit('10')
         self.textbox_phasethreshold.setMaximumWidth(50)
         label_phasethreshold = QLabel('[Deg.] Phase Threshold for Pulse Data')
@@ -1183,32 +1195,32 @@ class AppForm(QMainWindow):
         # Long time snapshot of a single channel
         self.button_longsnapshot = QPushButton("Long Snapshot (QDR)")
         self.button_longsnapshot.setMaximumWidth(170)
-        self.connect(self.button_longsnapshot, SIGNAL('clicked()'), self.longsnapshot)            
-        
-	# Continuous time snapshot of a single channel
+        self.connect(self.button_longsnapshot, SIGNAL('clicked()'), self.longsnapshot)
+
+        # Continuous time snapshot of a single channel
         self.button_contsnapshot = QPushButton("Record Pulse Data (SW)")
         self.button_contsnapshot.setMaximumWidth(170)
-        self.connect(self.button_contsnapshot, SIGNAL('clicked()'), self.contsnapshot)            
-        
-	# Stop button to stop continuous time snapshot
-	self.button_contsnapstop = QPushButton("Stop Pulse Data")
+        self.connect(self.button_contsnapshot, SIGNAL('clicked()'), self.contsnapshot)
+
+        # Stop button to stop continuous time snapshot
+        self.button_contsnapstop = QPushButton("Stop Pulse Data")
         self.button_contsnapstop.setMaximumWidth(170)
         self.connect(self.button_contsnapstop, SIGNAL('clicked()'), self.contsnapstop)            
         
         # Read pulses
-        self.button_readPulses = QPushButton("Read Pulses Heights (HW)")
-        self.button_readPulses.setMaximumWidth(205)
-        self.connect(self.button_readPulses, SIGNAL('clicked()'), self.readPulses)
+        # self.button_readPulses = QPushButton("Read Pulses Heights (HW)")
+        # self.button_readPulses.setMaximumWidth(205)
+        # self.connect(self.button_readPulses, SIGNAL('clicked()'), self.readPulses)
+        #
+        # # Seconds for "read pulses."
+        # self.textbox_seconds = QLineEdit('1')
+        # self.textbox_seconds.setMaximumWidth(50)
+        # label_seconds = QLabel('* 1 sec')
         
-        # Seconds for "read pulses."
-        self.textbox_seconds = QLineEdit('1')
-        self.textbox_seconds.setMaximumWidth(50)
-	label_seconds = QLabel('* 1 sec')
-        
-        # lengths of 2 ms for defining thresholds.
-        self.textbox_timeLengths = QLineEdit('10')
-        self.textbox_timeLengths.setMaximumWidth(50)
-        label_timeLengths = QLabel('* 2 msec       ')
+        # # lengths of 2 ms for defining thresholds.
+        # self.textbox_timeLengths = QLineEdit('10')
+        # self.textbox_timeLengths.setMaximumWidth(50)
+        # label_timeLengths = QLabel('* 2 msec       ')
 
 
         # lengths of 2 ms steps to combine in a snapshot.
@@ -1216,10 +1228,10 @@ class AppForm(QMainWindow):
         self.textbox_snapSteps.setMaximumWidth(50)
         label_snapSteps = QLabel('* 2 msec')
 
-	# normalisation for noise measurements. This is the signal voltage (in micro Volts [uV]) that is input to each of the ADCs.
-        self.textbox_normalisation = QLineEdit('50')
-        self.textbox_normalisation.setMaximumWidth(50)
-        label_normalisation = QLabel('Normalisation [uV] (ADC signal)')
+        # # normalisation for noise measurements. This is the signal voltage (in micro Volts [uV]) that is input to each of the ADCs.
+        # self.textbox_normalisation = QLineEdit('50')
+        # self.textbox_normalisation.setMaximumWidth(50)
+        # label_normalisation = QLabel('Normalisation [uV] (ADC signal)')
 
         # lengths of 2 ms steps to combine in a snapshot.
         self.textbox_longsnapSteps = QLineEdit('1')
@@ -1232,12 +1244,12 @@ class AppForm(QMainWindow):
         self.textbox_contsnapSteps.setMaximumWidth(50)
         label_contsnapSteps = QLabel('* sec')
 
-	# number of loops in a continuous snapshot.
+        # number of loops in a continuous snapshot.
         self.textbox_contsnapLoops = QLineEdit('1')
         self.textbox_contsnapLoops.setMaximumWidth(50)
         label_contsnapLoops = QLabel('Iterations')
 
-	# number of points in average, as a power of 2
+        # number of points in average, as a power of 2
         self.textbox_averagelength = QLineEdit('6')
         self.textbox_averagelength.setMaximumWidth(50)
         label_averagelength = QLabel('Average Length (2^ )')
@@ -1270,17 +1282,17 @@ class AppForm(QMainWindow):
         hbox01.addWidget(self.button_importFreqs)
         gbox0.addLayout(hbox01)
         hbox02 = QHBoxLayout()
-        hbox02.addWidget(self.textbox_coeffsFile)
-        hbox02.addWidget(self.button_importFIRcoeffs)
-        hbox02.addWidget(self.button_loadFIRcoeffs)
+        # hbox02.addWidget(self.textbox_coeffsFile)
+        # hbox02.addWidget(self.button_importFIRcoeffs)
+        # hbox02.addWidget(self.button_loadFIRcoeffs)
         gbox0.addLayout(hbox02)
-        hbox03 = QHBoxLayout()
-        hbox03.addWidget(self.textbox_timeLengths)
-        hbox03.addWidget(label_timeLengths)
-        hbox03.addWidget(self.textbox_Nsigma)
-        hbox03.addWidget(label_Nsigma)
-        hbox03.addWidget(self.button_loadThresholds)
-        gbox0.addLayout(hbox03)
+        # hbox03 = QHBoxLayout()
+        # # hbox03.addWidget(self.textbox_timeLengths)
+        # # hbox03.addWidget(label_timeLengths)
+        # # hbox03.addWidget(self.textbox_Nsigma)
+        # # hbox03.addWidget(label_Nsigma)
+        # # hbox03.addWidget(self.button_loadThresholds)
+        # gbox0.addLayout(hbox03)
         
         gbox1 = QVBoxLayout()
         gbox1.addWidget(label_DACfreqs)
@@ -1288,13 +1300,13 @@ class AppForm(QMainWindow):
 
         gbox2 = QVBoxLayout()
         hbox20 = QHBoxLayout()
-        hbox20.addWidget(self.textbox_channel)
-        hbox20.addWidget(self.button_channelInc)
-        gbox2.addLayout(hbox20)
-	hbox221 = QHBoxLayout()
-        hbox221.addWidget(self.textbox_normalisation)
-	hbox221.addWidget(label_normalisation)
-        gbox2.addLayout(hbox221)
+        # hbox20.addWidget(self.textbox_channel)
+        # hbox20.addWidget(self.button_channelInc)
+        # gbox2.addLayout(hbox20)
+        # hbox221 = QHBoxLayout()
+        # hbox221.addWidget(self.textbox_normalisation)
+        # hbox221.addWidget(label_normalisation)
+        # gbox2.addLayout(hbox221)
         hbox21 = QHBoxLayout()
         hbox21.addWidget(self.button_snapshot)
         hbox21.addWidget(self.textbox_snapSteps)
@@ -1305,12 +1317,12 @@ class AppForm(QMainWindow):
         hbox22.addWidget(self.textbox_longsnapSteps)
         hbox22.addWidget(label_longsnapSteps)
         gbox2.addLayout(hbox22)
-        gbox2.addWidget(self.button_rmCustomThreshold)
-        hbox23 = QHBoxLayout()
-        hbox23.addWidget(self.button_readPulses)
-	hbox23.addWidget(self.textbox_seconds)
-	hbox23.addWidget(label_seconds)
-        gbox2.addLayout(hbox23)
+        # gbox2.addWidget(self.button_rmCustomThreshold)
+        # hbox23 = QHBoxLayout()
+        # hbox23.addWidget(self.button_readPulses)
+        # hbox23.addWidget(self.textbox_seconds)
+        # hbox23.addWidget(label_seconds)
+        # gbox2.addLayout(hbox23)
 
         gbox3 = QVBoxLayout()
         gbox3.addWidget(self.label_median)
@@ -1318,34 +1330,31 @@ class AppForm(QMainWindow):
         gbox3.addWidget(self.label_attenuation)
         gbox3.addWidget(self.label_frequency)
 
-	hbox25 = QHBoxLayout()
+        hbox25 = QHBoxLayout()
         hbox25.addWidget(self.textbox_phasethreshold) #sets phase threshold
         hbox25.addWidget(label_phasethreshold)
-        
-	gbox3.addLayout(hbox25)
+        gbox3.addLayout(hbox25)
 
-	
-	hbox24 = QHBoxLayout()
+        hbox24 = QHBoxLayout()
         hbox24.addWidget(self.button_contsnapshot)
         hbox24.addWidget(self.textbox_contsnapSteps)
         hbox24.addWidget(label_contsnapSteps)
         hbox24.addWidget(self.textbox_contsnapLoops) #to control number of loops in continuous shot
         hbox24.addWidget(label_contsnapLoops)
-        
-	hbox26 = QHBoxLayout()
-	hbox26.addWidget(self.textbox_pulsesavepath) #adding text box to input save path
-	hbox26.addWidget(label_pulsesavepath)
-        gbox0.addLayout(hbox26)
 
-	hbox27 = QHBoxLayout()
-	hbox27.addWidget(self.textbox_averagelength) #adding text box to input average size
-	hbox27.addWidget(label_averagelength)
+        hbox26 = QHBoxLayout()
+        hbox26.addWidget(self.textbox_pulsesavepath) #adding text box to input save path
+        hbox26.addWidget(label_pulsesavepath)
+        gbox0.addLayout(hbox26)
+        hbox27 = QHBoxLayout()
+        hbox27.addWidget(self.textbox_averagelength) #adding text box to input average size
+        hbox27.addWidget(label_averagelength)
         gbox0.addLayout(hbox27)
         	
 
-	gbox3.addLayout(hbox24)
+        gbox3.addLayout(hbox24)
         
-	hbox24 = QHBoxLayout()
+        hbox24 = QHBoxLayout()
         hbox24.addWidget(self.button_contsnapstop)
         gbox3.addLayout(hbox24)
         
