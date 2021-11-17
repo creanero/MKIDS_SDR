@@ -372,7 +372,8 @@ class AppForm(QMainWindow):
         steps = int(self.textbox_snapSteps.text())
         L = 2**10
         bin_data_phase = ''
-	bin_data_I = ''	
+	bin_data_I = ''
+	bin_data_Q = ''	
 
         for n in range(steps):
             self.roach.write_int('startSnap', 0)
@@ -386,11 +387,14 @@ class AppForm(QMainWindow):
 	for n in range(steps):
 	    #self.roach.write_int('startSnap', 0)
             self.roach.write_int('conv_phase_snapI_ctrl', 1)
-            self.roach.write_int('conv_phase_snapI_ctrl', 0)	
+	    self.roach.write_int('conv_phase_snapQ_ctrl', 1)
+            self.roach.write_int('conv_phase_snapI_ctrl', 0)
+	    self.roach.write_int('conv_phase_snapQ_ctrl', 0)	
 	    #self.roach.write_int('startSnap', 1)
 	    time.sleep(0.001)
 	    
 	    bin_data_I = bin_data_I + self.roach.read('conv_phase_snapI_bram', 4*L)
+	    bin_data_Q = bin_data_Q + self.roach.read('conv_phase_snapQ_bram', 4*L)
 	    #bin_data_I0 = bin_data_I0 + str(self.roach.read_uint('snapI0_bram'))
 	    #bin_data_I = bin_data_I + str(self.roach.read_int('conv_phase_snapI_bram'))
 	    #print('bin_data_I = ', bin_data_I0) 
@@ -406,99 +410,29 @@ class AppForm(QMainWindow):
 	print 'phase: ', phase
 	
 
-	Iraw0 = []
-	Iraw1 = []
-	Iraw2 = []
-	Iraw3 = []
-	
-	Iraw4 = []
-	Iraw5 = []
-	Iraw6 = []
-	Iraw7 = []
-	
-	Iraw8 = []
-	Iraw9 = []
-	Iraw10 = []
-	Iraw11 = []
-
-	Iraw12 = []
-	#Iraw13 = []
-	#Iraw14 = []
-	
+	Iraw = []
+	Qraw = []		
 	phaseraw = []
 	
 
         for m in range(steps*L):
-             
-	    Iraw0.append(struct.unpack('<i', bin_data_I[m:m+4])[0])
-	    Iraw1.append(struct.unpack('<i', bin_data_I[m+1:m+5])[0])
-	    Iraw2.append(struct.unpack('<i', bin_data_I[m+2:m+6])[0])
-	    Iraw3.append(struct.unpack('<i', bin_data_I[m+3:m+7])[0])
 
-	    Iraw4.append(struct.unpack('<i', bin_data_I[2*m:2*m+4])[0])
-	    Iraw5.append(struct.unpack('<i', bin_data_I[2*m+1:2*m+5])[0])
-	    Iraw6.append(struct.unpack('<i', bin_data_I[2*m+2:2*m+6])[0])
-	    Iraw7.append(struct.unpack('<i', bin_data_I[2*m+3:2*m+7])[0])
-	    
-	    Iraw8.append(struct.unpack('<i', bin_data_I[3*m:3*m+4])[0])
-	    Iraw9.append(struct.unpack('<i', bin_data_I[3*m+1:3*m+5])[0])
-	    Iraw10.append(struct.unpack('<i', bin_data_I[3*m+2:3*m+6])[0])
-	    Iraw11.append(struct.unpack('<i', bin_data_I[3*m+3:3*m+7])[0])
-	    
-	    Iraw12.append(struct.unpack('<i', bin_data_I[4*m:4*m+4])[0])
-	    #Iraw13.append(struct.unpack('>l', bin_data_I[4*m+1:4*m+5])[0])
-	    #Iraw14.append(struct.unpack('>l', bin_data_I[4*m+2:4*m+6])[0])
-	    
-	    	    
-
-	    phaseraw.append(struct.unpack('>h', bin_data_phase[m*4:m*4+2])[0]) 
+	    Iraw.append(struct.unpack('>h', bin_data_I[4*m+2:4*m+4])[0])
+	    Qraw.append(struct.unpack('>h', bin_data_Q[4*m+2:4*m+4])[0])
+            
+	    phaseraw.append(struct.unpack('>h', bin_data_phase[m*4:m*4+2])[0])
 
 
             #Iraw.append(struct.unpack('>h', bin_data_I[m*4+0:m*4+2])[0])
 	
-	Iraw0 = numpy.array(Iraw0)
-	Iraw1 = numpy.array(Iraw1)
-	Iraw2 = numpy.array(Iraw2)
-	Iraw3 = numpy.array(Iraw3)
-	
-	Iraw4 = numpy.array(Iraw4)
-	Iraw5 = numpy.array(Iraw5)
-	Iraw6 = numpy.array(Iraw6)
-	Iraw7 = numpy.array(Iraw7)
-	
-	Iraw8 = numpy.array(Iraw8)
-	Iraw9 = numpy.array(Iraw9)
-	Iraw10 = numpy.array(Iraw10)
-	Iraw11 = numpy.array(Iraw11)
-	
-	Iraw12 = numpy.array(Iraw12)
-	#Iraw13 = numpy.array(Iraw13)
-	#Iraw14 = numpy.array(Iraw14)
-	
+	Iraw = numpy.array(Iraw)
+	Qraw = numpy.array(Qraw)
 	
 	phaseraw = numpy.array(phaseraw)	
 
 
-	print('Iraw0 = ', Iraw0)	
-	print('Iraw1 = ', Iraw1)	
-	print('Iraw2 = ', Iraw2)	
-	print('Iraw3 = ', Iraw3)
-	
-	print('Iraw4 = ', Iraw4)	
-	print('Iraw5 = ', Iraw5)	
-	print('Iraw6 = ', Iraw6)	
-	print('Iraw7 = ', Iraw7)
-	
-	print('Iraw8 = ', Iraw8)	
-	print('Iraw9 = ', Iraw9)	
-	print('Iraw10 = ', Iraw10)	
-	print('Iraw11 = ', Iraw11)
-	
-	print('Iraw12 = ', Iraw12)	
-	#print('Iraw13 = ', Iraw13)	
-	#print('Iraw14 = ', Iraw14)	
-	
-	
+	print('Iraw = ', Iraw)	
+	print('Qraw = ', Qraw)	
 	
 	print('phaseraw = ', phaseraw)		
 	
@@ -512,8 +446,8 @@ class AppForm(QMainWindow):
 
 
         if steps <= 1000:
-       	    self.axes0.plot(phaseraw, 'b.', markersize=1) #changed to plot I0 versus time
-	    self.axes1.plot(Iraw12, 'b.', markersize=1) #changed to plot I0 versus time
+       	    self.axes0.plot(Iraw, 'b.', markersize=1) #changed to plot I0 versus time
+	    self.axes1.plot(Qraw, 'b.', markersize=1) #changed to plot I0 versus time
 	    
 	print 'Phase length = ', len(phase)
 
