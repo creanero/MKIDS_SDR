@@ -30,7 +30,7 @@ class AppForm(QMainWindow):
         self.create_main_frame()
         self.create_status_bar()
         self.dacStatus = 'off'
-	self.contsnapStatus = 'off'
+        self.contsnapStatus = 'off'
         self.dramStatus = 'off'
         self.tapStatus = 'off'
         self.socketStatus = 'off'
