@@ -700,8 +700,9 @@ class AppForm(QtG.QMainWindow):
         #    print 'LO normal operation.'
         loSpan = float(self.textbox_loSpan.value())
         # df = float(self.textbox_df.text())
-        df = float(self.textbox_df.value())
-        steps = int(loSpan/df)
+        # df = float(self.textbox_df.value())
+        steps = self.spinbox_steps.value() # int(loSpan/df)
+        df = loSpan/steps
         #print "LO steps: ", steps
         lo_freqs = [f_base+i*df-0.5*steps*df for i in range(steps)]
         
@@ -1161,7 +1162,7 @@ class AppForm(QtG.QMainWindow):
         # keeping old text version for rollback if needed
         # self.textbox_loSpan = QtG.QLineEdit('0.5e6')
         self.textbox_loSpan = QtG.QDoubleSpinBox ()
-        self.textbox_loSpan.setRange(-1e6,1e6)
+        self.textbox_loSpan.setRange(0,1e6)
         self.textbox_loSpan.setSingleStep(1e3)
         self.textbox_loSpan.setValue(0.5e6)
         self.textbox_loSpan.setSuffix('Hz')
@@ -1169,18 +1170,27 @@ class AppForm(QtG.QMainWindow):
         self.textbox_loSpan.setMaximumWidth(200) # retain this even for text
         label_loSpan = QtG.QLabel('LO Sweep Span:')
 
-        # Sweep resolution
-        # keeping old text version for rollback if needed
-        # self.textbox_df = QtG.QLineEdit('1e4')
-        self.textbox_df = QtG.QDoubleSpinBox ()
-        self.textbox_df.setRange(-1e6,1e6)
-        self.textbox_df.setSingleStep(1e2)
-        self.textbox_df.setValue(1e4)
-        self.textbox_df.setSuffix('Hz')
-        self.textbox_df.setDecimals(0)
-        self.textbox_df.setMaximumWidth(200) # retain this even for text
-        label_df = QtG.QLabel('Sweep Resolution (df) (Hz):')
-        
+        # # Sweep resolution
+        # # keeping old text version for rollback if needed
+        # # self.textbox_df = QtG.QLineEdit('1e4')
+        # self.textbox_df = QtG.QDoubleSpinBox ()
+        # self.textbox_df.setRange(-1e6,1e6)
+        # self.textbox_df.setSingleStep(1e2)
+        # self.textbox_df.setValue(1e4)
+        # self.textbox_df.setSuffix('Hz')
+        # self.textbox_df.setDecimals(0)
+        # self.textbox_df.setMaximumWidth(200) # retain this even for text
+        # label_df = QtG.QLabel('Sweep Resolution (df) (Hz):')
+
+        # Sweep resolution as steps
+        self.spinbox_steps = QtG.QSpinBox()
+        self.spinbox_steps.setRange(1, 1e6)
+        self.spinbox_steps.setSingleStep(1)
+        self.spinbox_steps.setValue(1000)
+        self.spinbox_steps.setSuffix(' Steps')
+        self.spinbox_steps.setMaximumWidth(200)  # retain this even for text
+        label_steps = QtG.QLabel('Number of steps for sweep:')
+
         # Frequency span shift
         # A span shift of 0.75 shifts 75% of sweep span to the lower portion of the range.
         # I don't see this being used anywhere - OC
@@ -1203,13 +1213,13 @@ class AppForm(QtG.QMainWindow):
         # Input attenuation.
         # self.textbox_atten_in = QtG.QLineEdit('5')
         self.textbox_atten_in = QtG.QDoubleSpinBox ()
-        self.textbox_atten_in.setRange(-100,100)
+        self.textbox_atten_in.setRange(0,100)
         self.textbox_atten_in.setSingleStep(1e-1)
         self.textbox_atten_in.setValue(5)
         self.textbox_atten_in.setSuffix('dB')
         self.textbox_atten_in.setDecimals(1)
         self.textbox_atten_in.setMaximumWidth(150) # retain this even for text
-        label_atten_in = QtG.QLabel('Input atten.:')
+        label_atten_in = QtG.QLabel('in-front-of-ADC atten.:')
 
         # # offset in lut
         # self.textbox_offset = QtG.QLineEdit('0')
@@ -1231,13 +1241,13 @@ class AppForm(QtG.QMainWindow):
         # pushed to a user-level decision on the front end. - OC
         # self.textbox_powerSweepStart = QtG.QLineEdit('0')
         self.textbox_powerSweepStart = QtG.QDoubleSpinBox ()
-        self.textbox_powerSweepStart.setRange(-100,100)
+        self.textbox_powerSweepStart.setRange(0,100)
         self.textbox_powerSweepStart.setSingleStep(1e-1)
         self.textbox_powerSweepStart.setValue(0)
         self.textbox_powerSweepStart.setSuffix('dB')
         self.textbox_powerSweepStart.setDecimals(1)
         self.textbox_powerSweepStart.setMaximumWidth(150)
-        label_powerSweepStart = QtG.QLabel('Output atten.:')
+        label_powerSweepStart = QtG.QLabel('After-DAC atten.:')
         #self.textbox_powerSweepStop = QtG.QLineEdit('0')
         #self.textbox_powerSweepStop.setMaximumWidth(50)
         #label_powerSweepStop = QtG.QLabel('Stop atten:')
@@ -1276,13 +1286,13 @@ class AppForm(QtG.QMainWindow):
         # self.connect(self.button_loadFreqsAttens, QtC.SIGNAL('clicked()'), self.loadFreqsAttens)
         
         # Rotate IQ loops.
-        self.button_rotateLoops = QtG.QPushButton("(6)Rot. Loops")
-        self.button_rotateLoops.setMaximumWidth(150)
+        self.button_rotateLoops = QtG.QPushButton("(6) Rotate Loops")
+        self.button_rotateLoops.setMaximumWidth(250)
         self.connect(self.button_rotateLoops, QtC.SIGNAL('clicked()'), self.rotateLoops)        
 
         # Translate IQ loops.
-        self.button_translateLoops = QtG.QPushButton("(7)Trans. Loops")
-        self.button_translateLoops.setMaximumWidth(150)
+        self.button_translateLoops = QtG.QPushButton("(7) Re-define loop center")
+        self.button_translateLoops.setMaximumWidth(250)
         self.connect(self.button_translateLoops, QtC.SIGNAL('clicked()'), self.translateLoops)
         
         # DAC start button.
@@ -1431,8 +1441,8 @@ class AppForm(QtG.QMainWindow):
         #hbox20.addWidget(self.textbox_powerSweepStop)
         gbox2.addLayout(hbox20)
         hbox220 = QtG.QHBoxLayout()
-        hbox220.addWidget(label_df)
-        hbox220.addWidget(self.textbox_df)
+        hbox220.addWidget(label_steps)
+        hbox220.addWidget(self.spinbox_steps)
         gbox2.addLayout(hbox220)
         hbox21 = QtG.QHBoxLayout()
         hbox21.addWidget(label_loSpan)

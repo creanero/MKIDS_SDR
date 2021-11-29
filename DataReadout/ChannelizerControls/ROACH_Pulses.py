@@ -272,7 +272,7 @@ class AppForm(QMainWindow):
             if threshold < -25736:
                 threshold = -25736
             self.thresholds[ch] = scale_to_angle*threshold
-            self.medians[ch] = scale_to_abngle*med
+            self.medians[ch] = scale_to_angle*med
 
             if self.customThresholds[ch] != 360.0:
                 threshold = self.customThresholds[ch]/scale_to_angle
@@ -825,7 +825,7 @@ class AppForm(QMainWindow):
         peaksCh = numpy.array(peaks[ch],dtype = 'float')
         peaksCh = peaksCh/2.0**9-4.0
         peaksCh = peaksCh*180.0/numpy.pi
-        peaksSubBase = peaksCh-basedf
+        peaksSubBase = peaksCh-base
         print 'count rate:',len(base)
         print 'mean baseline:',numpy.mean(base)
         print 'median baseline:',numpy.median(base) 
