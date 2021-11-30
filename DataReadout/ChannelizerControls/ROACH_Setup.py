@@ -1138,7 +1138,7 @@ class AppForm(QtG.QMainWindow):
         # keeping old text version for rollback if needed
         # self.textbox_loFreq = QtG.QLineEdit('4.75e9')
         self.textbox_loFreq = QtG.QDoubleSpinBox ()
-        self.textbox_loFreq.setRange(4e9,5e9)
+        self.textbox_loFreq.setRange(2e9,6.8e9)
         self.textbox_loFreq.setSingleStep(1e6)
         self.textbox_loFreq.setMaximumWidth(300) # retain this even for text
         self.textbox_loFreq.setValue(4.75e9)
@@ -1213,7 +1213,7 @@ class AppForm(QtG.QMainWindow):
         # Input attenuation.
         # self.textbox_atten_in = QtG.QLineEdit('5')
         self.textbox_atten_in = QtG.QDoubleSpinBox ()
-        self.textbox_atten_in.setRange(0,100)
+        self.textbox_atten_in.setRange(-26,5)
         self.textbox_atten_in.setSingleStep(1e-1)
         self.textbox_atten_in.setValue(5)
         self.textbox_atten_in.setSuffix('dB')
