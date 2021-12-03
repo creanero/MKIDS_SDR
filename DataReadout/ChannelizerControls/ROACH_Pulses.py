@@ -46,9 +46,12 @@ class AppForm(QMainWindow):
         self.customResonators=numpy.array([[0.0,-1]]*256)   #customResonator[ch]=[freq,atten]
         
     def openClient(self):
-        self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
+	self.status_text.setText('connecting...') 
+	print 'connecting...'       
+	self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
+	time.sleep(2)
+	print 'programming roach...'
         self.roach.progdev('chan_snap_v3_2012_Oct_30_1216.bof')
-        time.sleep(2)
         self.status_text.setText('connection established')
         print 'Connected to ',self.textbox_roachIP.text()
         self.button_openClient.setDisabled(True)
@@ -411,6 +414,7 @@ class AppForm(QMainWindow):
 
         self.canvas.draw()
         print "snapshot taken"
+	print("Bins register = ", self.roach.read_int('bins'))
 
     def longsnapshot(self):        
         self.displayResonatorProperties()

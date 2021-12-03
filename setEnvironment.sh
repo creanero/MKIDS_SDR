@@ -14,7 +14,7 @@ export FILTER_WHEEL_PATH=$SCRIPT_ROOT/DataReadout/ReadoutControls/bin/filter.txt
 # A file to store the current state of the calibration mirror arm
 export MIRROR_ANGLE_PATH=$SCRIPT_ROOT/DataReadout/ReadoutControls/bin/mirror.txt
 #The filename of the current compiled firmware.  Should be stored in SDR/DataReadout/ChannelizerControls/boffiles/
-export BOFFILE=snap_raw_iq_0303_2021_Mar_03_1222.bof
+export BOFFILE=snap_raw_iq_20211202_2021_Dec_02_1438.bof
 #The git commit of the model file for the boffile above
 export FIRMWARE_COMMIT=75f17828098b0d3c57acf07f9b3188b39794f666
 

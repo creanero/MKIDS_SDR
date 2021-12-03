@@ -393,11 +393,24 @@ class AppForm(QMainWindow):
 	    #self.roach.write_int('startSnap', 1)
 	    time.sleep(0.001)
 	    
-	    bin_data_I = bin_data_I + self.roach.read('conv_phase_snapI_bram', 4*L)
+	    bin_data_I = bin_data_I + self.roach.read('conv_phase_snapI_bram', 4*L) 
+	    #Looking at 32 bit numbers coded in signed 2s c0mplement hex numbers 
+	    #output are 4 2 digit hex numbers, the first 2 represent the data, number 3 is 00, number 4 is 0F (= 15)
+
+
+
+
+ 
 	    bin_data_Q = bin_data_Q + self.roach.read('conv_phase_snapQ_bram', 4*L)
+	    testI = self.roach.read('conv_phase_snapI_bram', 4*L)
+	    testQ = self.roach.read('conv_phase_snapQ_bram', 4*L)
 	    #bin_data_I0 = bin_data_I0 + str(self.roach.read_uint('snapI0_bram'))
 	    #bin_data_I = bin_data_I + str(self.roach.read_int('conv_phase_snapI_bram'))
-	    #print('bin_data_I = ', bin_data_I0) 
+	    print "Type testI = ", len(testI)
+	    print "n = ", n
+	    print "testI = ", testI
+	    print "testQ = ", testQ
+	    print 
 
 	
     
@@ -418,9 +431,12 @@ class AppForm(QMainWindow):
         for m in range(steps*L):
 
 	    Iraw.append(struct.unpack('>h', bin_data_I[4*m+2:4*m+4])[0])
+	    #Iraw.append(struct.unpack('>h', bin_data_I[4*m+0:4*m+2])[0])
 	    Qraw.append(struct.unpack('>h', bin_data_Q[4*m+2:4*m+4])[0])
+	    #Qraw.append(struct.unpack('>h', bin_data_Q[4*m+0:4*m+2])[0])
             
-	    phaseraw.append(struct.unpack('>h', bin_data_phase[m*4:m*4+2])[0])
+	    phaseraw.append(struct.unpack('>h', bin_data_phase[4*m+2:4*m+4])[0])
+	    #phaseraw.append(struct.unpack('>h', bin_data_phase[4*m+0:4*m+2])[0])
 
 
             #Iraw.append(struct.unpack('>h', bin_data_I[m*4+0:m*4+2])[0])
@@ -447,7 +463,7 @@ class AppForm(QMainWindow):
 
         if steps <= 1000:
        	    self.axes0.plot(Iraw, 'b.', markersize=1) #changed to plot I0 versus time
-	    self.axes1.plot(Qraw, 'b.', markersize=1) #changed to plot I0 versus time
+	    self.axes1.plot(phase, 'b.', markersize=1) #changed to plot I0 versus time
 	    
 	print 'Phase length = ', len(phase)
 
