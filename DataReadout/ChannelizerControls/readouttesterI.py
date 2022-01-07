@@ -22,7 +22,8 @@ L = 16
 
 bin_data_I = ''
 
-ch_we = 29
+ch_we = 27
+
 
 roach.write_int('conv_phase_ch_we_IQ', ch_we)
 	
@@ -33,13 +34,12 @@ roach.write_int('conv_phase_startSnapI', 1)
 
 bin_data_I = roach.read('conv_phase_snapI_bram', 4*L)
 
-
 print("bin_data_I = ", bin_data_I)
 
 print 
 
 Iraw = []
-	#Qraw = []
+	
 for m in range(L):
 	Iraw.append(struct.unpack('>h', bin_data_I[4*m+2:4*m+4])[0])
 		

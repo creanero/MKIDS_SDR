@@ -1109,7 +1109,7 @@ class AppForm(QMainWindow):
         label_DACfreqs = QLabel('DAC Freqs:')
     
         # File with frequencies/attens
-        self.textbox_freqFile = QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file 
+        self.textbox_freqFile = QLineEdit('/home/labuser/MKIDS/MKIDS_SDR/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file 
         self.textbox_freqFile.setMaximumWidth(200) 
 
         # Import freqs from file.

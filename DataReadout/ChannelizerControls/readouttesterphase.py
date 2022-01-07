@@ -19,7 +19,7 @@ time.sleep(2)
 phaseraw = []
 
 ch_we = 0
-roach.write_int('ch_we', ch_we)
+roach.write_int('conv_phase_ch_we_IQ', ch_we)
 
 roach.write_int('startSnap', 0)
 roach.write_int('snapPhase_ctrl', 0)
