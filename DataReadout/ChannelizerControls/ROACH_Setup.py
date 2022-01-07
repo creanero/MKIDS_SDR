@@ -822,7 +822,7 @@ class AppForm(QtG.QMainWindow):
         self.axes0.clear()
         self.axes1.clear()
         self.axes2.clear()
-        self.axes3.clear()
+        # self.axes3.clear()
         try:
             self.axes0.plot(f_span, (I**2 + Q**2)**.5, '.-')
             self.axes0.set_xlabel('Freq [Hz]')
@@ -838,10 +838,10 @@ class AppForm(QtG.QMainWindow):
         self.axes2.set_xlabel('Freq [Hz]')
         self.axes2.set_ylabel('Transmission (Phase)')
 
-        self.axes3.plot(f_span, I, '.-')
-        self.axes3.plot(f_span, Q, '.-')
-        self.axes3.set_xlabel('Freq [Hz]')
-        self.axes3.set_ylabel('I (green) Q (blue)')
+        # self.axes3.plot(f_span, I, '.-')
+        # self.axes3.plot(f_span, Q, '.-')
+        # self.axes3.set_xlabel('Freq [Hz]')
+        # self.axes3.set_ylabel('I (green) Q (blue)')
 
         #saveDir = str('/home/cbracken/Desktop/SDR-master/DataReadout/LO_Sweep_Data') #saves data here
         #if saveDir != '':
@@ -956,7 +956,7 @@ class AppForm(QtG.QMainWindow):
         self.axes0.clear()
         self.axes1.clear()
         self.axes2.clear()
-        self.axes3.clear()
+        # self.axes3.clear()
 
         self.axes0.plot(self.f_span[ch], (self.I[ch]**2 + self.Q[ch]**2)**.5, '.-')
         self.axes0.plot(self.f_span[ch][0:-1], self.IQ_vels[ch],'g.-')
@@ -977,10 +977,10 @@ class AppForm(QtG.QMainWindow):
         # if self.last_IQ_vels != None and self.showPrevious:
         #     self.axes2.plot(self.last_f_span[ch][0:-1], self.last_IQ_vels[ch],'c.-',alpha=0.5)
 
-        self.axes3.plot(self.f_span[ch], self.I[ch], 'g.-')
-        self.axes3.plot(self.f_span[ch], self.Q[ch], 'b.-')
-        self.axes3.set_xlabel('Freq (Hz)')
-        self.axes3.set_ylabel('Baseband Amplitude')
+        # self.axes3.plot(self.f_span[ch], self.I[ch], 'g.-')
+        # self.axes3.plot(self.f_span[ch], self.Q[ch], 'b.-')
+        # self.axes3.set_xlabel('Freq (Hz)')
+        # self.axes3.set_ylabel('Baseband Amplitude')
         # if self.last_I != None and self.showPrevious:
         #     self.axes3.plot(self.last_I[ch], self.last_Q[ch], 'c.-', self.last_iq_centers.real[ch], self.last_iq_centers.imag[ch], '.', self.last_I_on_res[ch], self.last_Q_on_res[ch], '.',alpha=0.5)
 
@@ -1110,9 +1110,9 @@ class AppForm(QtG.QMainWindow):
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)
         self.axes0 = self.fig.add_subplot(221)
-        self.axes1 = self.fig.add_subplot(222)
+        self.axes1 = self.fig.add_subplot(122)
         self.axes2 = self.fig.add_subplot(223)
-        self.axes3 = self.fig.add_subplot(224)
+        # self.axes3 = self.fig.add_subplot(224)
         
         cid=self.canvas.mpl_connect('button_press_event', self.changeCenter)
         
