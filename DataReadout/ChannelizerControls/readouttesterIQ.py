@@ -21,7 +21,7 @@ time.sleep(2)
 
 Icentre = 0
 Qcentre = 0
-L = 32768
+L = 16
 bin_data_I = ''
 bin_data_Q = ''
 bin_data_Phase = ''
@@ -32,7 +32,7 @@ ch_we_Phase = 43
 
 
 roach.write_int('conv_phase_ch_we_IQ', ch_we)
-#roach.write_int('conv_phase_ch_we_Phase', ch_we_Phase)
+roach.write_int('conv_phase_ch_we_Phase', ch_we_Phase)
 
 
 starttime = time.time()
@@ -42,20 +42,20 @@ for n in range(steps):
 
 	roach.write_int('conv_phase_startSnapI', 0)
 	roach.write_int('conv_phase_startSnapQ', 0)
-	#roach.write_int('conv_phase_startSnapPhase', 0)
+	roach.write_int('conv_phase_startSnapPhase', 0)
 	roach.write_int('conv_phase_snapI_ctrl', 1)
 	roach.write_int('conv_phase_snapQ_ctrl', 1)
-	#roach.write_int('conv_phase_snapPhase_ctrl', 1)
+	roach.write_int('conv_phase_snapPhase_ctrl', 1)
 	roach.write_int('conv_phase_snapI_ctrl', 0)
 	roach.write_int('conv_phase_snapQ_ctrl', 0)
-	#roach.write_int('conv_phase_snapPhase_ctrl', 0)
+	roach.write_int('conv_phase_snapPhase_ctrl', 0)
 	roach.write_int('conv_phase_startSnapI', 1)
 	roach.write_int('conv_phase_startSnapQ', 1)
-	#roach.write_int('conv_phase_startSnapPhase', 1)
+	roach.write_int('conv_phase_startSnapPhase', 1)
 
 	bin_data_I = bin_data_I + roach.read('conv_phase_snapI_bram', 4*L)
 	bin_data_Q = bin_data_Q + roach.read('conv_phase_snapQ_bram', 4*L)
-	#bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L)
+	bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L)
 
 #print("bin_data_I = ", bin_data_I)
 #print("bin_data_Q = ", bin_data_Q)
@@ -64,14 +64,14 @@ print
 
 Iraw = []
 Qraw = []
-#phaseraw = []
+phaseraw = []
 #Inew = []
 #Qnew = []
 	
 for m in range(steps*L):
 	Iraw.append(struct.unpack('>h', bin_data_I[4*m+2:4*m+4])[0])
 	Qraw.append(struct.unpack('>h', bin_data_Q[4*m+2:4*m+4])[0])	
-	#phaseraw.append(struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0])	
+	phaseraw.append(struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0])	
 
 	#print"phaseraw = ", struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0]
 	#Inew.append(Iraw[m] - Icentre)
@@ -80,12 +80,12 @@ for m in range(steps*L):
 
 
 phase_cpu = 360 * (np.arctan2(Qraw, Iraw)) / (2*np.pi)
-#phase_fpga = np.array(phaseraw)*360./2**16*4/np.pi
+phase_fpga = np.array(phaseraw)*360./2**16*4/np.pi
 
 #print "Phase = ", phase
 
 for k in range(steps*L):
-	print "I = ", Iraw[k], "Q = ", Qraw[k], "	phase = ", round(phase_cpu[k], 2) #, " degrees", "	phase fpga = ", phase_fpga[k], " degrees" 
+	print "I = ", Iraw[k], "Q = ", Qraw[k], "	phase_cpu = ", round(phase_cpu[k], 2) , " degrees", "	phase fpga = ", round(phase_fpga[k], 2), " degrees" 
 	
 print "done"
 #print("------%s seconds-----" % (time.time() - starttime))

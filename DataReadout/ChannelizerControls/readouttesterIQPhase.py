@@ -32,6 +32,7 @@ for ch_we in range(256):
 	#time.sleep(0.5)
 	print"ch_we = ", ch_we, 
 	roach.write_int('conv_phase_ch_we_IQ', ch_we)
+	roach.write_int('conv_phase_ch_we_Phase', ch_we)
 
 
 	steps = 1
@@ -68,7 +69,7 @@ for ch_we in range(256):
 		Qraw.append(struct.unpack('>h', bin_data_Q[4*m+2:4*m+4])[0])	
 		phaseraw.append(struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0])	
 
-		print"phaseraw = ", struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0]
+		print"Iraw = ", struct.unpack('>h', bin_data_I[4*m+2:4*m+4])[0], "Qraw = ", struct.unpack('>h', bin_data_Q[4*m+2:4*m+4])[0], "phaseraw = ", struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0]
 		
 	 
 
