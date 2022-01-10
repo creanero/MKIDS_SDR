@@ -1186,7 +1186,7 @@ class AppForm(QtG.QMainWindow):
         self.spinbox_steps = QtG.QSpinBox()
         self.spinbox_steps.setRange(1, 1e6)
         self.spinbox_steps.setSingleStep(1)
-        self.spinbox_steps.setValue(1000)
+        self.spinbox_steps.setValue(100)
         self.spinbox_steps.setSuffix(' Steps')
         self.spinbox_steps.setMaximumWidth(200)  # retain this even for text
         label_steps = QtG.QLabel('Number of steps for sweep:')
