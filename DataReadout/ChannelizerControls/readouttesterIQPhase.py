@@ -26,8 +26,7 @@ L = 16
 
 
 for ch_we in range(256): 
-	bin_data_I = ''
-	bin_data_Q = ''
+	bin_data_IQ = ''
 	bin_data_Phase = ''
 	#time.sleep(0.5)
 	print"ch_we = ", ch_we, 
@@ -38,21 +37,16 @@ for ch_we in range(256):
 	steps = 1
 	for n in range(steps):
 
-		roach.write_int('conv_phase_startSnapI', 0)
-		roach.write_int('conv_phase_startSnapQ', 0)
+		roach.write_int('conv_phase_startSnapIQ', 0)
 		roach.write_int('conv_phase_startSnapPhase', 0)
-		roach.write_int('conv_phase_snapI_ctrl', 1)
-		roach.write_int('conv_phase_snapQ_ctrl', 1)
+		roach.write_int('conv_phase_snapIQ_ctrl', 1)
 		roach.write_int('conv_phase_snapPhase_ctrl', 1)
-		roach.write_int('conv_phase_snapI_ctrl', 0)
-		roach.write_int('conv_phase_snapQ_ctrl', 0)
+		roach.write_int('conv_phase_snapIQ_ctrl', 0)
 		roach.write_int('conv_phase_snapPhase_ctrl', 0)
-		roach.write_int('conv_phase_startSnapI', 1)
-		roach.write_int('conv_phase_startSnapQ', 1)
+		roach.write_int('conv_phase_startSnapIQ', 1)
 		roach.write_int('conv_phase_startSnapPhase', 1)
 
-		bin_data_I = bin_data_I + roach.read('conv_phase_snapI_bram', 4*L)
-		bin_data_Q = bin_data_Q + roach.read('conv_phase_snapQ_bram', 4*L)
+		bin_data_IQ = bin_data_IQ + roach.read('conv_phase_snapIQ_bram', 4*L)
 		bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L)
 
 	#print("bin_data_I = ", bin_data_I)
@@ -60,16 +54,14 @@ for ch_we in range(256):
 
 	print 
 
-	Iraw = []
-	Qraw = []
+	IQraw = []
 	phaseraw = []
 	
 	for m in range(steps*L):
-		Iraw.append(struct.unpack('>h', bin_data_I[4*m+2:4*m+4])[0])
-		Qraw.append(struct.unpack('>h', bin_data_Q[4*m+2:4*m+4])[0])	
+		IQraw.append(struct.unpack('>h', bin_data_IQ[4*m+2:4*m+4])[0])
 		phaseraw.append(struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0])	
 
-		print"Iraw = ", struct.unpack('>h', bin_data_I[4*m+2:4*m+4])[0], "Qraw = ", struct.unpack('>h', bin_data_Q[4*m+2:4*m+4])[0], "phaseraw = ", struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0]
+		print"IQraw = ", struct.unpack('>h', bin_data_IQ[4*m+2:4*m+4])[0], "phaseraw = ", struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0]
 		
 	 
 

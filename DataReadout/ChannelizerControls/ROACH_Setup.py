@@ -93,7 +93,7 @@ class AppForm(QtG.QMainWindow):
         self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
 	time.sleep(2)
 	print 'programming roach...'
-	self.roach.progdev('raw_iq_fix_phase_2022_Jan_06_1741.bof') 
+	self.roach.progdev('raw_iq_combined_2022_Jan_11_1456.bof') 
 	# 12/12/2021: snap_raw_iq_20211204_2021_Dec_05_1816.bof
 	# 'chan_512_2012_Jul_30_1754.bof' original boffile. 
 	#Last working: chan_snap_v3_2012_Oct_30_1216.bof
