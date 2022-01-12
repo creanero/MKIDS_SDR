@@ -1583,6 +1583,7 @@ class AppForm(QtG.QMainWindow):
         IQ_data=pd.DataFrame()
         IQ_data["I"]=pd.Series(self.I[0])
         IQ_data["Q"]=pd.Series(self.Q[0])
+        IQ_data=IQ_data.to_dict(orient='list')
         print(IQ_data)
 
 
