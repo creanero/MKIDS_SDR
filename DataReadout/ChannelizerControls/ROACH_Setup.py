@@ -1581,11 +1581,6 @@ class AppForm(QtG.QMainWindow):
             print ("creating empty array")
             self.Q = np.array([[0.0]])
 
-        IQ_data=pd.DataFrame()
-        IQ_data["I"]=pd.Series(self.I[0])
-        IQ_data["Q"]=pd.Series(self.Q[0])
-        IQ_data=IQ_data.to_dict(orient='list')
-
         # Creates the dictionary to hold the pulses with some demo header data
         pulse_dict = {'name': 'Demo pulses', 'purpose': 'This is a demo pulse to show how JSON files work'}
 
@@ -1599,7 +1594,17 @@ class AppForm(QtG.QMainWindow):
         # put this first due to the LIFO way JSON is written
         pulse_dict['pulses'] = []
 
-        append_pulse(pulse_dict, IQ_data, pulseID=1)
+        #temporarily hard coded to produce a 0
+        for ch in range(1):
+
+            IQ_data=pd.DataFrame()
+            IQ_data["I"]=pd.Series(self.I[ch])
+            IQ_data["Q"]=pd.Series(self.Q[ch])
+            IQ_data=IQ_data.to_dict(orient='list')
+
+
+
+            append_pulse(pulse_dict, IQ_data, pulseID=ch)
 
         print(pulse_dict)
 
