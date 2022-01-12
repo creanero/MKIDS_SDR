@@ -1567,8 +1567,8 @@ class AppForm(QtG.QMainWindow):
     def save_IQ_to_json(self):
         # this function takes the I and Q values from the object and saves them to a JSOn format
         print("running save IQ to JSON")
-        print(self.I)
-        print(self.Q)
+        print(type(self.I))
+        print(type(self.Q))
         pass
 
 def main():
