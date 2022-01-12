@@ -1581,7 +1581,7 @@ class AppForm(QtG.QMainWindow):
         print("typeof(Q) =",type(self.Q))
         print("Q=",self.Q)
         IQ_data=pd.DataFrame()
-        IQ_data["Q"]=pd.Series(self.Q)
+        IQ_data["Q"]=pd.Series(self.Q[0])
         print(IQ_data)
 
 
