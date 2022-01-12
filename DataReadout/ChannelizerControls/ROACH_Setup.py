@@ -17,6 +17,9 @@ import pandas as pd
 from tables import *
 from lib import iqsweep
 
+import json
+from datetime import datetime
+
 
 #Things to update:
 #DONE...make filename_NEW.txt only hold information for channel that is changed
@@ -1573,19 +1576,46 @@ class AppForm(QtG.QMainWindow):
         if self.I is None:
             print ("creating empty array")
             self.I = np.array([[0.0]])
-        print("typeof(I) =",type(self.I))
-        print("I=",self.I)
+
         if self.Q is None:
             print ("creating empty array")
             self.Q = np.array([[0.0]])
-        print("typeof(Q) =",type(self.Q))
-        print("Q=",self.Q)
+
         IQ_data=pd.DataFrame()
         IQ_data["I"]=pd.Series(self.I[0])
         IQ_data["Q"]=pd.Series(self.Q[0])
         IQ_data=IQ_data.to_dict(orient='list')
-        print(IQ_data)
 
+        # Creates the dictionary to hold the pulses with some demo header data
+        pulse_dict = {'name': 'Demo pulses', 'purpose': 'This is a demo pulse to show how JSON files work'}
+
+        # Creates a timestamp for the overall data
+        timestamp_format = '%Y%m%d%H%M%S'
+        timestamp = datetime.now().strftime(timestamp_format)
+        pulse_dict['timestamp'] = timestamp
+        pulse_dict['timestamp_format'] = timestamp_format
+
+        # Creates a list to hold the pulses inside the dictionary
+        # put this first due to the LIFO way JSON is written
+        pulse_dict['pulses'] = []
+
+        append_pulse(pulse_dict, IQ_data, pulseID=1)
+
+        print(pulse_dict)
+
+
+
+def append_pulse(pulse_dict,
+                 IQ_data,
+                 timestamp_format = '%Y%m%d%H%M%S%f', timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f'), pulseID=0):
+    # appends the demo pulse to the list of pulses
+    pulse_dict['pulses'].append(
+        {
+        'pulseID': pulseID,
+        'timestamp': timestamp,
+        'timestamp_format': timestamp_format,
+        'IQ_data': IQ_data
+        })
 
 def main():
     app = QtG.QApplication(sys.argv)
