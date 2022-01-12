@@ -1580,7 +1580,8 @@ class AppForm(QtG.QMainWindow):
             self.Q = np.array([0.0])
         print("typeof(Q) =",type(self.Q))
         print("Q=",self.Q)
-        IQ_data=pd.DataFrame({'I':self.I.tolist(),"Q":self.Q.tolist()})
+        IQ_data=pd.DataFrame({'I':self.I})
+        IQ_data["Q"]=self.Q
         print(IQ_data)
 
 
