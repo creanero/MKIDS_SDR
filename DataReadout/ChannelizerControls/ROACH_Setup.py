@@ -1,3 +1,4 @@
+import numpy as np
 import sys, os, random, math, array, fractions
 
 #from PyQt4.QtCore import *  #using import * was casuing errors with hex() function   
@@ -11,6 +12,8 @@ import matplotlib, corr, time, struct, numpy
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+
+import pandas as pd
 from tables import *
 from lib import iqsweep
 
@@ -1567,9 +1570,19 @@ class AppForm(QtG.QMainWindow):
     def save_IQ_to_json(self):
         # this function takes the I and Q values from the object and saves them to a JSOn format
         print("running save IQ to JSON")
-        print(type(self.I))
-        print(type(self.Q))
-        pass
+        if self.I is None:
+            print ("creating empty array")
+            self.I = np.array([0.0])
+            print("typeof(I) =",type(self.I))
+            print("I=",self.I)
+        if self.Q is None:
+            print ("creating empty array")
+            self.Q = np.array([0.0])
+            print("typeof(Q) =",type(self.Q))
+            print("Q=",self.Q)
+        IQ_data=pd.DataFrame({'I':self.I,"Q":self.Q})
+        print(IQ_data)
+
 
 def main():
     app = QtG.QApplication(sys.argv)
