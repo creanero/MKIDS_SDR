@@ -1294,7 +1294,13 @@ class AppForm(QtG.QMainWindow):
         self.button_translateLoops = QtG.QPushButton("(7) Re-define loop center")
         self.button_translateLoops.setMaximumWidth(250)
         self.connect(self.button_translateLoops, QtC.SIGNAL('clicked()'), self.translateLoops)
-        
+
+        # Save IQ values to JSON.
+        # self.save_IQ_to_json()
+        self.button_save_IQ_to_json = QtG.QPushButton("(8) Save IQ values to JSON")
+        self.button_save_IQ_to_json.setMaximumWidth(250)
+        self.connect(self.button_save_IQ_to_json, QtC.SIGNAL('clicked()'), self.save_IQ_to_json)
+
         # DAC start button.
         self.button_startDAC = QtG.QPushButton("(4)Start DAC")
         self.button_startDAC.setMaximumWidth(200)
@@ -1474,6 +1480,10 @@ class AppForm(QtG.QMainWindow):
         hbox25.addWidget(self.button_rotateLoops)
         hbox25.addWidget(self.button_translateLoops)
         gbox2.addLayout(hbox25)
+
+        hbox26 = QtG.QHBoxLayout()
+        hbox26.addWidget(self.button_save_IQ_to_json)
+        gbox2.addLayout(hbox26)
  
         hbox = QtG.QHBoxLayout()
         hbox.addLayout(gbox0)
@@ -1553,6 +1563,13 @@ class AppForm(QtG.QMainWindow):
         msg = """ I'm cool, but not as cool as High Templar will be
         """
         QMessageBox.about(self, "MKID-ROACH software demo", msg.strip())
+
+    def save_IQ_to_json(self):
+        # this function takes the I and Q values from the object and saves them to a JSOn format
+        print("running save IQ to JSON")
+        print(self.I)
+        print(self.Q)
+        pass
 
 def main():
     app = QtG.QApplication(sys.argv)
