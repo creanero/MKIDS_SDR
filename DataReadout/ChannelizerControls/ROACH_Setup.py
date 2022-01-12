@@ -5,6 +5,7 @@ import sys, os, random, math, array, fractions
 #from PyQt4.QtGui import *
 import PyQt4.QtCore as QtC   #instead, had to import PyQt4 like this 
 import PyQt4.QtGui as QtG    ##later had to add QtC. or QtG. before certain functions e.g. line 52
+import warnings
 
 from PyQt4 import QtGui
 import socket
@@ -1575,14 +1576,14 @@ class AppForm(QtG.QMainWindow):
         print("running save IQ to JSON")
         if self.I is None:
             print ("creating empty array")
-            self.I = np.array([[0.0]])
+            self.I = np.array([[0.0],[0.0]])
 
         if self.Q is None:
             print ("creating empty array")
-            self.Q = np.array([[0.0]])
+            self.Q = np.array([[0.0],[0.0]])
 
         # Creates the dictionary to hold the pulses with some demo header data
-        pulse_dict = {'name': 'Demo pulses', 'purpose': 'This is a demo pulse to show how JSON files work'}
+        pulse_dict = {'name': 'Saved Pulse', 'purpose': 'Output saved from ROACH_Setup.py'}
 
         # Creates a timestamp for the overall data
         timestamp_format = '%Y%m%d%H%M%S'
@@ -1594,15 +1595,21 @@ class AppForm(QtG.QMainWindow):
         # put this first due to the LIFO way JSON is written
         pulse_dict['pulses'] = []
 
-        #temporarily hard coded to produce a 0
-        for ch in range(1):
+        if len(self.I)>len(self.Q):
+            warnings.warn('I has more channels than Q')
+            no_channels = len(self.Q)
+        elif len(self.Q)>len(self.I):
+            warnings.warn('Q has more channels than I')
+            no_channels = len(self.I)
+        else:
+            no_channels = len(self.I)
+
+        for ch in range(no_channels):
 
             IQ_data=pd.DataFrame()
             IQ_data["I"]=pd.Series(self.I[ch])
             IQ_data["Q"]=pd.Series(self.Q[ch])
             IQ_data=IQ_data.to_dict(orient='list')
-
-
 
             append_pulse(pulse_dict, IQ_data, pulseID=ch)
 
