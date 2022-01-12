@@ -1595,6 +1595,7 @@ class AppForm(QtG.QMainWindow):
         # put this first due to the LIFO way JSON is written
         pulse_dict['pulses'] = []
 
+        # Created warning block against I and Q being different lengths.  Shouldn't happen.
         if len(self.I)>len(self.Q):
             warnings.warn('I has more channels than Q')
             no_channels = len(self.Q)
@@ -1604,6 +1605,7 @@ class AppForm(QtG.QMainWindow):
         else:
             no_channels = len(self.I)
 
+        # Iterates over the channels and records separate pulses for each
         for ch in range(no_channels):
 
             IQ_data=pd.DataFrame()
@@ -1613,7 +1615,12 @@ class AppForm(QtG.QMainWindow):
 
             append_pulse(pulse_dict, IQ_data, pulseID=ch)
 
-        print(pulse_dict)
+        # probably want to change this to a prompt for a directory
+        homepath=os.path.expanduser("~")
+
+        # saves the file to a json
+        with open(homepath+'/data' + timestamp + '.json', 'w') as outfile:
+            json.dump(pulse_dict, outfile)
 
 
 
