@@ -21,7 +21,7 @@ time.sleep(2)
 
 Icentre = 0
 Qcentre = 0
-L = 32
+L = 16
 bin_data_IQ = ''
 bin_data_Phase = ''
 
@@ -53,7 +53,10 @@ for n in range(steps):
 
 print("bin_data_IQ = ", bin_data_IQ)
 
-print("bin_data_IQ unpacked = ",struct.unpack('>h', bin_data_IQ[12:14])[0])	
+for n in range(L):
+	print("n = ", n)
+	print("bin_data_IQ = ", bin_data_IQ[n:n+2]) 
+	print("bin_data_IQ unpacked = ", struct.unpack('>h', bin_data_IQ[n:n+2])[0])	
 	
 	
 print "done"

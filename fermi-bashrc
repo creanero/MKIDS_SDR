@@ -21,7 +21,7 @@ alias arconsDashboard='cd $SDR_DIR/DataReadout/ReadoutControls; python ArconsDas
 # END OF DEAD-END DATA ####################################################################################################
 
 #The filename of the current compiled firmware.  Should be stored in SDR/DataReadout/ChannelizerControls/boffiles/
-export BOFFILE=raw_iq_combined_2022_Jan_11_1456.bof
+export BOFFILE=raw_iq_combined_2022_Jan_11_1628.bof
 #working boffile as of 16/12/2020: chan_snap_v3_2012_Oct_30_1216.bof
 #own boffile with IQ and Phase sampling working: raw_iq_fix_phase_2022_Jan_06_1741.bof
 #own boffile with IQ sampling: snap_raw_iq_20211204_2021_Dec_05_1816.bof, phase part doesn't work
