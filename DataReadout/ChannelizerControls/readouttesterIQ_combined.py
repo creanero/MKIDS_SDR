@@ -53,17 +53,18 @@ for n in range(steps):
 
 print("bin_data_IQ = ", bin_data_IQ)
 
-for n in range(L):
-	print("n = ", n)
-	print("bin_data_IQ = ", bin_data_IQ[n:n+2]) 
-	print("bin_data_IQ unpacked = ", struct.unpack('>h', bin_data_IQ[n:n+2])[0])	
-	
-	
-print "done"
-#print("------%s seconds-----" % (time.time() - starttime))
+IQraw = []
+for m in range(steps*L):
+	IQraw.append(struct.unpack('>h', bin_data_IQ[m:m+2])[0])
+
+print("IQraw = ", IQraw)
 
 
+print("bin_data_IQ[8] = ", bin_data_IQ[8])
 
+print("ord(bin_data_IQ[8]) = ", ord(bin_data_IQ[8]))
+
+#print("hex(ord(bin_data_IQ[8])) = ", hex(ord(bin_data_IQ[8])))
 
 
 
