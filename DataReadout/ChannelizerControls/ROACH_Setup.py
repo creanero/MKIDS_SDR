@@ -1573,13 +1573,13 @@ class AppForm(QtG.QMainWindow):
         if self.I is None:
             print ("creating empty array")
             self.I = np.array([0.0])
-            print("typeof(I) =",type(self.I))
-            print("I=",self.I)
+        print("typeof(I) =",type(self.I))
+        print("I=",self.I)
         if self.Q is None:
             print ("creating empty array")
             self.Q = np.array([0.0])
-            print("typeof(Q) =",type(self.Q))
-            print("Q=",self.Q)
+        print("typeof(Q) =",type(self.Q))
+        print("Q=",self.Q)
         IQ_data=pd.DataFrame({'I':self.I,"Q":self.Q})
         print(IQ_data)
 
