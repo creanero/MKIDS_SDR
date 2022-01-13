@@ -11,7 +11,7 @@ import matplotlib, corr, time, struct, numpy
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-from tables import *
+#from tables import *
 from lib import iqsweep
 
 
