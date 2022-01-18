@@ -29,6 +29,7 @@ for ch_we in range(256):
 	bin_data_IQ = ''
 	bin_data_Phase = ''
 	#time.sleep(0.5)
+	print""
 	print"ch_we = ", ch_we, 
 	roach.write_int('conv_phase_ch_we_IQ', ch_we)
 	roach.write_int('conv_phase_ch_we_Phase', ch_we)

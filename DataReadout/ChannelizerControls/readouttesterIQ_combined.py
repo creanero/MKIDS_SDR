@@ -31,13 +31,13 @@ time.sleep(2)
 
 Icentre = 0
 Qcentre = 0
-L = 1024 #must be greater than 4 
+L = 32 #must be greater than 4 
 bin_data_IQ = ''
 bin_data_Phase = ''
 bin_data_IQ_ord = []
 bin_data_IQ_hex = []
 
-ch_we_IQ = 27
+ch_we_IQ = 24
 ch_we_Phase = 43
 
 
@@ -63,13 +63,16 @@ for n in range(steps):
 	bin_data_IQ = bin_data_IQ + roach.read('conv_phase_snapIQ_bram', 4*L)
 	bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L)
 
-
+#print("bin_data_IQ = ", bin_data_IQ)
 
 
 for j in range(steps*L*4):
 	#print("j = ", j)
 	bin_data_IQ_ord.append(ord(bin_data_IQ[j]))
 	bin_data_IQ_hex.append("0x{:02x}".format(bin_data_IQ_ord[j]))	
+
+print""
+print""
 
 #print("bin_data_IQ_hex = ", bin_data_IQ_hex)
 
@@ -99,38 +102,39 @@ for m in range(steps*L):
 		phaseraw.append(struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0])	
 phasefpga = np.array(phaseraw)*360./2**16*4/np.pi
 
-#print"Iraw = ", Iraw
-#print"Qraw = ", Qraw
+print"Iraw = ", Iraw
+print"Qraw = ", Qraw
 #print"Phaseraw = ", phaseraw
-#print"Phasefpga = ", phasefpga
+print"Phasefpga = ", phasefpga
+print""
 
-plt.figure()
-plt.plot(Iraw, '.')
-plt.title('Iraw Vs Time')
-plt.xlabel('Time')
-plt.ylabel('Iraw')
-plt.grid()
+#plt.figure()
+#plt.plot(Iraw, '.')
+#plt.title('Iraw Vs Time')
+#plt.xlabel('Time')
+#plt.ylabel('Iraw')
+#plt.grid()
 
-plt.figure()
-plt.plot(Qraw, '.')
-plt.title('Qraw Vs Time')
-plt.xlabel('Time')
-plt.ylabel('Qraw')
-plt.grid()
+#plt.figure()
+#plt.plot(Qraw, '.')
+#plt.title('Qraw Vs Time')
+#plt.xlabel('Time')
+#plt.ylabel('Qraw')
+#plt.grid()
 
-plt.figure()
-plt.plot(Iraw, Qraw, '.')
-plt.title('Iraw Vs Qraw')
-plt.xlabel('Iraw')
-plt.ylabel('Qraw')
-plt.grid()
+#plt.figure()
+#plt.plot(Iraw, Qraw, '.')
+#plt.title('Iraw Vs Qraw')
+#plt.xlabel('Iraw')
+#plt.ylabel('Qraw')
+#plt.grid()
 
-plt.figure()
-plt.plot(phasefpga, '.')
-plt.title('Phase Vs Time')
-plt.xlabel('Time')
-plt.ylabel('Phase')
-plt.grid()
+#plt.figure()
+#plt.plot(phasefpga, '.')
+#plt.title('Phase Vs Time')
+#plt.xlabel('Time')
+#plt.ylabel('Phase')
+#plt.grid()
 
 
 plt.show()
