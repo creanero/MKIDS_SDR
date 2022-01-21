@@ -1,6 +1,6 @@
 #!/bin/bash
-for i in {1..64}
+for i in {1..10}
 do
-   python justsaveIQdata.py
+   python pulse_triggering.py
    echo "i = $i"
 done

@@ -22,7 +22,7 @@ def twos_comp(val, bits):
 
 
 #savedir = '/home/labuser/Data/2022/2022_01_18/4578MHz/BlueLaser/'
-savedir = '/home/labuser/Data/2022/2022_01_18/Setup/'
+savedir = '/home/labuser/Data/2022/2022_01_19/ClosedLoop/'
 
 filename = savedir + 'IQ_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'
 
@@ -30,17 +30,17 @@ filename = savedir + 'IQ_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] 
 roach = corr.katcp_wrapper.FpgaClient('192.168.4.10')
 time.sleep(2)
 
-L = 1024
+L = 65536
 #bin_data_I = ''
 #bin_data_Q = ''
 
 bin_data_IQ = ''
-bin_data_Phase = ''
+#bin_data_Phase = ''
 bin_data_IQ_ord = []
 bin_data_IQ_hex = []
 
-ch_we_IQ = 27
-ch_we_Phase = 43
+ch_we_IQ = 24
+#ch_we_Phase = 43
 
 
 
