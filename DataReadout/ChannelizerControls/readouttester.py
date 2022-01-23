@@ -17,9 +17,9 @@ roach = corr.katcp_wrapper.FpgaClient('192.168.4.10')
 time.sleep(2)
 
 
-roach.write_int('conv_phase_snapI_ctrl', 0)
+roach.write_int('conv_phase_snapIQ_ctrl', 0)
 #roach.write_int('conv_phase_snapQ_ctrl', 0)
-roach.write_int('conv_phase_snapI_ctrl', 1)
+roach.write_int('conv_phase_snapIQ_ctrl', 1)
 #roach.write_int('conv_phase_snapQ_ctrl', 1)
 
 #roach.write_int('conv_phase_snapI_ctrl', 2)
@@ -31,7 +31,7 @@ roach.write_int('conv_phase_snapI_ctrl', 1)
 
 time.sleep(0.001)
 
-testI = roach.read('conv_phase_snapI_bram', 4096)
+testI = roach.read('conv_phase_snapIQ_bram', 4096)
 #testQ = roach.read('conv_phase_snapQ_bram', 2048)
 
 

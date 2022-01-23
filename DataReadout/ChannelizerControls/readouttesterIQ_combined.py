@@ -49,7 +49,7 @@ roach.write_int('conv_phase_ch_we_Phase', ch_we_Phase)
 
 starttime = time.time()
 
-steps = 8
+steps = 1
 for n in range(steps):
 
 	roach.write_int('conv_phase_startSnapIQ', 0)

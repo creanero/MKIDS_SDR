@@ -42,10 +42,14 @@ Icentre = 0
 Qcentre = 0
 L_phase = 16384 #must be greater than 4 
 L_IQ = 16384
+steps_phase = 1
+steps_IQ = 1
 averagelength = 128
 phase_threshold = 20
-number_of_iterations = 5
+number_of_iterations = 1
+numberofaverages = int((L_phase*steps_phase)/averagelength)
 
+number_of_phase_values = L_phase * steps_phase
 
 for i in range(number_of_iterations):
 	print'i = ', i
@@ -63,8 +67,8 @@ for i in range(number_of_iterations):
 
 
 
-	steps_phase = 1
-	steps_IQ = 1
+	
+	
 	for n in range(steps_phase):
 
 		roach.write_int('conv_phase_startSnapPhase', 0)
@@ -73,12 +77,16 @@ for i in range(number_of_iterations):
 		roach.write_int('conv_phase_startSnapPhase', 1)
 
 		bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L_phase)
+	
+	starttime = time.time()
 
-
+	
 
 	for m in range(steps_phase*L_phase):
 		phaseraw.append(struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0])	
 	phasevalues = np.array(phaseraw)*360./2**16*4/np.pi
+
+	
 
 	#plt.figure()
 	#plt.plot(phasevalues, '.')
@@ -87,7 +95,9 @@ for i in range(number_of_iterations):
 	#plt.ylabel('Phase')
 	#plt.grid()
 
-	number_of_phase_values = len(phasevalues)
+	#number_of_phase_values = len(phasevalues)
+	#print("number_of_phase_values = ", number_of_phase_values)
+	#print("L_phase = ", L_phase)
     
 	#add 360 to negative values
 	for k in range(number_of_phase_values):
@@ -96,13 +106,13 @@ for i in range(number_of_iterations):
      
 	george = 0
 	bob = 100
-	numberofaverages = int((L_phase*steps_phase)/averagelength) 
+	 
 	phase_means = np.zeros(numberofaverages)
     
 	for j in range(numberofaverages):
 		phase_means[j] = np.mean(phasevalues[(averagelength*(j+1) - averagelength):averagelength*(j+1)])
            
-    
+    	
     
 	while bob < number_of_phase_values:	
 		whichmean = bob//averagelength	
@@ -184,8 +194,8 @@ for i in range(number_of_iterations):
 			#plt.ylabel("Phase (degrees)")
 			#plt.grid()
 		
-			pulsefilename = savedirPhase + 'pulse_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'	
-			np.savetxt(pulsefilename,bob_array,fmt='%.2f')
+			phasefilename = savedirPhase + 'pulse_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'	
+			np.savetxt(phasefilename,bob_array,fmt='%.2f')
 			#print "Phase saved!"	
 			total_pulses = total_pulses + 1
 			print'Number of pulses = ', total_pulses	
@@ -194,6 +204,7 @@ for i in range(number_of_iterations):
 		else:
         		bob = bob + 1			
 		
+		print("------%s seconds-----" % (time.time() - starttime))
 #print("Total number of pulses = ", total_pulses)   
 
 
@@ -201,7 +212,7 @@ for i in range(number_of_iterations):
   
 
     
-plt.show()
+#plt.show()
 
 
 
