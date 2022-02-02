@@ -64,19 +64,7 @@ for n in range(steps):
 	bin_data_IQ = bin_data_IQ + roach.read('conv_phase_snapIQ_bram', 4*2*L_IQ)
 	bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L_phase)
 
-for n in range(steps):
 
-	roach.write_int('conv_phase_startSnapIQ', 0)
-	roach.write_int('conv_phase_startSnapPhase', 0)
-	roach.write_int('conv_phase_snapIQ_ctrl', 1)
-	roach.write_int('conv_phase_snapPhase_ctrl', 1)
-	roach.write_int('conv_phase_snapIQ_ctrl', 0)
-	roach.write_int('conv_phase_snapPhase_ctrl', 0)
-	roach.write_int('conv_phase_startSnapIQ', 1)
-	roach.write_int('conv_phase_startSnapPhase', 1)
-
-	bin_data_IQ = bin_data_IQ + roach.read('conv_phase_snapIQ_bram', 4*2*L_IQ)
-	bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L_phase)
 
 
 #print("bin_data_IQ = ", bin_data_IQ)

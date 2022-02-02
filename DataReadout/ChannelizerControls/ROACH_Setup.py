@@ -93,7 +93,7 @@ class AppForm(QtG.QMainWindow):
         self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
 	time.sleep(2)
 	print 'programming roach...'
-	self.roach.progdev('pulse_trigger_2022_Jan_20_2237.bof') 
+	self.roach.progdev('pulse_trigger_2022_Jan_24_1322.bof') 
 	# 12/12/2021: snap_raw_iq_20211204_2021_Dec_05_1816.bof
 	# 'chan_512_2012_Jul_30_1754.bof' original boffile. 
 	#Last working: chan_snap_v3_2012_Oct_30_1216.bof
@@ -819,7 +819,7 @@ class AppForm(QtG.QMainWindow):
         except ValueError:
             pass
             
-        self.axes1.plot(I, Q, '.-', self.iq_centers.real[0:self.N_freqs], self.iq_centers.imag[0:self.N_freqs], '.', self.I_on_res, self.Q_on_res, '.')
+        self.axes1.plot(I, Q, '.-', self.iq_centers.real[0:self.N_freqs], self.iq_centers.imag[0:self.N_freqs], '.', self.I_on_res, self.Q_on_res, '.', I[0], Q[0], '.')
 	self.axes1.set_xlabel('I (In-Phase)')
 	self.axes1.set_ylabel('Q (In-Quadrature)')
 
@@ -832,10 +832,15 @@ class AppForm(QtG.QMainWindow):
 	self.axes3.set_xlabel('Freq [Hz]')
 	self.axes3.set_ylabel('I (green) Q (blue)')
 
-	#saveDir = str('/home/cbracken/Desktop/SDR-master/DataReadout/LO_Sweep_Data') #saves data here
-        #if saveDir != '':
-            #phasefilename = saveDir + '/IQdata_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + str(self.textbox_roachIP.text())+'.txt'
-            #numpy.savetxt(phasefilename,f_span,fmt='%.8f')                       #saves phase data #changed %e to %f
+
+
+	savearray = [I, Q]
+	
+
+	saveDirIQsweep = str('/home/labuser/Data/IQSweeps') #saves data here
+        
+        IQsweepfilename = saveDirIQsweep + '/IQsweep'+'.txt'
+        numpy.savetxt(IQsweepfilename,numpy.column_stack(savearray),fmt='%i,' '%i' )                       #saves phase data #changed %e to %f
         
 	self.canvas.draw()
 	print("Bins register = ", self.roach.read_int('bins'))

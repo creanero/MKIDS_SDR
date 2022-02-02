@@ -25,8 +25,8 @@ def twos_comp(val, bits):
         val = val - (1 << bits)        # compute negative value
     return val                         # return positive value as is
 
-savedirIQ = '/home/labuser/Data/2022/2022_01_21/Setup/IQ/'
-savedirPhase = '/home/labuser/Data/2022/2022_01_21/Setup/Phase/'
+savedirIQ = '/home/labuser/Data/2022/2022_01_25//PulseMeasurements/IQ/'
+savedirPhase = '/home/labuser/Data/2022/2022_01_25/PulseMeasurements/Phase/'
 
 roach = corr.katcp_wrapper.FpgaClient('192.168.4.10')
 time.sleep(2)
@@ -45,14 +45,17 @@ L_IQ = 16384
 steps_phase = 1
 steps_IQ = 1
 averagelength = 128
-phase_threshold = 20
-number_of_iterations = 1
+phase_threshold = 40
+number_of_seconds = 1
 numberofaverages = int((L_phase*steps_phase)/averagelength)
+final_pulse_count = 0
 
 number_of_phase_values = L_phase * steps_phase
 
-for i in range(number_of_iterations):
-	print'i = ', i
+starttime = time.time()
+
+for i in range(number_of_seconds*64):
+	print'Time = ', i, ' seconds'
 	#print''
 	bin_data_IQ = ''
 	bin_data_Phase = ''
@@ -72,13 +75,17 @@ for i in range(number_of_iterations):
 	for n in range(steps_phase):
 
 		roach.write_int('conv_phase_startSnapPhase', 0)
+		roach.write_int('conv_phase_startSnapIQ', 0)
 		roach.write_int('conv_phase_snapPhase_ctrl', 1)
+		roach.write_int('conv_phase_snapIQ_ctrl', 1)
 		roach.write_int('conv_phase_snapPhase_ctrl', 0)
+		roach.write_int('conv_phase_snapIQ_ctrl', 0)
 		roach.write_int('conv_phase_startSnapPhase', 1)
+		roach.write_int('conv_phase_startSnapIQ', 1)
 
 		bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L_phase)
 	
-	starttime = time.time()
+	
 
 	
 
@@ -126,11 +133,6 @@ for i in range(number_of_iterations):
 		
 
 			for n in range(steps_IQ):
-				roach.write_int('conv_phase_startSnapIQ', 0)
-				roach.write_int('conv_phase_snapIQ_ctrl', 1)
-				roach.write_int('conv_phase_snapIQ_ctrl', 0)
-				roach.write_int('conv_phase_startSnapIQ', 1)
-		
 				bin_data_IQ = bin_data_IQ + roach.read('conv_phase_snapIQ_bram', 4*L_IQ)
 
 
@@ -198,14 +200,15 @@ for i in range(number_of_iterations):
 			np.savetxt(phasefilename,bob_array,fmt='%.2f')
 			#print "Phase saved!"	
 			total_pulses = total_pulses + 1
-			print'Number of pulses = ', total_pulses	
+			#print'Number of pulses = ', total_pulses
+			final_pulse_count = final_pulse_count + total_pulses	
 			bob = bob + 200
 			
 		else:
         		bob = bob + 1			
 		
-		print("------%s seconds-----" % (time.time() - starttime))
-#print("Total number of pulses = ", total_pulses)   
+#print("------%s seconds-----" % (time.time() - starttime))		
+print("Total number of pulses = ", final_pulse_count)   
 
 
 	
