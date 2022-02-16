@@ -1169,9 +1169,9 @@ class AppForm(QtG.QMainWindow):
         # keeping old text version for rollback if needed
         # self.textbox_loSpan = QtG.QLineEdit('0.5e6')
         self.textbox_loSpan = QtG.QDoubleSpinBox ()
-        self.textbox_loSpan.setRange(0,1e6)
-        self.textbox_loSpan.setSingleStep(1e3)
-        self.textbox_loSpan.setValue(0.5e6)
+        self.textbox_loSpan.setRange(0,1e8)
+        self.textbox_loSpan.setSingleStep(1e6)
+        self.textbox_loSpan.setValue(2e6)
         self.textbox_loSpan.setSuffix('Hz')
         self.textbox_loSpan.setDecimals(0)
         self.textbox_loSpan.setMaximumWidth(200) # retain this even for text
