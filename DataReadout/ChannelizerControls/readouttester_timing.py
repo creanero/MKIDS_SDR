@@ -53,13 +53,15 @@ starttime = time.time()
 steps = 1
 for n in range(steps):
 	starttime = time.time()
-	#roach.write_int('conv_phase_startSnapIQ', 0)
+	roach.write_int('conv_phase_startSnapIQ', 0)
 	roach.write_int('conv_phase_startSnapPhase', 0)
-	#roach.write_int('conv_phase_snapIQ_ctrl', 1)
+	starttime = time.time()
+	roach.write_int('conv_phase_snapIQ_ctrl', 1)
 	roach.write_int('conv_phase_snapPhase_ctrl', 1)
-	#roach.write_int('conv_phase_snapIQ_ctrl', 0)
+	print("------%s seconds-----" % (time.time() - starttime))
+	roach.write_int('conv_phase_snapIQ_ctrl', 0)
 	roach.write_int('conv_phase_snapPhase_ctrl', 0)
-	#roach.write_int('conv_phase_startSnapIQ', 1)
+	roach.write_int('conv_phase_startSnapIQ', 1)
 	roach.write_int('conv_phase_startSnapPhase', 1)
 	#print("------%s seconds-----" % (time.time() - starttime))
 	#bin_data_IQ = bin_data_IQ + roach.read('conv_phase_snapIQ_bram', 4*2*L_IQ)
@@ -83,9 +85,9 @@ for k in range(len(phasefpga)):
 #plt.ylabel('Phase')
 #plt.grid()
 
-print("Phase = ", phasefpga)
+#print("Phase = ", phasefpga)
 
-time.sleep(20)
+time.sleep(2)
 bin_data_Phase_2 = roach.read('conv_phase_snapPhase_bram', 4*L_phase)
 
 phaseraw2 = []
@@ -99,7 +101,7 @@ for k in range(len(phasefpga)):
 	if phasefpga2[k] < 0:
 		phasefpga2[k] = phasefpga2[k] + 360 
 
-print("Phase 2 = ", phasefpga2)
+#print("Phase 2 = ", phasefpga2)
 
 #for n in range(steps):
 #	bin_data_IQ = bin_data_IQ + roach.read('conv_phase_snapIQ_bram', 4*2*L_IQ)

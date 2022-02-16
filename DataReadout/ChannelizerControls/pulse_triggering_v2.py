@@ -25,8 +25,8 @@ def twos_comp(val, bits):
         val = val - (1 << bits)        # compute negative value
     return val                         # return positive value as is
 
-savedirIQ = '/home/labuser/Data/2022/2022_01_25//PulseMeasurements/Crap/IQ/'
-savedirPhase = '/home/labuser/Data/2022/2022_01_25/PulseMeasurements/Crap/Phase/'
+savedirIQ = '/home/labuser/Data/2022/2022_02_14/TestingIQPulses/IQ/'
+savedirPhase = '/home/labuser/Data/2022/2022_02_14/TestingIQPulses/Phase/'
 
 roach = corr.katcp_wrapper.FpgaClient('192.168.4.10')
 time.sleep(2)
@@ -38,8 +38,7 @@ roach.write_int('conv_phase_ch_we_Phase', ch_we_Phase)
 
 
 
-Icentre = 0
-Qcentre = 0
+
 L_phase = 16384 #must be greater than 4 
 L_IQ = 16384
 steps_phase = 1
@@ -47,8 +46,8 @@ steps_IQ = 1
 meanlength = 20
 pulselength = 1000
 
-phase_threshold = 55
-number_of_seconds = 2160
+phase_threshold = 25
+number_of_seconds = 3600
 
 final_pulse_count = 0
 
@@ -72,120 +71,114 @@ for i in range(64*number_of_seconds):
 
 
 
+	try:
 	
-	
-	for n in range(steps_phase):
+		for n in range(steps_phase):
 
-		roach.write_int('conv_phase_startSnapPhase', 0)
-		roach.write_int('conv_phase_startSnapIQ', 0)
-		roach.write_int('conv_phase_snapPhase_ctrl', 1)
-		roach.write_int('conv_phase_snapIQ_ctrl', 1)
-		roach.write_int('conv_phase_snapPhase_ctrl', 0)
-		roach.write_int('conv_phase_snapIQ_ctrl', 0)
-		roach.write_int('conv_phase_startSnapPhase', 1)
-		roach.write_int('conv_phase_startSnapIQ', 1)
+			roach.write_int('conv_phase_startSnapIQ', 0)
+			roach.write_int('conv_phase_startSnapPhase', 0)
+			roach.write_int('conv_phase_snapIQ_ctrl', 1)
+			roach.write_int('conv_phase_snapPhase_ctrl', 1)
+			roach.write_int('conv_phase_snapIQ_ctrl', 0)
+			roach.write_int('conv_phase_snapPhase_ctrl', 0)
+			roach.write_int('conv_phase_startSnapIQ', 1)
+			roach.write_int('conv_phase_startSnapPhase', 1)
 
-		bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L_phase
+			bin_data_Phase = bin_data_Phase + roach.read('conv_phase_snapPhase_bram', 4*L_phase)
 		
 	
 
 	
 
-	for m in range(steps_phase*L_phase):
-		phaseraw.append(struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0])	
-	phasevalues = np.array(phaseraw)*360./2**16*4/np.pi
+		for m in range(steps_phase*L_phase):
+			phaseraw.append(struct.unpack('>h', bin_data_Phase[4*m+2:4*m+4])[0])	
+		phasevalues = np.array(phaseraw)*360./2**16*4/np.pi
 
-	
-
-	#plt.figure()
-	#plt.plot(phasevalues, '.')
-	#plt.title('Phase Vs Time')
-	#plt.xlabel('Time')
-	#plt.ylabel('Phase')
-	#plt.grid()
-
-	#number_of_phase_values = len(phasevalues)
-	#print("number_of_phase_values = ", number_of_phase_values)
-	#print("L_phase = ", L_phase)
     
-	#add 360 to negative values
-	for k in range(number_of_phase_values):
-		if phasevalues[k] < 0:
-			phasevalues[k] = phasevalues[k] + 360
+		#add 360 to negative values
+		#for k in range(number_of_phase_values):
+		#	if phasevalues[k] < 0:
+		#		phasevalues[k] = phasevalues[k] + 360
      
-	george = 0
-	bob = 100+meanlength
+		george = 0
+		bob = 100+meanlength
 	 
     
     
-	while bob < number_of_phase_values:	
+		while bob < number_of_phase_values:	
 			
 
-		if bob+pulselength > number_of_phase_values:
-			break
+			if bob+pulselength > number_of_phase_values:
+				break
 			
-		rollingaverage = np.mean(phasevalues[bob-meanlength:bob])
+			rollingaverage = np.mean(phasevalues[bob-meanlength:bob])
 		
-		bob_array = phasevalues[bob-100:bob+pulselength] #data to be saved
+			bob_array = phasevalues[bob-100:bob+pulselength] #data to be saved
 			
-		if abs(rollingaverage - phasevalues[bob]) > phase_threshold: 
+			if abs(rollingaverage - phasevalues[bob]) > phase_threshold: 
 		
 
-			for n in range(steps_IQ):
-				bin_data_IQ = bin_data_IQ + roach.read('conv_phase_snapIQ_bram', 4*L_IQ)
+				for n in range(steps_IQ):
+					bin_data_IQ = bin_data_IQ + roach.read('conv_phase_snapIQ_bram', 4*L_IQ)
 
 
-			for j in range(steps_IQ*L_IQ*4):
-				#print("j = ", j)
-				bin_data_IQ_ord.append(ord(bin_data_IQ[j]))
-				bin_data_IQ_hex.append("0x{:02x}".format(bin_data_IQ_ord[j]))	
+				for j in range(steps_IQ*L_IQ*4):
+					#print("j = ", j)
+					bin_data_IQ_ord.append(ord(bin_data_IQ[j]))
+					bin_data_IQ_hex.append("0x{:02x}".format(bin_data_IQ_ord[j]))	
 	
 
-			Iraw = []
-			Qraw = []
+				Iraw = []
+				Qraw = []
 
 
-			for k in range((steps_IQ*L_IQ) / 4):
+				for k in range((steps_IQ*L_IQ) / 4):
 
-				I0 = bin_data_IQ_hex[6+16*k][3] + bin_data_IQ_hex[7+16*k][2:4] + bin_data_IQ_hex[8+16*k][2]
-				I0 = twos_comp(int(I0,16), 16)
-				Iraw.append(I0)
+					I0 = bin_data_IQ_hex[6+16*k][3] + bin_data_IQ_hex[7+16*k][2:4] + bin_data_IQ_hex[8+16*k][2]
+					I0 = twos_comp(int(I0,16), 16)
+					Iraw.append(I0)
 
-				I1 = bin_data_IQ_hex[11+16*k][3] + bin_data_IQ_hex[12+16*k][2:4] + bin_data_IQ_hex[13+16*k][2]
-				I1 = twos_comp(int(I1,16), 16)
-				Iraw.append(I1)
+					I1 = bin_data_IQ_hex[11+16*k][3] + bin_data_IQ_hex[12+16*k][2:4] + bin_data_IQ_hex[13+16*k][2]
+					I1 = twos_comp(int(I1,16), 16)
+					Iraw.append(I1)
 
-				Q0 = bin_data_IQ_hex[9+16*k][2:4] + bin_data_IQ_hex[10+16*k][2:4]
-				Q0 = twos_comp(int(Q0,16), 16)
-				Qraw.append(Q0)
+					Q0 = bin_data_IQ_hex[9+16*k][2:4] + bin_data_IQ_hex[10+16*k][2:4]
+					Q0 = twos_comp(int(Q0,16), 16)
+					Qraw.append(Q0)
 
-				Q1 = bin_data_IQ_hex[14+16*k][2:4] + bin_data_IQ_hex[15+16*k][2:4]
-				Q1 = twos_comp(int(Q1,16), 16)
-				Qraw.append(Q1)
+					Q1 = bin_data_IQ_hex[14+16*k][2:4] + bin_data_IQ_hex[15+16*k][2:4]
+					Q1 = twos_comp(int(Q1,16), 16)
+					Qraw.append(Q1)
 
-			savearray = [Iraw, Qraw]
-			IQfilename = savedirIQ + 'IQ_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'	
-			np.savetxt(IQfilename,np.column_stack(savearray),fmt='%i ' ' %i' )
-			#print "IQ saved!"
-
-
+				savearray = [Iraw, Qraw]
+				IQfilename = savedirIQ + 'IQ_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'	
+				np.savetxt(IQfilename,np.column_stack(savearray),fmt='%i ' ' %i' )
+				#print "IQ saved!"
 
 
-			george = george + 1	
+
+
+				george = george + 1	
                 
 		
 		
-			phasefilename = savedirPhase + 'pulse_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'	
-			np.savetxt(phasefilename,bob_array,fmt='%.2f')
-			#print "Phase saved!"	
-			total_pulses = total_pulses + 1
-			#print'Number of pulses = ', total_pulses
-			final_pulse_count = final_pulse_count + total_pulses	
-			bob = bob + pulselength
+				phasefilename = savedirPhase + 'pulse_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'	
+				np.savetxt(phasefilename,bob_array,fmt='%.2f')
+				#print "Phase saved!"	
+				total_pulses = total_pulses + 1
+				#print'Number of pulses = ', total_pulses
+				final_pulse_count = final_pulse_count + total_pulses	
+				bob = bob + pulselength
 			
-		else:
-        		bob = bob + 1			
-		
+			else:
+        			bob = bob + 1			
+	
+
+	except RuntimeError:
+		print'RuntimeError, skipping this iteration'
+		continue #changed break to continue
+
+	
 #print("------%s seconds-----" % (time.time() - starttime))		
 print("Total number of pulses = ", final_pulse_count)   
 

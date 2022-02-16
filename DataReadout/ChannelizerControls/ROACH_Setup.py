@@ -589,8 +589,16 @@ class AppForm(QtG.QMainWindow):
             self.roach.write_int('conv_phase_load_centers', 0)
         
             centers_for_file[ch] = [self.iq_centers[ch].real, self.iq_centers[ch].imag]
-            
+	    #print"Icentre = ", self.iq_centers[ch].real, "Qcentre = ", self.iq_centers[ch].imag
+        
+	    
         numpy.savetxt(os.path.join(saveDir,'centers.dat'), centers_for_file)
+
+	centresavearray = [self.iq_centers[0].real, self.iq_centers[0].imag]
+	saveDirIQsweep = str('/home/labuser/Data/IQSweeps') #saves data here
+        
+        IQcentrefilename = saveDirIQsweep + '/IQcentre'+'.txt'
+        numpy.savetxt(IQcentrefilename,numpy.column_stack(centresavearray),fmt='%i,' '%i' )                       #saves phase data 
 
     def findIQcenters(self, I, Q):
         I_0 = (I.max()+I.min())/2.
@@ -1126,7 +1134,7 @@ class AppForm(QtG.QMainWindow):
         self.connect(self.button_openClient, QtC.SIGNAL('clicked()'), self.openClient)
         
         # LO frequency.
-        self.textbox_loFreq = QtG.QLineEdit('4.75e9')
+        self.textbox_loFreq = QtG.QLineEdit('4.41208e9')
         self.textbox_loFreq.setMaximumWidth(100)
         label_loFreq = QtG.QLabel('LO frequency:')
 
@@ -1136,7 +1144,7 @@ class AppForm(QtG.QMainWindow):
         label_freqOffset = QtG.QLabel('Freq Offset:')
 
         # Sweep span
-        self.textbox_loSpan = QtG.QLineEdit('0.5e6')
+        self.textbox_loSpan = QtG.QLineEdit('2e6')
         self.textbox_loSpan.setMaximumWidth(50)
         label_loSpan = QtG.QLabel('LO Sweep Span:')
 

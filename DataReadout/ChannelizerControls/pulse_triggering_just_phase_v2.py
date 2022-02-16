@@ -19,7 +19,7 @@ from matplotlib.figure import Figure
 from lib import iqsweep
 
 
-savedirPhase = '/home/labuser/Data/2022/2022_02_01/WindowClosed/Phase/'
+savedirPhase = '/home/labuser/Data/2022/2022_02_15/Testing/Phase/'
 
 roach = corr.katcp_wrapper.FpgaClient('192.168.4.10')
 time.sleep(2)
@@ -32,19 +32,23 @@ L_phase = 16384 #must be greater than 4
 steps_phase = 1
 meanlength = 20
 pulselength = 1000
+phase_threshold = 50
+number_of_seconds = 10
 
-phase_threshold = 30
-number_of_seconds = 600
+time_completed = 0 #counting time that has run 
 
-final_pulse_count = 0
-
+#final_pulse_count = 0
+total_pulses = 0
 number_of_phase_values = L_phase * steps_phase
 
-starttime = time.time()
+#starttime = time.time()
 
 for i in range(64*number_of_seconds):
-	print'Steps = ', i
-	print''
+	
+	#total_pulses = 0
+
+	
+
 	bin_data_IQ = ''
 	bin_data_Phase = ''
 	bin_data_IQ_ord = []
@@ -54,7 +58,7 @@ for i in range(64*number_of_seconds):
 	pulsenumberarray = np.zeros(400)
 	pulsenumberarray = pulsenumberarray.tolist()
 
-	total_pulses = 0
+	
 
 
 
@@ -78,10 +82,10 @@ for i in range(64*number_of_seconds):
 
 	
     
-	#add 360 to negative values
-		for k in range(number_of_phase_values):
-			if phasevalues[k] < 0:
-				phasevalues[k] = phasevalues[k] + 360
+		#add 360 to negative values
+		#for k in range(number_of_phase_values):
+		#	if phasevalues[k] < 0:
+		#		phasevalues[k] = phasevalues[k] + 360
      
 		george = 0
 		bob = 100+meanlength
@@ -107,19 +111,30 @@ for i in range(64*number_of_seconds):
 				#print "Phase saved!"	
 				total_pulses = total_pulses + 1
 				#print'Number of pulses = ', total_pulses
-				final_pulse_count = final_pulse_count + total_pulses
-				print'Pulse saved' 	
+				#final_pulse_count = final_pulse_count + total_pulses
+				#print'Pulse saved' 	
 				bob = bob + pulselength
 			
 			else:
         			bob = bob + 1			
 		
+	
+		if np.mod(i, 64) == 0:
+			print''
+			print'time = ', time_completed, ' seconds'
+			print'pulses per second = ', total_pulses
+			total_pulses = 0
+			#print''
+			time_completed = time_completed + 1 
 
-
-
+	
 	except RuntimeError:
-		print'RuntimeError, breaking out of loop'
-		break
+		print'RuntimeError, skipping this iteration'
+		continue #changed break to continue
+
+	
+	
+	
 
 #print("------%s seconds-----" % (time.time() - starttime))		
 #print("Total number of pulses = ", final_pulse_count)   

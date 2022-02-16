@@ -41,8 +41,8 @@ roach.write_int('conv_phase_ch_we_Phase', ch_we_Phase)
 pause = False 
 
 
-Icentre = -10400
-Qcentre = 800
+#Icentre = -4000
+#Qcentre = 300
 L_phase = 16384 #must be greater than 4 
 L_IQ = 16384
 steps_phase = 1
@@ -91,6 +91,40 @@ with open(fullname) as csv_file:
 
 #print'sweepIvalues = ', sweepIvalues
 #print'sweepQvalues = ', sweepQvalues
+
+
+  
+IQfilename = 'IQcentre.txt'
+IQfullname = foldername + filename
+
+#start reader and calculate length of file
+with open(IQfullname, 'r') as csv_file:
+    IQcsv_reader = csv.reader(csv_file, delimiter=',')
+    row_count = sum(1 for row in IQcsv_reader)  # fileObject is your csv.reader
+    
+#sweepIvalues = np.zeros(row_count)
+#sweepQvalues = np.zeros(row_count)
+
+#print'csv_reader = ', csv_reader
+#print'row_count = ', row_count
+
+with open(IQfullname) as csv_file:
+    IQcsv_reader = csv.reader(csv_file, delimiter=',')
+    
+    line_count = 0
+    for row in IQcsv_reader:    
+    	Icentre = row[0] #saves data to array from csv file
+    	Qcentre = row[1] #saves data to array from csv file
+            
+        line_count = line_count + 1   
+
+Icentreint = int(Icentre)
+Qcentreint = int(Qcentre)
+print'Icentre = ', Icentreint
+print'Qcentre = ', Qcentreint
+
+
+
 
 
 
@@ -173,8 +207,13 @@ def animate(q):
 	Irawarray = np.array(Iraw)			
 	Qrawarray = np.array(Qraw)
 
-	phase_cpu = -360 * (np.arctan2((Qrawarray-Qcentre), (Irawarray-Icentre))) / (2*np.pi)
+	phase_cpu = -360 * (np.arctan2((Qrawarray-Qcentreint), (Irawarray-Icentreint))) / (2*np.pi)
 	
+	#for k in range(len(phase_cpu)):
+	#	if phase_cpu[k] < 0:
+	#		phase_cpu[k] = phase_cpu[k] + 360
+	
+
 	phase_cpu_max_index = np.argmax(phase_cpu)
 
 	#print'phase_cpu_max_index = ', phase_cpu_max_index		
@@ -186,13 +225,16 @@ def animate(q):
 
 	#print'phase_cpu_max_index = ', phase_cpu_max_index
 
+
+	#for k in range(len(phase_cpu)):
+	#	if phase_cpu[k] < 0:
+	#		phase_cpu[k] = phase_cpu[k] + 360
+
 	phaseplot = phase_cpu[phase_cpu_max_index-200:phase_cpu_max_index+1000]
 	#phase_cpu = 360 * (np.arctan2((Qraw), (Iraw))) / (2*np.pi)
 
 
-	for k in range(len(phase_cpu)):
-		if phase_cpu[k] < 0:
-			phase_cpu[k] = phase_cpu[k] + 360
+	
 	
 
 	george = 0
@@ -200,46 +242,6 @@ def animate(q):
 	 
     
     
-	while bob < number_of_phase_values:	
-		#print'Looking for pulses'
-		#print'bob = ', bob
-
-		if bob+pulselength > number_of_phase_values:
-			break
-			
-		rollingaverage = np.mean(phasevalues[bob-meanlength:bob])
-		
-		bob_array = phasevalues[bob-100:bob+pulselength] #data to be saved
-
-
-		counter1 = 0		
-
-		#print'time = ', time.time()
-		
-		#print'q = ', q
-		#print'x = ', x
-		x = x + 1
-	
-		if abs(rollingaverage - phasevalues[bob]) > phase_threshold: 
-			print'Pulse!'
-
-			george = george + 1	
-                
-		
-		
-			phasefilename = savedirPhase + 'pulse_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'	
-			np.savetxt(phasefilename,bob_array,fmt='%.2f')
-			#print "Pulse saved!"	
-			#total_pulses = total_pulses + 1
-			#print'Number of pulses = ', total_pulses
-			#final_pulse_count = final_pulse_count + 1	
-			bob = bob + pulselength
-			
-		else:
-						
-			#print'No pulse!'				
-			
-        		bob = bob + 1	
 					
 	fig = plt.figure(1)	
 	ax1 = fig.add_subplot(121)
