@@ -1137,7 +1137,7 @@ class AppForm(QtG.QMainWindow):
         label_roachIP = QtG.QLabel('Roach IP Address:')
 
         # Start connection to roach.
-        self.button_openClient = QtG.QPushButton("(1)Open Client")
+        self.button_openClient = QtG.QPushButton("(1) Connect to Roach Board")
         self.button_openClient.setMaximumWidth(200)
         self.connect(self.button_openClient, QtC.SIGNAL('clicked()'), self.openClient)
         
@@ -1176,7 +1176,7 @@ class AppForm(QtG.QMainWindow):
 
 
         self.spinBox_loFreq.valueChanged.connect(self.calculate_offset)
-        self.spinBox_DACfreq.valueChanged.connect(self.calculate_offset)
+        self.spinBox_DACfreq.valueChanged.connect(self.calculate_LOFreq)
         self.spinBox_offset.valueChanged.connect(self.calculate_LOFreq)
 
 
@@ -1314,35 +1314,41 @@ class AppForm(QtG.QMainWindow):
         # self.connect(self.button_loadFreqsAttens, QtC.SIGNAL('clicked()'), self.loadFreqsAttens)
         
         # Rotate IQ loops.
-        self.button_rotateLoops = QtG.QPushButton("(6) Rotate Loops")
+        self.button_rotateLoops = QtG.QPushButton("Rotate Loops")
         self.button_rotateLoops.setMaximumWidth(250)
         self.connect(self.button_rotateLoops, QtC.SIGNAL('clicked()'), self.rotateLoops)        
 
         # Translate IQ loops.
-        self.button_translateLoops = QtG.QPushButton("(7) Re-define loop center")
+        self.button_translateLoops = QtG.QPushButton("Re-define loop center")
         self.button_translateLoops.setMaximumWidth(250)
         self.connect(self.button_translateLoops, QtC.SIGNAL('clicked()'), self.translateLoops)
 
         # Save IQ values to JSON.
         # self.save_IQ_to_json()
-        self.button_save_IQ_to_json = QtG.QPushButton("(8) Save IQ values to JSON")
+        self.button_save_IQ_to_json = QtG.QPushButton("(4) Save IQ values to JSON")
         self.button_save_IQ_to_json.setMaximumWidth(250)
         self.connect(self.button_save_IQ_to_json, QtC.SIGNAL('clicked()'), self.save_IQ_to_json)
 
+        # # define DAC/DDS frequencies and load LUTs.
+        # self.button_define_LUTs= QtG.QPushButton("(3)Define LUTs")
+        # self.button_define_LUTs.setMaximumWidth(200)
+        # self.connect(self.button_define_LUTs, QtC.SIGNAL('clicked()'), self.define_LUTs)
+
         # DAC start button.
-        self.button_startDAC = QtG.QPushButton("(4)Start DAC")
+        self.button_startDAC = QtG.QPushButton("(2) Start DAC")
         self.button_startDAC.setMaximumWidth(200)
-        self.connect(self.button_startDAC, QtC.SIGNAL('clicked()'), self.toggleDAC)
+        self.connect(self.button_startDAC, QtC.SIGNAL('clicked()'), self.LUT_and_DAC)
 
         #DAC Indicator Square
         self.square_DACindicate = QtGui.QLabel(self)
-        self.square_DACindicate.setMaximumWidth(30)
+        self.square_DACindicate.setMaximumWidth(200)
         self.square_DACindicate.setStyleSheet("QFrame { background-color: #ff0000 }")
         self.square_DACindicate.setFrameShadow(QtGui.QFrame.Raised)
         self.square_DACindicate.setFrameShape(QtGui.QFrame.Panel)
         self.square_DACindicate.setLineWidth(3)
         self.square_DACindicate.setMidLineWidth(3)
         self.square_DACindicate.setText('off')
+        self.square_DACindicate.setAlignment(QtC.Qt.AlignCenter)
         
 
         # self.cbox_keepScaleFactor = QtG.QCheckBox("Keep Last Scale")
@@ -1350,13 +1356,8 @@ class AppForm(QtG.QMainWindow):
         # self.textbox_customScale = QtG.QLineEdit('1')
         # self.textbox_customScale.setMaximumWidth(60)
 
-        # define DAC/DDS frequencies and load LUTs. 
-        self.button_define_LUTs= QtG.QPushButton("(3)Define LUTs")
-        self.button_define_LUTs.setMaximumWidth(200)
-        self.connect(self.button_define_LUTs, QtC.SIGNAL('clicked()'), self.define_LUTs)
-
         # Sweep LO
-        self.button_sweepLO = QtG.QPushButton("(5)Sweep LO")
+        self.button_sweepLO = QtG.QPushButton("(3) Sweep LO")
         self.button_sweepLO.setMaximumWidth(340)
         self.connect(self.button_sweepLO, QtC.SIGNAL('clicked()'), self.sweepLO)    
         # Toggle whether to show previous or not
@@ -1459,13 +1460,14 @@ class AppForm(QtG.QMainWindow):
         # gbox1.addLayout(hbox11)
         # gbox1.addWidget(self.cbox_keepScaleFactor)
         hbox111 = QtG.QHBoxLayout()
+
         # hbox111.addWidget(self.cbox_useScaleFactor)
         # hbox111.addWidget(self.textbox_customScale)
         gbox1.addLayout(hbox111)
-        gbox1.addWidget(self.button_define_LUTs)
-        #gbox1.addWidget(self.button_startDAC)
+        gbox1.addWidget(self.button_startDAC)
+        # gbox1.addWidget(self.button_define_LUTs)
+        # gbox1.addWidget(self.button_startDAC)
         hbox12 = QtG.QHBoxLayout()
-        hbox12.addWidget(self.button_startDAC)
         hbox12.addWidget(self.square_DACindicate)
         gbox1.addLayout(hbox12)
 
@@ -1543,6 +1545,11 @@ class AppForm(QtG.QMainWindow):
     # calculates the offset in frequency between DAC and LO
     def calculate_LOFreq(self):
         self.spinBox_loFreq.setValue(self.spinBox_DACfreq.value() - self.spinBox_offset.value())
+
+    def LUT_and_DAC(self):
+        self.define_LUTs()
+        time.sleep(2)
+        self.toggleDAC()
 
     # creates the menubar at the top of the window
     def create_menu(self):        
