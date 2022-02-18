@@ -473,7 +473,7 @@ class AppForm(QtG.QMainWindow):
         return I, Q
         
     def define_DAC_LUT(self):
-        freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
+        freqs = [float(self.spinBox_DACfreq.value())]
         f_base = float(self.textbox_loFreq.value())
 
         
@@ -504,7 +504,7 @@ class AppForm(QtG.QMainWindow):
     def define_DDS_LUT(self, phase = [0.]*256):
         fft_len=2**9
         ch_shift = 154  # This number should be verified in the firmware file. For the current .bof file being used (chan_snap_v3_2012_Oct_30_1216.bof), set it to 154.
-        freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
+        freqs = [float(self.spinBox_DACfreq.value())] #map(float, unicode(self.spinBox_DACfreq.toPlainText()).split())
         f_base = float(self.textbox_loFreq.value())
         for n in range(len(freqs)):
             if freqs[n] < f_base:
@@ -635,7 +635,7 @@ class AppForm(QtG.QMainWindow):
     def rotateLoopsReady(self):
         print "Calculating loop rotations..."
         self.status_text.setText('Calculating loop rotations...')
-        dac_freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
+        dac_freqs = [float(self.spinBox_DACfreq.value())]
         
 
         N_freqs = len(dac_freqs)
@@ -691,7 +691,7 @@ class AppForm(QtG.QMainWindow):
         saveDir = str(self.textbox_saveDir.text())
         savefile = os.path.join(saveDir,'COLM%d_'%roachNo + time.strftime("%Y%m%d-%H%M%S",time.localtime())+'.h5')
         #print "in sweelLOready:  savefile=",savefile
-        dac_freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split()) 
+        dac_freqs = [float(self.spinBox_DACfreq.value())]
         
         self.N_freqs = len(dac_freqs)
         f_base = float(self.textbox_loFreq.value())
@@ -941,7 +941,7 @@ class AppForm(QtG.QMainWindow):
     #         #print 'attens list',self.attens
     #         #print self.attens[4]
     #         self.minimumAttenuation = numpy.array(x[1:,3]).min()
-    #         self.textedit_DACfreqs.setText(x_string)
+    #         self.spinBox_DACfreq.setText(x_string)
     #         # print 'Freq/Atten loaded from',freqFile
     #         self.status_text.setText('Freq/Atten loaded')
     #     except IOError:
@@ -995,7 +995,7 @@ class AppForm(QtG.QMainWindow):
         self.canvas.draw()
 
         
-        freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
+        freqs = [float(self.spinBox_DACfreq.value())]
         freq=freqs[ch]/10**9
         atten=self.attens[ch]
         
@@ -1038,7 +1038,7 @@ class AppForm(QtG.QMainWindow):
         else:
             iNewResFreq = iMaxIQVel
 
-        freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
+        freqs = [float(self.spinBox_DACfreq.value())]
         currentFreq=freqs[ch]/10**9
         newFreq = self.f_span[ch][iNewResFreq]
         newFreq = newFreq/1e9
@@ -1059,7 +1059,7 @@ class AppForm(QtG.QMainWindow):
                 iNewResFreq = iMaxIQVel
 
             maxJump = 10e-5 # float(self.textbox_freqAutoLimit.text())#10e-5# don't jump further than 100kHz/10 points
-            freqs = map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
+            freqs = [float(self.spinBox_DACfreq.value())]
             currentFreq=freqs[ch]/10**9
             newFreq = self.f_span[ch][iNewResFreq]
             newFreq = newFreq/1e9
@@ -1154,19 +1154,21 @@ class AppForm(QtG.QMainWindow):
         label_loFreq = QtG.QLabel('LO frequency:')
 
         # DAC Frequencies.
-        self.textedit_DACfreqs = QtG.QTextEdit('4.75e9')
-        self.textedit_DACfreqs.setMaximumWidth(170)
-        self.textedit_DACfreqs.setMaximumHeight(100)
+        self.spinBox_DACfreq = QtG.QDoubleSpinBox()
+        self.spinBox_DACfreq.setRange(2e9, 6.8e9)
+        self.spinBox_DACfreq.setSingleStep(1e6)
+        self.spinBox_DACfreq.setMaximumWidth(300)  # retain this even for text
+        self.spinBox_DACfreq.setValue(4.75e9)
+        self.spinBox_DACfreq.setSuffix('Hz')
+        self.spinBox_DACfreq.setDecimals(0)
         label_DACfreqs = QtG.QLabel('Centre Freqs:')
 
-        freqs=map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
-        self.current_freq = freqs[0]
-        self.LO_freq = self.textbox_loFreq.value()
         self.label_offset = QtG.QLabel('LO Offset')
-        self.label_offset_value = QtG.QLabel(str(self.current_freq-self.LO_freq))
+        self.label_offset_value = QtG.QLabel(str(self.spinBox_DACfreq.value()-self.textbox_loFreq.value()))
 
 
         self.textbox_loFreq.valueChanged.connect(self.calculate_offset)
+        self.spinBox_DACfreq.valueChanged.connect(self.calculate_offset)
 
         # Global freq offset.
         # keeping old text version for rollback if needed
@@ -1417,23 +1419,26 @@ class AppForm(QtG.QMainWindow):
         # hbox01.addWidget(self.textbox_freqFile)
         # hbox01.addWidget(self.button_loadFreqsAttens)
         gbox0.addLayout(hbox01)
-        hbox02 = QtG.QHBoxLayout()
-        hbox02.addWidget(label_saveDir)
-        hbox02.addWidget(self.textbox_saveDir)
-        gbox0.addLayout(hbox02)
-        hbox03 = QtG.QHBoxLayout()
-        hbox03.addWidget(label_loFreq)
-        hbox03.addWidget(self.textbox_loFreq)
-        gbox0.addLayout(hbox03)
+        # hbox02 = QtG.QHBoxLayout()
+        # hbox02.addWidget(label_saveDir)
+        # hbox02.addWidget(self.textbox_saveDir)
+        # gbox0.addLayout(hbox02)
 
+        hbox03 = QtG.QHBoxLayout()
+        hbox03.addWidget(label_DACfreqs)
+        hbox03.addWidget(self.spinBox_DACfreq)
+        gbox0.addLayout(hbox03)
         hbox04 = QtG.QHBoxLayout()
-        hbox04.addWidget(self.label_offset)
-        hbox04.addWidget(self.label_offset_value)
+        hbox04.addWidget(label_loFreq)
+        hbox04.addWidget(self.textbox_loFreq)
         gbox0.addLayout(hbox04)
 
+        hbox05 = QtG.QHBoxLayout()
+        hbox05.addWidget(self.label_offset)
+        hbox05.addWidget(self.label_offset_value)
+        gbox0.addLayout(hbox05)
+
         gbox1 = QtG.QVBoxLayout()
-        gbox1.addWidget(label_DACfreqs)
-        gbox1.addWidget(self.textedit_DACfreqs)
         # hbox10 = QtG.QHBoxLayout()
         # hbox10.addWidget(label_offset)
         # hbox10.addWidget(self.textbox_offset)
@@ -1522,7 +1527,7 @@ class AppForm(QtG.QMainWindow):
         self.statusBar().addWidget(self.status_text, 1)
 
     def calculate_offset(self):
-        self.label_offset_value.setText(str(self.current_freq-self.textbox_loFreq.value()))
+        self.label_offset_value.setText(str(self.spinBox_DACfreq.value()-self.textbox_loFreq.value()))
 
     # creates the menubar at the top of the window
     def create_menu(self):        
