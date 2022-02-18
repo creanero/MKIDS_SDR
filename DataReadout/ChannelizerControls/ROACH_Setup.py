@@ -1247,7 +1247,7 @@ class AppForm(QtG.QMainWindow):
         self.textbox_atten_in.setSuffix('dB')
         self.textbox_atten_in.setDecimals(1)
         self.textbox_atten_in.setMaximumWidth(150) # retain this even for text
-        label_atten_in = QtG.QLabel('in-front-of-ADC atten.:')
+        label_atten_in = QtG.QLabel('In-front-of-ADC atten.:')
 
         # # offset in lut
         # self.textbox_offset = QtG.QLineEdit('0')
@@ -1326,7 +1326,7 @@ class AppForm(QtG.QMainWindow):
         # Save IQ values to JSON.
         # self.save_IQ_to_json()
         self.button_save_IQ_to_json = QtG.QPushButton("(4) Save IQ values to JSON")
-        self.button_save_IQ_to_json.setMaximumWidth(250)
+        self.button_save_IQ_to_json.setMaximumWidth(300)
         self.connect(self.button_save_IQ_to_json, QtC.SIGNAL('clicked()'), self.save_IQ_to_json)
 
         # # define DAC/DDS frequencies and load LUTs.
@@ -1336,7 +1336,7 @@ class AppForm(QtG.QMainWindow):
 
         # DAC start button.
         self.button_startDAC = QtG.QPushButton("(2) Start DAC")
-        self.button_startDAC.setMaximumWidth(200)
+        self.button_startDAC.setMaximumWidth(300)
         self.connect(self.button_startDAC, QtC.SIGNAL('clicked()'), self.LUT_and_DAC)
 
         #DAC Indicator Square
@@ -1358,7 +1358,7 @@ class AppForm(QtG.QMainWindow):
 
         # Sweep LO
         self.button_sweepLO = QtG.QPushButton("(3) Sweep LO")
-        self.button_sweepLO.setMaximumWidth(340)
+        self.button_sweepLO.setMaximumWidth(300)
         self.connect(self.button_sweepLO, QtC.SIGNAL('clicked()'), self.sweepLO)    
         # Toggle whether to show previous or not
         # self.button_showPrevious = QtG.QPushButton("Show Prev")
@@ -1471,15 +1471,20 @@ class AppForm(QtG.QMainWindow):
         hbox12.addWidget(self.square_DACindicate)
         gbox1.addLayout(hbox12)
 
+
+        hbox13 = QtG.QHBoxLayout()
+        hbox13.addWidget(label_atten_in)
+        hbox13.addWidget(self.textbox_atten_in)
+        gbox1.addLayout(hbox13)
+        hbox14 = QtG.QHBoxLayout()
+        hbox14.addWidget(label_powerSweepStart)
+        hbox14.addWidget(self.textbox_powerSweepStart)
+        gbox1.addLayout(hbox14)
+
         gbox2 = QtG.QVBoxLayout()
-        hbox20 = QtG.QHBoxLayout()
-        hbox20.addWidget(label_atten_in)
-        hbox20.addWidget(self.textbox_atten_in)
-        hbox20.addWidget(label_powerSweepStart)
-        hbox20.addWidget(self.textbox_powerSweepStart)
+
         #hbox20.addWidget(label_powerSweepStop)
         #hbox20.addWidget(self.textbox_powerSweepStop)
-        gbox2.addLayout(hbox20)
         hbox220 = QtG.QHBoxLayout()
         hbox220.addWidget(label_steps)
         hbox220.addWidget(self.spinbox_steps)
@@ -1487,9 +1492,11 @@ class AppForm(QtG.QMainWindow):
         hbox21 = QtG.QHBoxLayout()
         hbox21.addWidget(label_loSpan)
         hbox21.addWidget(self.textbox_loSpan)
-        hbox21.addWidget(self.button_sweepLO)
-        # hbox21.addWidget(self.button_showPrevious)
         gbox2.addLayout(hbox21)
+        hbox211 = QtG.QHBoxLayout()
+        hbox211.addWidget(self.button_sweepLO)
+        # hbox21.addWidget(self.button_showPrevious)
+        gbox2.addLayout(hbox211)
         # hbox22 = QtG.QHBoxLayout()
         # # hbox22.addWidget(label_channel)
         # # hbox22.addWidget(self.textbox_channel)
