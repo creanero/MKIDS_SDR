@@ -264,7 +264,7 @@ class AppForm(QtG.QMainWindow):
   #      if sweep_freq:
   #          f = freq
   #      else:
-  #          f = float(self.textbox_loFreq.value())
+  #          f = float(self.spinBox_loFreq.value())
   #      if f >= 4.4e9:
   #          f = f/2
   #          
@@ -309,7 +309,7 @@ class AppForm(QtG.QMainWindow):
         if sweep_freq:
             myfreq = freq
         else:
-            myfreq = float(self.textbox_loFreq.value())
+            myfreq = float(self.spinBox_loFreq.value())
         #On the rev2 board the max freq of the ADF4355 chip is 6.8GHz
         #There is no freq doubler on the board, so don't divide by two
         if myfreq >= 6.8e9:
@@ -474,7 +474,7 @@ class AppForm(QtG.QMainWindow):
         
     def define_DAC_LUT(self):
         freqs = [float(self.spinBox_DACfreq.value())]
-        f_base = float(self.textbox_loFreq.value())
+        f_base = float(self.spinBox_loFreq.value())
 
         
         #print(freqs)
@@ -505,7 +505,7 @@ class AppForm(QtG.QMainWindow):
         fft_len=2**9
         ch_shift = 154  # This number should be verified in the firmware file. For the current .bof file being used (chan_snap_v3_2012_Oct_30_1216.bof), set it to 154.
         freqs = [float(self.spinBox_DACfreq.value())] #map(float, unicode(self.spinBox_DACfreq.toPlainText()).split())
-        f_base = float(self.textbox_loFreq.value())
+        f_base = float(self.spinBox_loFreq.value())
         for n in range(len(freqs)):
             if freqs[n] < f_base:
                 freqs[n] = freqs[n] + self.sampleRate  #512e6
@@ -569,7 +569,7 @@ class AppForm(QtG.QMainWindow):
 
 
         # Write LUTs to file.
-        saveDir = str(self.textbox_saveDir.text())
+        saveDir = self.LUT_saveDir
         f = open(os.path.join(saveDir,'luts.dat'), 'w')
         f.write(binaryData)
         f.close()
@@ -591,7 +591,7 @@ class AppForm(QtG.QMainWindow):
             
 
     def loadIQcenters(self):
-        saveDir = str(self.textbox_saveDir.text())
+        saveDir = self.LUT_saveDir
         centers_for_file = [[0., 0.]]*256
         for ch in range(256):
             I_c = int(self.iq_centers[ch].real/2**3)
@@ -688,13 +688,13 @@ class AppForm(QtG.QMainWindow):
 
     def sweepLOready(self):
         atten_in = float(self.textbox_atten_in.value())
-        saveDir = str(self.textbox_saveDir.text())
+        saveDir = self.LUT_saveDir
         savefile = os.path.join(saveDir,'COLM%d_'%roachNo + time.strftime("%Y%m%d-%H%M%S",time.localtime())+'.h5')
         #print "in sweelLOready:  savefile=",savefile
         dac_freqs = [float(self.spinBox_DACfreq.value())]
         
         self.N_freqs = len(dac_freqs)
-        f_base = float(self.textbox_loFreq.value())
+        f_base = float(self.spinBox_loFreq.value())
         
 
         
@@ -911,7 +911,7 @@ class AppForm(QtG.QMainWindow):
     #         pass
 
     # def loadFreqsAttens(self):
-    #     f_base = float(self.textbox_loFreq.value())
+    #     f_base = float(self.spinBox_loFreq.value())
     #     # freqFile =str(self.textbox_freqFile.text())
     #     #print freqFile
     #     #newFreqFile = freqFile[:-4] + '_NEW.txt'
@@ -1143,14 +1143,14 @@ class AppForm(QtG.QMainWindow):
         
         # LO frequency.
         # keeping old text version for rollback if needed
-        # self.textbox_loFreq = QtG.QLineEdit('4.75e9')
-        self.textbox_loFreq = QtG.QDoubleSpinBox ()
-        self.textbox_loFreq.setRange(2e9,6.8e9)
-        self.textbox_loFreq.setSingleStep(1e6)
-        self.textbox_loFreq.setMaximumWidth(300) # retain this even for text
-        self.textbox_loFreq.setValue(4.74e9)
-        self.textbox_loFreq.setSuffix('Hz')
-        self.textbox_loFreq.setDecimals(0)
+        # self.spinBox_loFreq = QtG.QLineEdit('4.75e9')
+        self.spinBox_loFreq = QtG.QDoubleSpinBox ()
+        self.spinBox_loFreq.setRange(2e9, 6.8e9)
+        self.spinBox_loFreq.setSingleStep(1e6)
+        self.spinBox_loFreq.setMaximumWidth(300) # retain this even for text
+        self.spinBox_loFreq.setValue(4.74e9)
+        self.spinBox_loFreq.setSuffix('Hz')
+        self.spinBox_loFreq.setDecimals(0)
         label_loFreq = QtG.QLabel('LO frequency:')
 
         # DAC Frequencies.
@@ -1163,12 +1163,22 @@ class AppForm(QtG.QMainWindow):
         self.spinBox_DACfreq.setDecimals(0)
         label_DACfreqs = QtG.QLabel('Centre Freqs:')
 
+        # LO Offset
+        self.spinBox_offset = QtG.QDoubleSpinBox()
+        self.spinBox_offset.setRange(1e3, 1e9)
+        self.spinBox_offset.setSingleStep(1e6)
+        self.spinBox_offset.setMaximumWidth(300)  # retain this even for text
+        self.spinBox_offset.setValue(self.spinBox_DACfreq.value() - self.spinBox_loFreq.value())
+        self.spinBox_offset.setSuffix('Hz')
+        self.spinBox_offset.setDecimals(0)
         self.label_offset = QtG.QLabel('LO Offset')
-        self.label_offset_value = QtG.QLabel(str(self.spinBox_DACfreq.value()-self.textbox_loFreq.value()))
+        #self.spinBox_offset = QtG.QLabel(str(self.spinBox_DACfreq.value() - self.spinBox_loFreq.value()))
 
 
-        self.textbox_loFreq.valueChanged.connect(self.calculate_offset)
+        self.spinBox_loFreq.valueChanged.connect(self.calculate_offset)
         self.spinBox_DACfreq.valueChanged.connect(self.calculate_offset)
+        self.spinBox_offset.valueChanged.connect(self.calculate_LOFreq)
+
 
         # Global freq offset.
         # keeping old text version for rollback if needed
@@ -1288,10 +1298,10 @@ class AppForm(QtG.QMainWindow):
         
 
         # Save directory
-        self.textbox_saveDir = QtG.QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT')
-        self.textbox_saveDir.setMaximumWidth(500)
-        label_saveDir = QtG.QLabel('Save directory:')
-        label_saveDir.setMaximumWidth(250)
+        self.LUT_saveDir = SCRIPT_ROOT + '/DataReadout/ChannelizerControls/LUT'
+        # self.LUT_saveDir.setMaximumWidth(500)
+        # label_saveDir = QtG.QLabel('Save directory:')
+        # label_saveDir.setMaximumWidth(250)
     
         # File with frequencies/attens
         # self.textbox_freqFile = QtG.QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/1tones.txt')
@@ -1421,7 +1431,7 @@ class AppForm(QtG.QMainWindow):
         gbox0.addLayout(hbox01)
         # hbox02 = QtG.QHBoxLayout()
         # hbox02.addWidget(label_saveDir)
-        # hbox02.addWidget(self.textbox_saveDir)
+        # hbox02.addWidget(self.LUT_saveDir)
         # gbox0.addLayout(hbox02)
 
         hbox03 = QtG.QHBoxLayout()
@@ -1430,12 +1440,12 @@ class AppForm(QtG.QMainWindow):
         gbox0.addLayout(hbox03)
         hbox04 = QtG.QHBoxLayout()
         hbox04.addWidget(label_loFreq)
-        hbox04.addWidget(self.textbox_loFreq)
+        hbox04.addWidget(self.spinBox_loFreq)
         gbox0.addLayout(hbox04)
 
         hbox05 = QtG.QHBoxLayout()
         hbox05.addWidget(self.label_offset)
-        hbox05.addWidget(self.label_offset_value)
+        hbox05.addWidget(self.spinBox_offset)
         gbox0.addLayout(hbox05)
 
         gbox1 = QtG.QVBoxLayout()
@@ -1526,8 +1536,13 @@ class AppForm(QtG.QMainWindow):
         self.status_text = QtG.QLabel("Awaiting orders.")
         self.statusBar().addWidget(self.status_text, 1)
 
+    # calculates the offset in frequency between DAC and LO
     def calculate_offset(self):
-        self.label_offset_value.setText(str(self.spinBox_DACfreq.value()-self.textbox_loFreq.value()))
+        self.spinBox_offset.setValue(self.spinBox_DACfreq.value() - self.spinBox_loFreq.value())
+
+    # calculates the offset in frequency between DAC and LO
+    def calculate_LOFreq(self):
+        self.spinBox_loFreq.setValue(self.spinBox_DACfreq.value() - self.spinBox_offset.value())
 
     # creates the menubar at the top of the window
     def create_menu(self):        
