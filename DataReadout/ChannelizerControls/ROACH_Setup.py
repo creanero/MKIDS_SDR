@@ -1148,10 +1148,25 @@ class AppForm(QtG.QMainWindow):
         self.textbox_loFreq.setRange(2e9,6.8e9)
         self.textbox_loFreq.setSingleStep(1e6)
         self.textbox_loFreq.setMaximumWidth(300) # retain this even for text
-        self.textbox_loFreq.setValue(4.75e9)
+        self.textbox_loFreq.setValue(4.74e9)
         self.textbox_loFreq.setSuffix('Hz')
         self.textbox_loFreq.setDecimals(0)
         label_loFreq = QtG.QLabel('LO frequency:')
+
+        # DAC Frequencies.
+        self.textedit_DACfreqs = QtG.QTextEdit('4.75e9')
+        self.textedit_DACfreqs.setMaximumWidth(170)
+        self.textedit_DACfreqs.setMaximumHeight(100)
+        label_DACfreqs = QtG.QLabel('Centre Freqs:')
+
+        freqs=map(float, unicode(self.textedit_DACfreqs.toPlainText()).split())
+        self.current_freq = freqs[0]
+        self.LO_freq = self.textbox_loFreq.value()
+        self.label_offset = QtG.QLabel('LO Offset')
+        self.label_offset_value = QtG.QLabel(str(self.current_freq-self.LO_freq))
+
+
+        self.textbox_loFreq.valueChanged.connect(self.calculate_offset)
 
         # Global freq offset.
         # keeping old text version for rollback if needed
@@ -1210,12 +1225,6 @@ class AppForm(QtG.QMainWindow):
         self.textbox_spanShift.setDecimals(0)
         self.textbox_spanShift.setMaximumWidth(100)  # retain this even for text
         label_spanShift = QtG.QLabel('Span shift')
-        
-        # DAC Frequencies.
-        self.textedit_DACfreqs = QtG.QTextEdit('0.0')
-        self.textedit_DACfreqs.setMaximumWidth(170)
-        self.textedit_DACfreqs.setMaximumHeight(100)
-        label_DACfreqs = QtG.QLabel('Centre Freqs:')
 
         # Input attenuation.
         # self.textbox_atten_in = QtG.QLineEdit('5')
@@ -1416,10 +1425,11 @@ class AppForm(QtG.QMainWindow):
         hbox03.addWidget(label_loFreq)
         hbox03.addWidget(self.textbox_loFreq)
         gbox0.addLayout(hbox03)
-        # hbox04 = QtG.QHBoxLayout()
-        # hbox04.addWidget(label_freqOffset)
-        # hbox04.addWidget(self.textbox_freqOffset)
-        # gbox0.addLayout(hbox04)
+
+        hbox04 = QtG.QHBoxLayout()
+        hbox04.addWidget(self.label_offset)
+        hbox04.addWidget(self.label_offset_value)
+        gbox0.addLayout(hbox04)
 
         gbox1 = QtG.QVBoxLayout()
         gbox1.addWidget(label_DACfreqs)
@@ -1510,6 +1520,9 @@ class AppForm(QtG.QMainWindow):
     def create_status_bar(self):
         self.status_text = QtG.QLabel("Awaiting orders.")
         self.statusBar().addWidget(self.status_text, 1)
+
+    def calculate_offset(self):
+        self.label_offset_value.setText(str(self.current_freq-self.textbox_loFreq.value()))
 
     # creates the menubar at the top of the window
     def create_menu(self):        
