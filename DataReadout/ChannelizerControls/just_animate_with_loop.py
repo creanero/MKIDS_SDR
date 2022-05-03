@@ -253,8 +253,8 @@ def animate(q):
 	ax1.plot(sweepIvalues, sweepQvalues, '.-')
 	ax1.scatter(Iraw, Qraw, s=0.1, color='red')
 	ax1.set_title('Iraw Vs Qraw')
-	ax1.set_xlabel('Iraw')
-	ax1.set_xlabel('Qraw')
+	ax1.set_xlabel('Iraw (ADUs)')
+	ax1.set_ylabel('Qraw (ADUs)')
 	ax1.grid()
 
 
