@@ -246,7 +246,7 @@ class AppForm(QtG.QMainWindow):
   #      if sweep_freq:
   #          f = freq
   #      else:
-  #          f = float(self.textbox_loFreq.text())
+  #          f = float(self.spinBox_loFreq.text())
   #      if f >= 4.4e9:
   #          f = f/2
   #          

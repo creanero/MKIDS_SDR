@@ -30,7 +30,7 @@ class AppForm(QMainWindow):
         self.create_main_frame()
         self.create_status_bar()
         self.dacStatus = 'off'
-	self.contsnapStatus = 'off'
+        self.contsnapStatus = 'off'
         self.dramStatus = 'off'
         self.tapStatus = 'off'
         self.socketStatus = 'off'
@@ -210,7 +210,7 @@ class AppForm(QMainWindow):
                 median is used instead of mean.
                 """
         x = raw_input('Is the lamp off? ')
-        Nsigma = float(self.textbox_Nsigma.text())
+        Nsigma = 2.5 #float(self.textbox_Nsigma.text())
         N_freqs = len(map(float, unicode(self.textedit_DACfreqs.toPlainText()).split()))
         self.thresholds, self.medians = numpy.array([0.]*N_freqs), numpy.array([0.]*N_freqs)
 
@@ -218,11 +218,11 @@ class AppForm(QMainWindow):
             #print 'attempting to load channel: ',ch
         #    self.loadSingleThreshold(ch)
 
-        steps = int(self.textbox_timeLengths.text())
+        steps = 10 # int(self.textbox_timeLengths.text())
         L = 2**10
         scale_to_angle = 360./2**16*4/numpy.pi
         threshInfo = {}
-        threshInfo['roachNum'] = roachNum
+        threshInfo['roachNo'] = roachNo
         threshInfo['scaleToAngle'] = scale_to_angle
         threshInfo['N_freqs'] = N_freqs
         now = datetime.datetime.now()
@@ -272,7 +272,7 @@ class AppForm(QMainWindow):
             if threshold < -25736:
                 threshold = -25736
             self.thresholds[ch] = scale_to_angle*threshold
-            self.medians[ch] = scale_to_abngle*med
+            self.medians[ch] = scale_to_angle*med
 
             if self.customThresholds[ch] != 360.0:
                 threshold = self.customThresholds[ch]/scale_to_angle
@@ -289,7 +289,7 @@ class AppForm(QMainWindow):
         threshInfo['medians'] = self.medians.copy()
         threshInfo['thresholds'] = self.thresholds.copy()
         nowStr = datetime.datetime.strftime(now,"%Y%m%d-%H%M%S")
-        pklFileName = "thresh_%d_%s.pkl"%(roachNum,nowStr)
+        pklFileName = "thresh_%d_%s.pkl"%(roachNo,nowStr)
         #print 'Dump threshold infomation to ',os.path.join(os.environ['MKID_DATA_DIR'],pklFileName)
         #pickle.dump(threshInfo,open(os.path.join(os.environ['MKID_DATA_DIR'],pklFileName),'wb'))
         self.status_text.setText('Thresholds loaded and written to %s'%pklFileName)
@@ -299,9 +299,9 @@ class AppForm(QMainWindow):
         #print 'ch: ',ch
         L = 2**10
         scale_to_angle = 360./2**16*4/numpy.pi
-        Nsigma = float(self.textbox_Nsigma.text())
+        Nsigma = 2.5 #float(self.textbox_Nsigma.text())
         bin_data_phase = ''
-        steps = int(self.textbox_timeLengths.text())
+        steps = 10# int(self.textbox_timeLengths.text())
         for n in range(steps):
             self.roach.write_int('ch_we', ch)
             self.roach.write_int('startSnap', 0)
@@ -354,9 +354,9 @@ class AppForm(QMainWindow):
     def snapshot(self):       
         self.displayResonatorProperties()
         ch_we = int(self.textbox_channel.text())
-	#print ch_we
+        # print ch_we
         self.roach.write_int('ch_we', ch_we)
-        #print self.roach.read_int('ch_we')
+        # print self.roach.read_int('ch_we')
         steps = int(self.textbox_snapSteps.text())
         L = 2**10
         bin_data_phase = ''
@@ -376,7 +376,21 @@ class AppForm(QMainWindow):
 
         self.axes1.clear()
         #self.axes1.plot(phase, '.-', [self.thresholds[ch_we]]*2*L*steps, 'r.', [self.medians[ch_we]]*2*L*steps, 'g.')
-        saveDir = str('/home/labuser/Desktop/SDR-master/DataReadout/NewData/') #saves phase data here
+
+        # gets the environment variable
+        SCRIPT_ROOT=os.environ.get('SCRIPT_ROOT')
+
+        # If the environment variable is not defined
+        if SCRIPT_ROOT is None:
+            # Gets the path to this script
+            this_script= os.path.abspath(__file__)
+            # Gets the directory of the current file
+            this_script_dir=os.path.dirname(this_script)
+            # Gets the directory two up from the current one (i.e. PWD/../..)
+            SCRIPT_ROOT=os.path.dirname(os.path.dirname(this_script_dir))
+
+
+        saveDir = str(SCRIPT_ROOT+'/DataReadout/NewData/') #saves phase data here
         if saveDir != '':
             phasefilename = saveDir + 'shot_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + str(self.textbox_roachIP.text())+'.txt'
             #numpy.savetxt(phasefilename,phase,fmt='%.8e')
@@ -385,7 +399,7 @@ class AppForm(QMainWindow):
             self.axes1.plot(phase,'.')
 
         med=numpy.median(phase)
-	sd = numpy.std(phase) #added to see if shifting LO has any effect on data
+        sd = numpy.std(phase) #added to see if shifting LO has any effect on data
 
         print 'ch:',ch_we,'median:',med, 'standard deviation:', sd
         thresh=self.thresholds[ch_we]
@@ -426,8 +440,8 @@ class AppForm(QMainWindow):
         bin_data_phase = ''
         qdr_data_str = ''
 
-	
-	
+
+
 
         for n in range(steps):
             self.roach.write_int('snapPhase_ctrl', 0)
@@ -447,15 +461,15 @@ class AppForm(QMainWindow):
         for m in range(steps*L):
             phase.append(struct.unpack('>h', bin_data_phase[m*4+2:m*4+4])[0])
             phase.append(struct.unpack('>h', bin_data_phase[m*4+0:m*4+2])[0])
-	
-	
-	
+
+
+
         qdr_values = struct.unpack('>%dh'%(nLongsnapSamples),qdr_data_str)
         qdr_phase_values = numpy.array(qdr_values)*360./2**16*4/numpy.pi
         phase = numpy.array(phase)*360./2**16*4/numpy.pi
-	#print 'Length of Phase Array = ', len(phase)
-	#print 'Length of QDR Phase Array = ', len(qdr_phase_values)
-		
+        # print 'Length of Phase Array = ', len(phase)
+        # print 'Length of QDR Phase Array = ', len(qdr_phase_values)
+
 
 
         fqdr = open('ch_out_%d.txt'%ch_we,'w')
@@ -468,26 +482,23 @@ class AppForm(QMainWindow):
         self.axes1.clear()
         self.axes1.plot(phase, '.-', [self.thresholds[ch_we]]*2*L*steps, 'r.', [self.medians[ch_we]]*2*L*steps, 'g.')
 
+        saveDir = str(self.textbox_pulsesavepath.text()) + 'LongSnapShots/'
+        #if saveDir doesn't already exist, make it
+        if not os.path.exists(saveDir):
+            os.makedirs(saveDir)
 
-
-	saveDir = str(self.textbox_pulsesavepath.text()) + 'LongSnapShots/'
-
-	#if saveDir doesn't already exist, make it 
-	if not os.path.exists(saveDir):
-		os.makedirs(saveDir)
-
-	#print 'Starting Saving!'
+        #print 'Starting Saving!'
         #saveDir = str('/home/labuser/Desktop/SDR-master/DataReadout/PhaseData') #saves phase data here
         if saveDir != '':
-        	phasefilename = saveDir + '/longsnapshot_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] + '.txt'
-        	numpy.savetxt(phasefilename,qdr_phase_values,fmt='%.8f')   #saves phase data #changed %e to %f
-	    
-	
-	#print 'Finishing Saving!'
+            phasefilename = saveDir + '/longsnapshot_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] + '.txt'
+            numpy.savetxt(phasefilename,qdr_phase_values,fmt='%.8f')   #saves phase data #changed %e to %f
+
+
+        #print 'Finishing Saving!'
 
         med=numpy.median(phase)
         sd = numpy.std(phase) #added to see if shifting LO has any effect on data
-	meanphase = numpy.mean(phase)
+        meanphase = numpy.mean(phase)
         print 'ch:', ch_we, 'median:', med, 'mean:', meanphase, 'standard deviation:', sd
         thresh=self.thresholds[ch_we]
 
@@ -496,37 +507,38 @@ class AppForm(QMainWindow):
             #print "Custom Threshold: ", thresh
 
         if steps < 2:
-        	self.axes1.plot(qdr_phase_values,'b-')
-        	self.axes1.plot([thresh+med]*2*numQDRSamples*steps,'r-',[med]*2*numQDRSamples*steps,'g-',alpha=1)
-        	med=self.medians[ch_we]
-        	self.axes1.plot([thresh+med]*2*numQDRSamples*steps,'y-',[med]*2*numQDRSamples*steps,'y-',alpha=0.2)
-		self.axes1.set_xlabel('Time (us)')
-		self.axes1.set_ylabel('Phase (Deg)')
+            self.axes1.plot(qdr_phase_values,'b-')
+            self.axes1.plot([thresh+med]*2*numQDRSamples*steps,'r-',[med]*2*numQDRSamples*steps,'g-',alpha=1)
+            med=self.medians[ch_we]
+            self.axes1.plot([thresh+med]*2*numQDRSamples*steps,'y-',[med]*2*numQDRSamples*steps,'y-',alpha=0.2)
+            self.axes1.set_xlabel('Time (us)')
+            self.axes1.set_ylabel('Phase (Deg)')
 
-         	nFFTAverages = 100
-         	nSamplesPerFFT = nLongsnapSamples/nFFTAverages
-          	noiseFFT = numpy.zeros(nSamplesPerFFT)
-          	noiseFFTFreqs = numpy.fft.fftfreq(nSamplesPerFFT)
-	  	norm1 = float(self.textbox_normalisation.text()) #This normalisation factor is the input signal to the ADCs, in (Volts [V]). 
-          	for iAvg in xrange(nFFTAverages):
-          		noise = numpy.fft.fft(qdr_phase_values[iAvg*nSamplesPerFFT:(iAvg+1)*nSamplesPerFFT])
-          		noise = numpy.abs(noise)
-          		noiseFFT += 20*(numpy.log10(noise/norm1/1e-6))
-           	noiseFFT /= nFFTAverages
-	   	fnoifreqs = open('ch_noifreqs_%d.txt'%ch_we,'w')
-	   	for q in noiseFFTFreqs:
-           		fnoifreqs.write(str(q)+'\n')
-	   	fnoise = open('ch_noise_%d.txt'%ch_we,'w')
-	   	for q in noiseFFT:
-           		fnoise.write(str(q)+'\n')
-           	self.axes0.clear()
-           	nFFTfreqs = len(noiseFFTFreqs)
-           	noiseFFTFreqs *= 1e6 #convert MHz to Hz
-           	self.axes0.semilogx(noiseFFTFreqs[1:nFFTfreqs],noiseFFT[1:nFFTfreqs])
-           	self.axes0.set_xlabel('Freq (Hz)')
-           	self.axes0.set_ylabel('Phase Noise [dBc/Hz], nAverages=%d'%nFFTAverages)
-	   	fnoispec = open('ch_noispec_%d.txt'%ch_we,'w')
-	    
+        nFFTAverages = 100
+        nSamplesPerFFT = nLongsnapSamples/nFFTAverages
+        noiseFFT = numpy.zeros(nSamplesPerFFT)
+        noiseFFTFreqs = numpy.fft.fftfreq(nSamplesPerFFT)
+        norm1 = 50.0 # float(self.textbox_normalisation.text()) #This normalisation factor is the input signal to the ADCs, in (Volts [V]).
+        for iAvg in xrange(nFFTAverages):
+            noise = numpy.fft.fft(qdr_phase_values[iAvg*nSamplesPerFFT:(iAvg+1)*nSamplesPerFFT])
+            noise = numpy.abs(noise)
+            noiseFFT += 20*(numpy.log10(noise/norm1/1e-6))
+        noiseFFT /= nFFTAverages
+
+        fnoifreqs = open('ch_noifreqs_%d.txt'%ch_we,'w')
+        for q in noiseFFTFreqs:
+            fnoifreqs.write(str(q)+'\n')
+        fnoise = open('ch_noise_%d.txt'%ch_we,'w')
+        for q in noiseFFT:
+            fnoise.write(str(q)+'\n')
+            self.axes0.clear()
+            nFFTfreqs = len(noiseFFTFreqs)
+            noiseFFTFreqs *= 1e6 #convert MHz to Hz
+            self.axes0.semilogx(noiseFFTFreqs[1:nFFTfreqs],noiseFFT[1:nFFTfreqs])
+            self.axes0.set_xlabel('Freq (Hz)')
+            self.axes0.set_ylabel('Phase Noise [dBc/Hz], nAverages=%d'%nFFTAverages)
+        fnoispec = open('ch_noispec_%d.txt'%ch_we,'w')
+
 
 
         #print "Threshold: ",self.thresholds[ch_we]
@@ -538,206 +550,205 @@ class AppForm(QMainWindow):
 
 
 
-    def contsnapshot(self): 
-
-	failsafe = 0
-	maxloops = int(self.textbox_contsnapLoops.text()) #break if failsafe exceeds this. Stop button currently bugging. 
-	total_pulses = 0
-
-	
-
-	while self.contsnapStatus == 'off':
-       
-		time.sleep(0.1) #might stop from becoming unresponsive 
-		
-        	self.displayResonatorProperties()
-        	ch_we = int(self.textbox_channel.text())
-        	self.roach.write_int('ch_we', ch_we)
-        	#print self.roach.read_int('ch_we')
-        
-        	steps = int(self.textbox_contsnapSteps.text())
-        	L = 2**10
-        	numQDRSamples=2**19
-        	numBytesPerSample=4
-        	nContsnapSamples = numQDRSamples*2*steps # 2 16-bit samples per 32-bit QDR word
-        	bin_data_phase = ''
-
-        	qdr_data_str = ''
+    def contsnapshot(self):
+        failsafe = 0
+        maxloops = int(self.textbox_contsnapLoops.text()) #break if failsafe exceeds this. Stop button currently bugging.
+        total_pulses = 0
 
 
-		countrate = 0 #counts per second	
 
-        	for n in range(steps):
-            		self.roach.write_int('snapPhase_ctrl', 0)
-            		self.roach.write_int('snapqdr_ctrl',0)
-            		self.roach.write_int('startSnap', 0)
-            		self.roach.write_int('snapqdr_ctrl',1)
-            		self.roach.write_int('snapPhase_ctrl', 1)
-            		self.roach.write_int('startSnap', 1)
-            		time.sleep(1)
-            		bin_data_phase = bin_data_phase + self.roach.read('snapPhase_bram', 4*L)  
-            		qdr_data_str = qdr_data_str + self.roach.read('qdr0_memory',numQDRSamples*numBytesPerSample)
+        while self.contsnapStatus == 'off':
+
+            time.sleep(0.1) #might stop from becoming unresponsive
+
+            self.displayResonatorProperties()
+            ch_we = int(self.textbox_channel.text())
+            self.roach.write_int('ch_we', ch_we)
+            #print self.roach.read_int('ch_we')
+
+            steps = int(self.textbox_contsnapSteps.text())
+            L = 2**10
+            numQDRSamples=2**19
+            numBytesPerSample=4
+            nContsnapSamples = numQDRSamples*2*steps # 2 16-bit samples per 32-bit QDR word
+            bin_data_phase = ''
+
+            qdr_data_str = ''
+
+
+        countrate = 0 #counts per second
+
+        for n in range(steps):
+            self.roach.write_int('snapPhase_ctrl', 0)
+            self.roach.write_int('snapqdr_ctrl',0)
+            self.roach.write_int('startSnap', 0)
+            self.roach.write_int('snapqdr_ctrl',1)
+            self.roach.write_int('snapPhase_ctrl', 1)
+            self.roach.write_int('startSnap', 1)
+            time.sleep(1)
+            bin_data_phase = bin_data_phase + self.roach.read('snapPhase_bram', 4*L)
+            qdr_data_str = qdr_data_str + self.roach.read('qdr0_memory',numQDRSamples*numBytesPerSample)
             
-        	self.roach.write_int('snapPhase_ctrl', 0)
-        	self.roach.write_int('snapqdr_ctrl',0)
-        	self.roach.write_int('startSnap', 0)
-        	phase = []
-        	for m in range(steps*L):
-            		phase.append(struct.unpack('>h', bin_data_phase[m*4+2:m*4+4])[0])
-            		phase.append(struct.unpack('>h', bin_data_phase[m*4+0:m*4+2])[0])
-	
-	
-		#print'Number of phase samples: ', len(phase) #delete this	
-
-        	qdr_values = struct.unpack('>%dh'%(nContsnapSamples),qdr_data_str)
-        	qdr_phase_values = numpy.array(qdr_values)*360./2**16*4/numpy.pi
-        	phase = numpy.array(phase)*360./2**16*4/numpy.pi
+        self.roach.write_int('snapPhase_ctrl', 0)
+        self.roach.write_int('snapqdr_ctrl',0)
+        self.roach.write_int('startSnap', 0)
+        phase = []
+        for m in range(steps*L):
+            phase.append(struct.unpack('>h', bin_data_phase[m*4+2:m*4+4])[0])
+            phase.append(struct.unpack('>h', bin_data_phase[m*4+0:m*4+2])[0])
 
 
-		phase_threshold = float(self.textbox_phasethreshold.text())
-		#phase_threshold = -20          #using textbox now
-		george = 0
-		bob = 500 #making this 500, skipping first 500 points so can get median
+        #print'Number of phase samples: ', len(phase) #delete this
 
-		#qdr_phase_values = qdr_phase_values - numpy.median(qdr_phase_values)
-		median_qdr_phase = numpy.median(qdr_phase_values)	
-				
-		
-		#calculate mean for each 1024 samples band. Will make user select this length later
-
-		averagelengthpower = float(self.textbox_averagelength.text())
-		averagelength = int(2**(averagelengthpower))
-		#print 'Average Length: ', averagelength
+        qdr_values = struct.unpack('>%dh'%(nContsnapSamples),qdr_data_str)
+        qdr_phase_values = numpy.array(qdr_values)*360./2**16*4/numpy.pi
+        phase = numpy.array(phase)*360./2**16*4/numpy.pi
 
 
-		numberofaverages = nContsnapSamples/averagelength 
-		phase_means = numpy.zeros(numberofaverages) #making array off means
+        phase_threshold = float(self.textbox_phasethreshold.text())
+        #phase_threshold = -20          #using textbox now
+        george = 0
+        bob = 500 #making this 500, skipping first 500 points so can get median
 
-		for i in range(numberofaverages):
-			phase_means[i] = numpy.mean(qdr_phase_values[(averagelength*(i+1) - averagelength):averagelength*(i+1)])
-			#print 'start:end = ',(averagelength*(i+1) - averagelength),':', averagelength*(i+1)-1, 'mean = ', phase_means[i]
-			
-		while bob < len(qdr_phase_values):	
-			whichmean = bob//averagelength	
-			#print 'Index: ', bob, ', ', 'Which Mean: ', whichmean, ', ', 'Mean: ', phase_means[whichmean]
-			#print 'QDR Phase Value: ', qdr_phase_values[bob]
-
-			if bob+1500 > len(qdr_phase_values):
-				break
-
-			#need to add some extra requirements here to count a pulse
-			#see matt strader thesis
-
-			#changing how median/mean is calculated to fix bug with phase baseline
-			bob_array = [2001]
-			bob_array = qdr_phase_values[bob-500:bob+1500]
-			#currentmean = numpy.mean(bob_array)
-			#currentmedian = numpy.median(bob_array)
+        #qdr_phase_values = qdr_phase_values - numpy.median(qdr_phase_values)
+        median_qdr_phase = numpy.median(qdr_phase_values)
 
 
-			if abs(phase_means[whichmean] - qdr_phase_values[bob]) > phase_threshold: 
-				#print 'QDR Phase Value: ', qdr_phase_values[bob]
-				george = george + 1			
-				#saveDir = str('/home/labuser/Desktop/SDR-master/DataReadout/PhaseDataEoin/') #commenting out and adding line below to load saveDir from textbox
-				saveDir = str(self.textbox_pulsesavepath.text())
+        #calculate mean for each 1024 samples band. Will make user select this length later
 
-				#if saveDir doesn't already exist, make it 
-				if not os.path.exists(saveDir):
-					os.makedirs(saveDir)
+        averagelengthpower = float(self.textbox_averagelength.text())
+        averagelength = int(2**(averagelengthpower))
+        #print 'Average Length: ', averagelength
 
-				pulsefilename = saveDir + 'pulses_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt' #changed to include milliseconds
+
+        numberofaverages = nContsnapSamples/averagelength
+        phase_means = numpy.zeros(numberofaverages) #making array off means
+
+        for i in range(numberofaverages):
+            phase_means[i] = numpy.mean(qdr_phase_values[(averagelength*(i+1) - averagelength):averagelength*(i+1)])
+            #print 'start:end = ',(averagelength*(i+1) - averagelength),':', averagelength*(i+1)-1, 'mean = ', phase_means[i]
+
+        while bob < len(qdr_phase_values):
+            whichmean = bob//averagelength
+            #print 'Index: ', bob, ', ', 'Which Mean: ', whichmean, ', ', 'Mean: ', phase_means[whichmean]
+            #print 'QDR Phase Value: ', qdr_phase_values[bob]
+
+            if bob+1500 > len(qdr_phase_values):
+                break
+
+            #need to add some extra requirements here to count a pulse
+            #see matt strader thesis
+
+            #changing how median/mean is calculated to fix bug with phase baseline
+            bob_array = [2001]
+            bob_array = qdr_phase_values[bob-500:bob+1500]
+            #currentmean = numpy.mean(bob_array)
+            #currentmedian = numpy.median(bob_array)
+
+
+            if abs(phase_means[whichmean] - qdr_phase_values[bob]) > phase_threshold:
+                #print 'QDR Phase Value: ', qdr_phase_values[bob]
+                george = george + 1
+                #saveDir = str('/home/labuser/Desktop/SDR-master/DataReadout/PhaseDataEoin/') #commenting out and adding line below to load saveDir from textbox
+                saveDir = str(self.textbox_pulsesavepath.text())
+
+                #if saveDir doesn't already exist, make it
+                if not os.path.exists(saveDir):
+                    os.makedirs(saveDir)
+
+                pulsefilename = saveDir + 'pulses_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt' #changed to include milliseconds
  
-				#saving off binary data to debug 
-				qdrfilename = saveDir + 'qdr_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'
+                #saving off binary data to debug
+                qdrfilename = saveDir + 'qdr_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'
 
-				numpy.savetxt(pulsefilename,bob_array,fmt='%.8f', delimiter=',')                       #saves pulse data #changed %e to %f
-				#print 'Total pulses = ', total_pulses
-				#print 'Modulo = ', total_pulses % 10
+                numpy.savetxt(pulsefilename,bob_array,fmt='%.8f', delimiter=',')                       #saves pulse data #changed %e to %f
+                #print 'Total pulses = ', total_pulses
+                #print 'Modulo = ', total_pulses % 10
 
-				#if (total_pulses % 10) == 0:
-				#	print 'Modulo = ', total_pulses % 10
-					
-				#	self.axes0.clear()
-				#	self.axes0.plot(bob_array,'b.')
-				#	self.canvas.draw()
-				#	time.sleep(1)
+                #if (total_pulses % 10) == 0:
+                #	print 'Modulo = ', total_pulses % 10
+
+                #	self.axes0.clear()
+                #	self.axes0.plot(bob_array,'b.')
+                #	self.canvas.draw()
+                #	time.sleep(1)
 
 
-				#self.axes0.clear()
-				#self.axes0.plot(bob_array,'b.')
-				#self.canvas.draw()
-				#time.sleep(1)
-				
-				total_pulses = total_pulses + 1
-				
+                #self.axes0.clear()
+                #self.axes0.plot(bob_array,'b.')
+                #self.canvas.draw()
+                #time.sleep(1)
 
-				
+                total_pulses = total_pulses + 1
 
-				#print'I,Q Centre: ', iq_centers
-				#print'File saved!', george#, 'Index ', bob, 'Mean: ', phase_means[whichmean]
-				#print'Phase: ', qdr_phase_values[bob]
-				#print'Phase Threshold: ', phase_threshold
-			
-				bob = bob + 1000
-			else:
-				bob = bob + 1			
-				#print'Count= ', bob
-		
-		
-        	med=numpy.median(phase)
-        	sd = numpy.std(phase) #added to see if shifting LO has any effect on data
 
-        	#print 'ch:',ch_we,'median:',med,'standard deviation:', sd
-        	thresh=self.thresholds[ch_we]
 
-        	countrate = countrate + george
-		print 'Iteration: ', failsafe, ', Counts per second: ', countrate
 
-		self.axes0.clear()
-		self.axes0.plot(bob_array,'b.')
-		time.sleep(1)
-		#self.axes0.pause(0.0001)
-		#self.axes0.draw()
-		#self.axes0.show()
-		#self.canvas.draw()
-		#self.canvas.show()
-		self.canvas.draw()
-		self.canvas.show()
-				
-		
+                #print'I,Q Centre: ', iq_centers
+                #print'File saved!', george#, 'Index ', bob, 'Mean: ', phase_means[whichmean]
+                #print'Phase: ', qdr_phase_values[bob]
+                #print'Phase Threshold: ', phase_threshold
 
-		#time.sleep(10)
-				
+                bob = bob + 1000
+            else:
+                bob = bob + 1
+                #print'Count= ', bob
 
-		failsafe = failsafe + 1
 
-		if failsafe > (maxloops - 1):
-			#print 'Too many loops.'
-			break 
-			
+            med=numpy.median(phase)
+            sd = numpy.std(phase) #added to see if shifting LO has any effect on data
+
+            #print 'ch:',ch_we,'median:',med,'standard deviation:', sd
+            thresh=self.thresholds[ch_we]
+
+            countrate = countrate + george
+            print 'Iteration: ', failsafe, ', Counts per second: ', countrate
+
+            self.axes0.clear()
+            self.axes0.plot(bob_array,'b.')
+            time.sleep(1)
+            #self.axes0.pause(0.0001)
+            #self.axes0.draw()
+            #self.axes0.show()
+            #self.canvas.draw()
+            #self.canvas.show()
+            self.canvas.draw()
+            self.canvas.show()
+
+
+
+            #time.sleep(10)
+
+
+            failsafe = failsafe + 1
+
+            if failsafe > (maxloops - 1):
+                #print 'Too many loops.'
+                break
+
         
-	print "Finished!"
+    print "Finished!"
 
 
 
     def contsnapstop(self):
-	
-	if self.contsnapStatus == 'off':
-		self.contsnapStatus = 'on'
-		 
-	else:
-		self.contsnapStatus = 'off'
 
-	print'Stop: ', self.contsnapStatus	
+        if self.contsnapStatus == 'off':
+            self.contsnapStatus = 'on'
 
-	#return stop
+        else:
+            self.contsnapStatus = 'off'
+
+        print'Stop: ', self.contsnapStatus
+
+        #return stop
 
 
 
 
 
     def readPulses(self):
-	N_freqs = len(map(float, unicode(self.textedit_DACfreqs.toPlainText()).split()))
+        N_freqs = len(map(float, unicode(self.textedit_DACfreqs.toPlainText()).split()))
         scale_to_degrees = 360./2**12*4/numpy.pi
         channel_count = [0]*256
         p1 = [[] for n in range(256)]
@@ -810,11 +821,11 @@ class AppForm(QMainWindow):
         base = base/2.0**9-4.0
         base = base*180.0/numpy.pi
         times = numpy.array(timestamp[ch],dtype='float')/1e6
-	timesCh = times/1
+        timesCh = times/1
         peaksCh = numpy.array(peaks[ch],dtype = 'float')
         peaksCh = peaksCh/2.0**9-4.0
         peaksCh = peaksCh*180.0/numpy.pi
-        peaksSubBase = peaksCh-basedf
+        peaksSubBase = peaksCh-base
         print 'count rate:',len(base)
         print 'mean baseline:',numpy.mean(base)
         print 'median baseline:',numpy.median(base) 
@@ -852,12 +863,25 @@ class AppForm(QMainWindow):
         self.axes1.bar(center, hgPeakSubBase, width, alpha=0.5, linewidth=0, color='r')
         self.axes1.set_xlabel("peak phase (degrees)")
         self.axes1.set_title(hTitle)
-	saveDir = str('/home/labuser/Desktop/SDR-master/DataReadout/NewData/') #saves phase data here
+
+        # gets the environment variable
+        SCRIPT_ROOT = os.environ.get('SCRIPT_ROOT')
+
+        # If the environment variable is not defined
+        if SCRIPT_ROOT is None:
+            # Gets the path to this script
+            this_script = os.path.abspath(__file__)
+            # Gets the directory of the current file
+            this_script_dir = os.path.dirname(this_script)
+            # Gets the directory two up from the current one (i.e. PWD/../..)
+            SCRIPT_ROOT = os.path.dirname(os.path.dirname(this_script_dir))
+
+        saveDir = str(SCRIPT_ROOT+'/DataReadout/NewData/') #saves phase data here
         if saveDir != '':
             phasefilename1 = saveDir + 'Pulse_histogram_'+time.strftime("%Y%m%d-%H%M%S",time.localtime())+'.txt'
-	    phasefilename2 = saveDir + 'Pulse_times_'+time.strftime("%Y%m%d-%H%M%S",time.localtime())+'.txt'
+            phasefilename2 = saveDir + 'Pulse_times_'+time.strftime("%Y%m%d-%H%M%S",time.localtime())+'.txt'
             numpy.savetxt(phasefilename1,peaksCh,fmt='%.8e')
-	    numpy.savetxt(phasefilename2,timesCh,fmt='%.8e')
+            numpy.savetxt(phasefilename2,timesCh,fmt='%.8e')
 
 
         self.canvas.draw()
@@ -1030,7 +1054,19 @@ class AppForm(QMainWindow):
 
         
     def importFIRcoeffs(self):
-        coeffsFile =str(self.textbox_coeffsFile.text())
+        # gets the environment variable
+        SCRIPT_ROOT = os.environ.get('SCRIPT_ROOT')
+
+        # If the environment variable is not defined
+        if SCRIPT_ROOT is None:
+            # Gets the path to this script
+            this_script = os.path.abspath(__file__)
+            # Gets the directory of the current file
+            this_script_dir = os.path.dirname(this_script)
+            # Gets the directory two up from the current one (i.e. PWD/../..)
+            SCRIPT_ROOT = os.path.dirname(os.path.dirname(this_script_dir))
+
+        coeffsFile = SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/BlackmanFilter_250kHz.txt' # str(self.textbox_coeffsFile.text())
         self.fir = numpy.loadtxt(coeffsFile)
         print self.fir
   
@@ -1059,7 +1095,7 @@ class AppForm(QMainWindow):
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
         
         # Roach board's IP address
-        self.textbox_roachIP = QLineEdit('192.168.4.%d'%roachNum)
+        self.textbox_roachIP = QLineEdit('192.168.4.%d'%roachNo)
         self.textbox_roachIP.setMaximumWidth(200)
         label_roachIP = QLabel('Roach IP Address:')
 
@@ -1070,13 +1106,25 @@ class AppForm(QMainWindow):
         
         # DAC Frequencies.
         self.textedit_DACfreqs = QTextEdit()
-	self.textedit_DACfreqs.setMinimumWidth(150) #added this, box was appearing too small
+        self.textedit_DACfreqs.setMinimumWidth(150) #added this, box was appearing too small
         self.textedit_DACfreqs.setMaximumWidth(170) #changed from 170 to 200
         self.textedit_DACfreqs.setMaximumHeight(100)
         label_DACfreqs = QLabel('DAC Freqs:')
     
         # File with frequencies/attens
-        self.textbox_freqFile = QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file 
+        # gets the environment variable
+        SCRIPT_ROOT = os.environ.get('SCRIPT_ROOT')
+
+        # If the environment variable is not defined
+        if SCRIPT_ROOT is None:
+            # Gets the path to this script
+            this_script = os.path.abspath(__file__)
+            # Gets the directory of the current file
+            this_script_dir = os.path.dirname(this_script)
+            # Gets the directory two up from the current one (i.e. PWD/../..)
+            SCRIPT_ROOT = os.path.dirname(os.path.dirname(this_script_dir))
+
+        self.textbox_freqFile = QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file
         self.textbox_freqFile.setMaximumWidth(200) 
 
         # Import freqs from file.
@@ -1084,54 +1132,54 @@ class AppForm(QMainWindow):
         self.button_importFreqs.setMaximumWidth(200)
         self.connect(self.button_importFreqs, SIGNAL('clicked()'), self.importFreqs)   
 
-        # File with FIR coefficients
-        self.textbox_coeffsFile = QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/BlackmanFilter_250kHz.txt')
-        self.textbox_coeffsFile.setMaximumWidth(200)
+        # # File with FIR coefficients
+        # self.textbox_coeffsFile = QLineEdit(SCRIPT_ROOT+'/DataReadout/ChannelizerControls/LUT/BlackmanFilter_250kHz.txt')
+        # self.textbox_coeffsFile.setMaximumWidth(200)
 
-        # Import FIR coefficients from file.
-        self.button_importFIRcoeffs = QPushButton("(3)Import FIR coeffs.")
-        self.button_importFIRcoeffs.setMaximumWidth(200)
-        self.connect(self.button_importFIRcoeffs, SIGNAL('clicked()'), self.importFIRcoeffs) 
+        # # Import FIR coefficients from file.
+        # self.button_importFIRcoeffs = QPushButton("(3)Import FIR coeffs.")
+        # self.button_importFIRcoeffs.setMaximumWidth(200)
+        # self.connect(self.button_importFIRcoeffs, SIGNAL('clicked()'), self.importFIRcoeffs)
 
-        # Channel increment by 1.
-        self.button_channelInc = QPushButton("Channel++")
-        self.button_channelInc.setMaximumWidth(100)
-        self.connect(self.button_channelInc, SIGNAL('clicked()'), self.channelInc)
+        # # Channel increment by 1.
+        # self.button_channelInc = QPushButton("Channel++")
+        # self.button_channelInc.setMaximumWidth(100)
+        # self.connect(self.button_channelInc, SIGNAL('clicked()'), self.channelInc)
 
-        # Load FIR coefficients.
-        self.button_loadFIRcoeffs = QPushButton("(4)Load FIR")
-        self.button_loadFIRcoeffs.setMaximumWidth(170)
-        self.connect(self.button_loadFIRcoeffs, SIGNAL('clicked()'), self.loadFIRcoeffs)
+        # # Load FIR coefficients.
+        # self.button_loadFIRcoeffs = QPushButton("(4)Load FIR")
+        # self.button_loadFIRcoeffs.setMaximumWidth(170)
+        # self.connect(self.button_loadFIRcoeffs, SIGNAL('clicked()'), self.loadFIRcoeffs)
 
         # Load thresholds.
-        self.button_loadThresholds = QPushButton("(5)Load thresholds")
-        self.button_loadThresholds.setMaximumWidth(170)
-        self.connect(self.button_loadThresholds, SIGNAL('clicked()'), self.loadThresholds)
-
-	# File with save path for pulses
-	
-	#getdate
-	default_save_path = '/home/labuser/Data/' + datetime.utcnow().strftime('%Y') + '/' + datetime.utcnow().strftime('%Y_%m_%d') + '/'
+        # self.button_loadThresholds = QPushButton("(5)Load thresholds")
+        # self.button_loadThresholds.setMaximumWidth(170)
+        # self.connect(self.button_loadThresholds, SIGNAL('clicked()'), self.loadThresholds)
+        # File with save path for pulses
+        # getdate
+        # gets the directory one up from the script root
+        MKIDS_ROOT=os.path.dirname(SCRIPT_ROOT)
+        default_save_path = MKIDS_ROOT+'/Data/' + datetime.utcnow().strftime('%Y') + '/' + datetime.utcnow().strftime('%Y_%m_%d') + '/'
 
         self.textbox_pulsesavepath = QLineEdit(default_save_path) #changed file 
-        self.textbox_pulsesavepath.setMaximumWidth(200) 
-	label_pulsesavepath = QLabel('Phase Data Save Path')
+        self.textbox_pulsesavepath.setMaximumWidth(200)
+        label_pulsesavepath = QLabel('Phase Data Save Path')
 
-        # remove custom threshold button
-        self.button_rmCustomThreshold = QPushButton("Remove custom threshold")
-        self.button_rmCustomThreshold.setMaximumWidth(200) #changed from 170
-        self.connect(self.button_rmCustomThreshold, SIGNAL('clicked()'), self.rmCustomThreshold)
+        # # remove custom threshold button
+        # self.button_rmCustomThreshold = QPushButton("Remove custom threshold")
+        # self.button_rmCustomThreshold.setMaximumWidth(200) #changed from 170
+        # self.connect(self.button_rmCustomThreshold, SIGNAL('clicked()'), self.rmCustomThreshold)
         
         # Channel to measure
         self.textbox_channel = QLineEdit('0')
         self.textbox_channel.setMaximumWidth(50)
 
         # threshold N*sigma
-        self.textbox_Nsigma = QLineEdit('2.5')
-        self.textbox_Nsigma.setMaximumWidth(50)
-        label_Nsigma = QLabel('Sigma       ')
+        # self.textbox_Nsigma = QLineEdit('2.5')
+        # self.textbox_Nsigma.setMaximumWidth(50)
+        # label_Nsigma = QLabel('Sigma       ')
 
-	# phase threshold - new 
+        # phase threshold - new
         self.textbox_phasethreshold = QLineEdit('10')
         self.textbox_phasethreshold.setMaximumWidth(50)
         label_phasethreshold = QLabel('[Deg.] Phase Threshold for Pulse Data')
@@ -1144,32 +1192,32 @@ class AppForm(QMainWindow):
         # Long time snapshot of a single channel
         self.button_longsnapshot = QPushButton("Long Snapshot (QDR)")
         self.button_longsnapshot.setMaximumWidth(170)
-        self.connect(self.button_longsnapshot, SIGNAL('clicked()'), self.longsnapshot)            
-        
-	# Continuous time snapshot of a single channel
+        self.connect(self.button_longsnapshot, SIGNAL('clicked()'), self.longsnapshot)
+
+        # Continuous time snapshot of a single channel
         self.button_contsnapshot = QPushButton("Record Pulse Data (SW)")
         self.button_contsnapshot.setMaximumWidth(170)
-        self.connect(self.button_contsnapshot, SIGNAL('clicked()'), self.contsnapshot)            
-        
-	# Stop button to stop continuous time snapshot
-	self.button_contsnapstop = QPushButton("Stop Pulse Data")
+        self.connect(self.button_contsnapshot, SIGNAL('clicked()'), self.contsnapshot)
+
+        # Stop button to stop continuous time snapshot
+        self.button_contsnapstop = QPushButton("Stop Pulse Data")
         self.button_contsnapstop.setMaximumWidth(170)
         self.connect(self.button_contsnapstop, SIGNAL('clicked()'), self.contsnapstop)            
         
         # Read pulses
-        self.button_readPulses = QPushButton("Read Pulses Heights (HW)")
-        self.button_readPulses.setMaximumWidth(205)
-        self.connect(self.button_readPulses, SIGNAL('clicked()'), self.readPulses)
+        # self.button_readPulses = QPushButton("Read Pulses Heights (HW)")
+        # self.button_readPulses.setMaximumWidth(205)
+        # self.connect(self.button_readPulses, SIGNAL('clicked()'), self.readPulses)
+        #
+        # # Seconds for "read pulses."
+        # self.textbox_seconds = QLineEdit('1')
+        # self.textbox_seconds.setMaximumWidth(50)
+        # label_seconds = QLabel('* 1 sec')
         
-        # Seconds for "read pulses."
-        self.textbox_seconds = QLineEdit('1')
-        self.textbox_seconds.setMaximumWidth(50)
-	label_seconds = QLabel('* 1 sec')
-        
-        # lengths of 2 ms for defining thresholds.
-        self.textbox_timeLengths = QLineEdit('10')
-        self.textbox_timeLengths.setMaximumWidth(50)
-        label_timeLengths = QLabel('* 2 msec       ')
+        # # lengths of 2 ms for defining thresholds.
+        # self.textbox_timeLengths = QLineEdit('10')
+        # self.textbox_timeLengths.setMaximumWidth(50)
+        # label_timeLengths = QLabel('* 2 msec       ')
 
 
         # lengths of 2 ms steps to combine in a snapshot.
@@ -1177,10 +1225,10 @@ class AppForm(QMainWindow):
         self.textbox_snapSteps.setMaximumWidth(50)
         label_snapSteps = QLabel('* 2 msec')
 
-	# normalisation for noise measurements. This is the signal voltage (in micro Volts [uV]) that is input to each of the ADCs.
-        self.textbox_normalisation = QLineEdit('50')
-        self.textbox_normalisation.setMaximumWidth(50)
-        label_normalisation = QLabel('Normalisation [uV] (ADC signal)')
+        # # normalisation for noise measurements. This is the signal voltage (in micro Volts [uV]) that is input to each of the ADCs.
+        # self.textbox_normalisation = QLineEdit('50')
+        # self.textbox_normalisation.setMaximumWidth(50)
+        # label_normalisation = QLabel('Normalisation [uV] (ADC signal)')
 
         # lengths of 2 ms steps to combine in a snapshot.
         self.textbox_longsnapSteps = QLineEdit('1')
@@ -1193,12 +1241,12 @@ class AppForm(QMainWindow):
         self.textbox_contsnapSteps.setMaximumWidth(50)
         label_contsnapSteps = QLabel('* sec')
 
-	# number of loops in a continuous snapshot.
+        # number of loops in a continuous snapshot.
         self.textbox_contsnapLoops = QLineEdit('1')
         self.textbox_contsnapLoops.setMaximumWidth(50)
         label_contsnapLoops = QLabel('Iterations')
 
-	# number of points in average, as a power of 2
+        # number of points in average, as a power of 2
         self.textbox_averagelength = QLineEdit('6')
         self.textbox_averagelength.setMaximumWidth(50)
         label_averagelength = QLabel('Average Length (2^ )')
@@ -1231,17 +1279,17 @@ class AppForm(QMainWindow):
         hbox01.addWidget(self.button_importFreqs)
         gbox0.addLayout(hbox01)
         hbox02 = QHBoxLayout()
-        hbox02.addWidget(self.textbox_coeffsFile)
-        hbox02.addWidget(self.button_importFIRcoeffs)
-        hbox02.addWidget(self.button_loadFIRcoeffs)
+        # hbox02.addWidget(self.textbox_coeffsFile)
+        # hbox02.addWidget(self.button_importFIRcoeffs)
+        # hbox02.addWidget(self.button_loadFIRcoeffs)
         gbox0.addLayout(hbox02)
-        hbox03 = QHBoxLayout()
-        hbox03.addWidget(self.textbox_timeLengths)
-        hbox03.addWidget(label_timeLengths)
-        hbox03.addWidget(self.textbox_Nsigma)
-        hbox03.addWidget(label_Nsigma)
-        hbox03.addWidget(self.button_loadThresholds)
-        gbox0.addLayout(hbox03)
+        # hbox03 = QHBoxLayout()
+        # # hbox03.addWidget(self.textbox_timeLengths)
+        # # hbox03.addWidget(label_timeLengths)
+        # # hbox03.addWidget(self.textbox_Nsigma)
+        # # hbox03.addWidget(label_Nsigma)
+        # # hbox03.addWidget(self.button_loadThresholds)
+        # gbox0.addLayout(hbox03)
         
         gbox1 = QVBoxLayout()
         gbox1.addWidget(label_DACfreqs)
@@ -1249,13 +1297,13 @@ class AppForm(QMainWindow):
 
         gbox2 = QVBoxLayout()
         hbox20 = QHBoxLayout()
-        hbox20.addWidget(self.textbox_channel)
-        hbox20.addWidget(self.button_channelInc)
-        gbox2.addLayout(hbox20)
-	hbox221 = QHBoxLayout()
-        hbox221.addWidget(self.textbox_normalisation)
-	hbox221.addWidget(label_normalisation)
-        gbox2.addLayout(hbox221)
+        # hbox20.addWidget(self.textbox_channel)
+        # hbox20.addWidget(self.button_channelInc)
+        # gbox2.addLayout(hbox20)
+        # hbox221 = QHBoxLayout()
+        # hbox221.addWidget(self.textbox_normalisation)
+        # hbox221.addWidget(label_normalisation)
+        # gbox2.addLayout(hbox221)
         hbox21 = QHBoxLayout()
         hbox21.addWidget(self.button_snapshot)
         hbox21.addWidget(self.textbox_snapSteps)
@@ -1266,12 +1314,12 @@ class AppForm(QMainWindow):
         hbox22.addWidget(self.textbox_longsnapSteps)
         hbox22.addWidget(label_longsnapSteps)
         gbox2.addLayout(hbox22)
-        gbox2.addWidget(self.button_rmCustomThreshold)
-        hbox23 = QHBoxLayout()
-        hbox23.addWidget(self.button_readPulses)
-	hbox23.addWidget(self.textbox_seconds)
-	hbox23.addWidget(label_seconds)
-        gbox2.addLayout(hbox23)
+        # gbox2.addWidget(self.button_rmCustomThreshold)
+        # hbox23 = QHBoxLayout()
+        # hbox23.addWidget(self.button_readPulses)
+        # hbox23.addWidget(self.textbox_seconds)
+        # hbox23.addWidget(label_seconds)
+        # gbox2.addLayout(hbox23)
 
         gbox3 = QVBoxLayout()
         gbox3.addWidget(self.label_median)
@@ -1279,34 +1327,31 @@ class AppForm(QMainWindow):
         gbox3.addWidget(self.label_attenuation)
         gbox3.addWidget(self.label_frequency)
 
-	hbox25 = QHBoxLayout()
+        hbox25 = QHBoxLayout()
         hbox25.addWidget(self.textbox_phasethreshold) #sets phase threshold
         hbox25.addWidget(label_phasethreshold)
-        
-	gbox3.addLayout(hbox25)
+        gbox3.addLayout(hbox25)
 
-	
-	hbox24 = QHBoxLayout()
+        hbox24 = QHBoxLayout()
         hbox24.addWidget(self.button_contsnapshot)
         hbox24.addWidget(self.textbox_contsnapSteps)
         hbox24.addWidget(label_contsnapSteps)
         hbox24.addWidget(self.textbox_contsnapLoops) #to control number of loops in continuous shot
         hbox24.addWidget(label_contsnapLoops)
-        
-	hbox26 = QHBoxLayout()
-	hbox26.addWidget(self.textbox_pulsesavepath) #adding text box to input save path
-	hbox26.addWidget(label_pulsesavepath)
+
+        hbox26 = QHBoxLayout()
+        hbox26.addWidget(self.textbox_pulsesavepath) #adding text box to input save path
+        hbox26.addWidget(label_pulsesavepath)
         gbox0.addLayout(hbox26)
-
-	hbox27 = QHBoxLayout()
-	hbox27.addWidget(self.textbox_averagelength) #adding text box to input average size
-	hbox27.addWidget(label_averagelength)
+        hbox27 = QHBoxLayout()
+        hbox27.addWidget(self.textbox_averagelength) #adding text box to input average size
+        hbox27.addWidget(label_averagelength)
         gbox0.addLayout(hbox27)
-        	
 
-	gbox3.addLayout(hbox24)
+
+        gbox3.addLayout(hbox24)
         
-	hbox24 = QHBoxLayout()
+        hbox24 = QHBoxLayout()
         hbox24.addWidget(self.button_contsnapstop)
         gbox3.addLayout(hbox24)
         
@@ -1316,7 +1361,7 @@ class AppForm(QMainWindow):
         hbox.addLayout(gbox1)     
         hbox.addLayout(gbox2)
         hbox.addLayout(gbox3)
-	
+
         vbox = QVBoxLayout()
         vbox.addWidget(self.canvas)
         vbox.addWidget(self.mpl_toolbar)
@@ -1388,10 +1433,22 @@ def main():
     app.exec_()
 
 if __name__=='__main__':
-    if len(sys.argv)!= 2:
-        print 'Usage: ',sys.argv[0],' roachNum'
+    if len(sys.argv) == 1:
+        print 'Preferred Usage: ', sys.argv[0], ' roachNo'
+        roachNo = 10
+        print 'Defaulting to roachNo = ', roachNo
+
+    elif len(sys.argv) != 2:
+        #print len(sys.argv)
+        #print sys.argv[0]
+        print 'Usage: ',sys.argv[0],' roachNo'
         exit(1)
-    roachNum = int(sys.argv[1])
-    datadir = '/opt/software/colin1/LUT/freqTest.txt'
+    else:
+        roachNo = int(sys.argv[1])
+    # if len(sys.argv)!= 2:
+    #     print 'Usage: ',sys.argv[0],' roachNum'
+    #     exit(1)
+    # roachNum = int(sys.argv[1])
+    # datadir = '/opt/software/colin1/LUT/freqTest.txt'
     main()
 
