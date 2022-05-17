@@ -46,8 +46,11 @@ class AppForm(QMainWindow):
         self.customResonators=numpy.array([[0.0,-1]]*256)   #customResonator[ch]=[freq,atten]
         
     def openClient(self):
+        self.status_text.setText('connecting...')
+        print 'connecting...'
         self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
         self.roach.progdev('chan_snap_v3_2012_Oct_30_1216.bof')
+        print 'programming roach...'
         time.sleep(2)
         self.status_text.setText('connection established')
         print 'Connected to ',self.textbox_roachIP.text()
@@ -425,6 +428,7 @@ class AppForm(QMainWindow):
 
         self.canvas.draw()
         print "snapshot taken"
+        print("Bins register = ", self.roach.read_int('bins'))
 
     def longsnapshot(self):        
         self.displayResonatorProperties()
@@ -550,12 +554,14 @@ class AppForm(QMainWindow):
 
 
 
-    def contsnapshot(self):
+    def contsnapshot(self): 
         failsafe = 0
         maxloops = int(self.textbox_contsnapLoops.text()) #break if failsafe exceeds this. Stop button currently bugging.
         total_pulses = 0
-
-
+        pulsenumberarray = numpy.zeros(2000)
+        pulsenumberarray = pulsenumberarray.tolist()
+        finalphasearray = []
+	
 
         while self.contsnapStatus == 'off':
 
@@ -640,8 +646,17 @@ class AppForm(QMainWindow):
             #see matt strader thesis
 
             #changing how median/mean is calculated to fix bug with phase baseline
-            bob_array = [2001]
+            #bob_array = [2001]
+            #bob_array = qdr_phase_values[bob-500:bob+1500]
+
+            #bob_array = [2001]
+            #pulsenumberarray = total_pulses*numpy.ones(2000)
+            #pulsenumberarray = pulsenumberarray.tolist()
             bob_array = qdr_phase_values[bob-500:bob+1500]
+            #print "Pulse numbers = ", pulsenumberarray
+
+
+
             #currentmean = numpy.mean(bob_array)
             #currentmedian = numpy.median(bob_array)
 
@@ -661,7 +676,23 @@ class AppForm(QMainWindow):
                 #saving off binary data to debug
                 qdrfilename = saveDir + 'qdr_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'
 
-                numpy.savetxt(pulsefilename,bob_array,fmt='%.8f', delimiter=',')                       #saves pulse data #changed %e to %f
+
+                pulsenumber = total_pulses*numpy.ones(2000)
+                pulsenumber = pulsenumber.tolist()
+                #print "Pulse numbers = ", pulsenumberarray
+
+
+                if total_pulses == 0:
+                    finalphasearray.extend(bob_array)
+
+                else:
+                    finalphasearray.extend(bob_array)
+                    pulsenumberarray.extend(pulsenumber)
+
+
+                #numpy.savetxt(pulsefilename,numpy.column_stack(savearray),fmt='%.2f')
+
+                #numpy.savetxt(pulsefilename,bob_array,fmt='%.8f', delimiter=',')                       #saves pulse data #changed %e to %f
                 #print 'Total pulses = ', total_pulses
                 #print 'Modulo = ', total_pulses % 10
 
@@ -726,8 +757,9 @@ class AppForm(QMainWindow):
                 #print 'Too many loops.'
                 break
 
-        
-    print "Finished!"
+        savearray = [pulsenumberarray, finalphasearray]
+        numpy.savetxt(pulsefilename, numpy.column_stack(savearray), fmt='%i ' '%.2f')
+        print "Finished!"
 
 
 

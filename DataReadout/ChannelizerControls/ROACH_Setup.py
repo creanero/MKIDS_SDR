@@ -39,8 +39,8 @@ if __name__ == '__main__':
         print 'Defaulting to roachNo = ', roachNo
 
     elif len(sys.argv) != 2:
-        #print len(sys.argv) 
-        #print sys.argv[0] 
+        #print len(sys.argv)
+        #print sys.argv[0]
         print 'Usage: ',sys.argv[0],' roachNo'
         exit(1)
     else:
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     #defaultLOFreq = defaultLOFreqs[roachNo]
    #defaultAtten = int(defaultAttens[roachNo])
 
-        
+
     MAX_ATTEN = 99
 
 class AppForm(QtG.QMainWindow):
@@ -112,8 +112,8 @@ class AppForm(QtG.QMainWindow):
         self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
         time.sleep(2)
         print 'programming roach...'
-        self.roach.progdev('chan_snap_v3_2012_Oct_30_1216.bof') 
-        #'chan_512_2012_Jul_30_1754.bof' original boffile. 
+        self.roach.progdev('pulse_trigger_2022_Jan_24_1322.bof')
+        #'chan_512_2012_Jul_30_1754.bof' original boffile.
         #Last working: chan_snap_v3_2012_Oct_30_1216.bof
         #trying chan_snap_v4_20_12_2018_May_29_1235.bof and chan_snap_v4_20_12_2018_Jun_07_1106.bof
 
@@ -305,7 +305,7 @@ class AppForm(QtG.QMainWindow):
         #print 'LO programmed. '
 
     def programLOrev2board(self, freq=3.2e9, sweep_freq=0, enable = 1):  #ensured that all frequency values here were in Hz, not MHz, enable changed to 0
-        
+
         f_pfd = 5e6
         #5MHz PFD freq on the rev2 Board
         if sweep_freq:
@@ -331,7 +331,7 @@ class AppForm(QtG.QMainWindow):
         integer_part = int(myfreq/5.0e6)
         #print 'integer_part = ', integer_part    #added for debugging
 
-        
+
 
         fractional_part = int(((myfreq - 5e6 * integer_part)/5e6)*2**24)  
         print "PLL values", myfreq, integer_part, fractional_part, div
@@ -368,16 +368,16 @@ class AppForm(QtG.QMainWindow):
         reg2 = 0x00000052   
         #reg 1
         reg1 = (fractional_part<<4) | 1 
-        
+
 
         #reg 0
         #reg0 = 0x00200000 | (integer_part<<4)   #this reg is causing errors - value too large            
         #hard coding reg0 to value given by music_if_control_v03.py
         #reg0 = 0x00204b00
-        #print 'integer_part = ', integer_part         
+        #print 'integer_part = ', integer_part
         reg0 = 0x00200000 | (integer_part<<4)         #code here calculating reg0 taking from music_if_control_v03.py
-        
-        regs = [reg12, reg11, reg10, reg9, reg8, reg7, reg6, reg5, reg4, reg3, reg2, reg1, reg0]   
+
+        regs = [reg12, reg11, reg10, reg9, reg8, reg7, reg6, reg5, reg4, reg3, reg2, reg1, reg0]
 
         #i = 12          #added for debugging
         for r in regs:
@@ -448,7 +448,7 @@ class AppForm(QtG.QMainWindow):
         a = numpy.array([abs(I).max(), abs(Q).max()])
         scale_factor = a.max()
 
-         
+
 
         scaleFudgeFactor = 1.1 #don't scale to the max value, but get close
         if echo == 'yes':
@@ -478,11 +478,11 @@ class AppForm(QtG.QMainWindow):
         freqs = [float(self.spinBox_DACfreq.value())]
         f_base = float(self.spinBox_loFreq.value())
 
-        
+
         #print(freqs)
-        
+
         n = 0
-        for f in freqs:                             #need this to stop giving wrong frequencies - not sure why it works but it does 
+        for f in freqs:                             #need this to stop giving wrong frequencies - not sure why it works but it does
             freqs[n] = f_base + (f_base - f)
             n = n + 1
 
@@ -605,8 +605,16 @@ class AppForm(QtG.QMainWindow):
             self.roach.write_int('conv_phase_load_centers', 0)
         
             centers_for_file[ch] = [self.iq_centers[ch].real, self.iq_centers[ch].imag]
-            
+	    #print"Icentre = ", self.iq_centers[ch].real, "Qcentre = ", self.iq_centers[ch].imag
+
+
         numpy.savetxt(os.path.join(saveDir,'centers.dat'), centers_for_file)
+
+        centresavearray = [self.iq_centers[0].real, self.iq_centers[0].imag]
+        saveDirIQsweep = str('/home/labuser/Data/IQSweeps')  # saves data here
+
+        IQcentrefilename = saveDirIQsweep + '/IQcentre' + '.txt'
+        numpy.savetxt(IQcentrefilename, numpy.column_stack(centresavearray), fmt='%i,' '%i')
 
     # Calculates midpoint between minimum and maximum value for I and Q
     # and returns it as a complex number in the form (I+Qj)
@@ -638,7 +646,7 @@ class AppForm(QtG.QMainWindow):
         print "Calculating loop rotations..."
         self.status_text.setText('Calculating loop rotations...')
         dac_freqs = [float(self.spinBox_DACfreq.value())]
-        
+
 
         N_freqs = len(dac_freqs)
         phase = [0.]*256
@@ -699,7 +707,7 @@ class AppForm(QtG.QMainWindow):
         f_base = float(self.spinBox_loFreq.value())
         
 
-        
+
 
         #if f_base >= 4.4e9:                  #new board does not have frequency doubler
         #    self.programRFswitches('10010')     
@@ -742,7 +750,7 @@ class AppForm(QtG.QMainWindow):
                 l = l + 1
 
 
-            #print 'self.I = ', self.I               #debugging 
+            #print 'self.I = ', self.I               #debugging
             Iarray = numpy.array(self.I)                  #debugging
             if Iarray.any() != None:                  #was getting error when doing more than one sweep, changing to self.I to Iarray.any()
                self.last_I = numpy.array(self.I) 
@@ -790,8 +798,8 @@ class AppForm(QtG.QMainWindow):
             
             N = steps*self.N_freqs
             #calculate IQ velocities (distances between points in IQ loop)
-                
-            IQ_vels_array = numpy.array(self.IQ_vels)                  #debugging            
+
+            IQ_vels_array = numpy.array(self.IQ_vels)                  #debugging
             if IQ_vels_array.any() != None:           #was getting error when doing more than one sweep, changing to self.I to Iarray.any()
                 self.last_IQ_vels = self.IQ_vels
             self.IQ_vels = numpy.zeros([self.N_freqs,steps-1])
@@ -839,7 +847,7 @@ class AppForm(QtG.QMainWindow):
         except ValueError:
             pass
             
-        self.axes1.plot(I, Q, '.-', self.iq_centers.real[0:self.N_freqs], self.iq_centers.imag[0:self.N_freqs], '.', self.I_on_res, self.Q_on_res, '.')
+        self.axes1.plot(I, Q, '.-', self.iq_centers.real[0:self.N_freqs], self.iq_centers.imag[0:self.N_freqs], '.', self.I_on_res, self.Q_on_res, '.', I[0], Q[0], '.')
         self.axes1.set_xlabel('I (In-Phase)')
         self.axes1.set_ylabel('Q (In-Quadrature)')
 
@@ -856,9 +864,18 @@ class AppForm(QtG.QMainWindow):
         #if saveDir != '':
             #phasefilename = saveDir + '/IQdata_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + str(self.textbox_roachIP.text())+'.txt'
             #numpy.savetxt(phasefilename,f_span,fmt='%.8f')                       #saves phase data #changed %e to %f
-        
-        self.canvas.draw()
 
+
+        savearray = [I, Q]
+
+
+        saveDirIQsweep = str('/home/labuser/Data/IQSweeps') #saves data here
+
+        IQsweepfilename = saveDirIQsweep + '/IQsweep'+'.txt'
+        numpy.savetxt(IQsweepfilename,numpy.column_stack(savearray),fmt='%i,' '%i' )                       #saves phase data #changed %e to %f
+
+        self.canvas.draw()
+        print("Bins register = ", self.roach.read_int('bins'))
 
 
     def toggleDAC(self):
@@ -949,7 +966,7 @@ class AppForm(QtG.QMainWindow):
     #     except IOError:
     #         # print 'No such file or directory:',freqFile
     #         self.status_text.setText('IOError')
-        
+
 
     # def channelIncUp(self):
     #     ch = int(self.textbox_channel.text())
@@ -1150,7 +1167,7 @@ class AppForm(QtG.QMainWindow):
         self.spinBox_loFreq.setRange(2e9, 6.8e9)
         self.spinBox_loFreq.setSingleStep(1e6)
         self.spinBox_loFreq.setMaximumWidth(300) # retain this even for text
-        self.spinBox_loFreq.setValue(4.74e9)
+        self.spinBox_loFreq.setValue(4.41208e9)
         self.spinBox_loFreq.setSuffix('Hz')
         self.spinBox_loFreq.setDecimals(0)
         label_loFreq = QtG.QLabel('LO frequency:')
@@ -1297,7 +1314,7 @@ class AppForm(QtG.QMainWindow):
             this_script_dir=os.path.dirname(this_script)
             # Gets the directory two up from the current one (i.e. PWD/../..)
             SCRIPT_ROOT=os.path.dirname(os.path.dirname(this_script_dir))
-        
+
 
         # Save directory
         self.LUT_saveDir = SCRIPT_ROOT + '/DataReadout/ChannelizerControls/LUT'
@@ -1351,7 +1368,7 @@ class AppForm(QtG.QMainWindow):
         self.square_DACindicate.setMidLineWidth(3)
         self.square_DACindicate.setText('off')
         self.square_DACindicate.setAlignment(QtC.Qt.AlignCenter)
-        
+
 
         # self.cbox_keepScaleFactor = QtG.QCheckBox("Keep Last Scale")
         # self.cbox_useScaleFactor = QtG.QCheckBox("Use Scale")
@@ -1527,7 +1544,7 @@ class AppForm(QtG.QMainWindow):
         hbox26 = QtG.QHBoxLayout()
         hbox26.addWidget(self.button_save_IQ_to_json)
         gbox2.addLayout(hbox26)
- 
+
         hbox = QtG.QHBoxLayout()
         hbox.addLayout(gbox0)
         hbox.addLayout(gbox1)     
