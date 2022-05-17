@@ -46,9 +46,12 @@ class AppForm(QMainWindow):
         self.customResonators=numpy.array([[0.0,-1]]*256)   #customResonator[ch]=[freq,atten]
         
     def openClient(self):
-        self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
+	self.status_text.setText('connecting...') 
+	print 'connecting...'       
+	self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
+	time.sleep(2)
+	print 'programming roach...'
         self.roach.progdev('chan_snap_v3_2012_Oct_30_1216.bof')
-        time.sleep(2)
         self.status_text.setText('connection established')
         print 'Connected to ',self.textbox_roachIP.text()
         self.button_openClient.setDisabled(True)
@@ -411,6 +414,7 @@ class AppForm(QMainWindow):
 
         self.canvas.draw()
         print "snapshot taken"
+	print("Bins register = ", self.roach.read_int('bins'))
 
     def longsnapshot(self):        
         self.displayResonatorProperties()
@@ -542,8 +546,10 @@ class AppForm(QMainWindow):
 
 	failsafe = 0
 	maxloops = int(self.textbox_contsnapLoops.text()) #break if failsafe exceeds this. Stop button currently bugging. 
-	total_pulses = 0
-
+	total_pulses = 0 
+	pulsenumberarray = numpy.zeros(2000)
+	pulsenumberarray = pulsenumberarray.tolist()
+	finalphasearray = []
 	
 
 	while self.contsnapStatus == 'off':
@@ -629,8 +635,17 @@ class AppForm(QMainWindow):
 			#see matt strader thesis
 
 			#changing how median/mean is calculated to fix bug with phase baseline
-			bob_array = [2001]
+			#bob_array = [2001]
+			#bob_array = qdr_phase_values[bob-500:bob+1500]
+
+			#bob_array = [2001]
+			#pulsenumberarray = total_pulses*numpy.ones(2000)
+			#pulsenumberarray = pulsenumberarray.tolist()
 			bob_array = qdr_phase_values[bob-500:bob+1500]
+			#print "Pulse numbers = ", pulsenumberarray 
+			
+
+
 			#currentmean = numpy.mean(bob_array)
 			#currentmedian = numpy.median(bob_array)
 
@@ -650,7 +665,23 @@ class AppForm(QMainWindow):
 				#saving off binary data to debug 
 				qdrfilename = saveDir + 'qdr_'+datetime.utcnow().strftime('%Y-%m-%d_%H%M%S%f')[:-3] +'.txt'
 
-				numpy.savetxt(pulsefilename,bob_array,fmt='%.8f', delimiter=',')                       #saves pulse data #changed %e to %f
+
+				pulsenumber = total_pulses*numpy.ones(2000)
+				pulsenumber = pulsenumber.tolist()
+				#print "Pulse numbers = ", pulsenumberarray 
+				
+
+				if total_pulses == 0:
+					finalphasearray.extend(bob_array)
+					
+				else:
+					finalphasearray.extend(bob_array)
+					pulsenumberarray.extend(pulsenumber)
+					
+
+				#numpy.savetxt(pulsefilename,numpy.column_stack(savearray),fmt='%.2f')
+
+				#numpy.savetxt(pulsefilename,bob_array,fmt='%.8f', delimiter=',')                       #saves pulse data #changed %e to %f
 				#print 'Total pulses = ', total_pulses
 				#print 'Modulo = ', total_pulses % 10
 
@@ -715,7 +746,9 @@ class AppForm(QMainWindow):
 			#print 'Too many loops.'
 			break 
 			
-        
+        savearray = [pulsenumberarray, finalphasearray]
+	numpy.savetxt(pulsefilename,numpy.column_stack(savearray),fmt='%i ' '%.2f')
+
 	print "Finished!"
 
 
@@ -1076,7 +1109,7 @@ class AppForm(QMainWindow):
         label_DACfreqs = QLabel('DAC Freqs:')
     
         # File with frequencies/attens
-        self.textbox_freqFile = QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file 
+        self.textbox_freqFile = QLineEdit('/home/labuser/MKIDS/MKIDS_SDR/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file 
         self.textbox_freqFile.setMaximumWidth(200) 
 
         # Import freqs from file.

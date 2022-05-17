@@ -1,0 +1,19 @@
+import sys, os, random, math, array, fractions,time,datetime,pickle
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+import socket
+import matplotlib, corr, time, struct, numpy
+from datetime import datetime
+#from bitstring import BitArray
+import matplotlib.pyplot as mpl
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+from tables import *
+from lib import iqsweep
+
+
+roach = corr.katcp_wrapper.FpgaClient('192.168.4.10')
+time.sleep(2)
+
+

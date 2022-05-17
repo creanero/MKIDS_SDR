@@ -46,11 +46,18 @@ class AppForm(QMainWindow):
         self.customResonators=numpy.array([[0.0,-1]]*256)   #customResonator[ch]=[freq,atten]
         
     def openClient(self):
-        self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
-        self.roach.progdev('snap_raw_iq_4chan_2021_Feb_01_1548.bof')
+        
+	self.status_text.setText('connecting...')
+	print 'connecting...'	
+	
+	self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
+	time.sleep(2)
+	print 'programming roach...'
+	
+        self.roach.progdev('snap_raw_iq_32b_2021_Mar_09_1646.bof')
 	#working boffile as of 16/12/2020: chan_snap_v3_2012_Oct_30_1216.bof
 	#trying snap_rawIQ.bof and snap_raw_iq_2018_Dec_11_1630.bof on 16/12/2020
-        time.sleep(2)
+        #time.sleep(2)
         self.status_text.setText('connection established')
         print 'Connected to ',self.textbox_roachIP.text()
         self.button_openClient.setDisabled(True)
@@ -365,6 +372,7 @@ class AppForm(QMainWindow):
         steps = int(self.textbox_snapSteps.text())
         L = 2**10
         bin_data_phase = ''
+	bin_data_I = ''
 	bin_data_I0 = ''
 	bin_data_I1 = ''
 	bin_data_Q0 = ''
@@ -381,21 +389,46 @@ class AppForm(QMainWindow):
 	       
         	
 	for n in range(steps):
-            self.roach.write_int('snapI0_ctrl', 1)
-            self.roach.write_int('snapI0_ctrl', 0)
-	    self.roach.write_int('snapI1_ctrl', 1)
-            self.roach.write_int('snapI1_ctrl', 0)          
-            self.roach.write_int('snapQ0_ctrl', 1)
-            self.roach.write_int('snapQ0_ctrl', 0)
-	    self.roach.write_int('snapQ1_ctrl', 1)
-            self.roach.write_int('snapQ1_ctrl', 0)          
+	    #self.roach.write_int('startSnap', 0)
+            self.roach.write_int('conv_phase_snapI_ctrl', 1)
+            self.roach.write_int('conv_phase_snapI_ctrl', 0)	
+	    #self.roach.write_int('startSnap', 1)
+	    time.sleep(0.001)
+	    #bin_data_I = bin_data_I + self.roach.read('conv_phase_snapI_bram', 4*L)
+	    bin_data_I = bin_data_I + self.roach.read('conv_phase_snapI_bram', 4*L)
+	    #bin_data_I0 = bin_data_I0 + str(self.roach.read_uint('snapI0_bram'))
+	    #bin_data_I = bin_data_I + str(self.roach.read_int('conv_phase_snapI_bram'))
+	    #print('bin_data_I = ', bin_data_I0) 
+
+	#print('bin_data_I0 = ', bin_data_I0)
+
+	#for n in range(steps):
+	    #self.roach.write_int('startSnap', 0)
+            #self.roach.write_int('snapI1_ctrl', 1)
+            #self.roach.write_int('snapI1_ctrl', 0)	
+	    #self.roach.write_int('startSnap', 1)
+	    #time.sleep(0.001)
+	    #bin_data_I1 = bin_data_I1 + self.roach.read('snapI1_bram', 4*L)
+	    #bin_data_I1 = bin_data_I1 + str(self.roach.read_uint('snapI1_bram'))
+
+	    #self.roach.write_int('snapI1_ctrl', 1)
+            #self.roach.write_int('snapI1_ctrl', 0) 
+	    #self.roach.write_int('startSnap', 0)         
+            #self.roach.write_int('snapQ0_ctrl', 1)
+            #self.roach.write_int('snapQ0_ctrl', 0)
+	    #self.roach.write_int('startSnap', 1)
+	    #time.sleep(0.001)
+	    #bin_data_Q0 = bin_data_Q0 + self.roach.read('snapQ0_bram', 4*L)
+
+	    #self.roach.write_int('snapQ1_ctrl', 1)
+            #self.roach.write_int('snapQ1_ctrl', 0)          
             
 	    #self.roach.write_int('startSnapI0', 1)	
-            time.sleep(0.001)
-            bin_data_I0 = bin_data_I0 + self.roach.read('snapI0_bram', 4*L)
-	    bin_data_I1 = bin_data_I1 + self.roach.read('snapI1_bram', 4*L)
-	    bin_data_Q0 = bin_data_Q0 + self.roach.read('snapQ0_bram', 4*L)
-	    bin_data_Q1 = bin_data_Q1 + self.roach.read('snapQ1_bram', 4*L)
+            #time.sleep(0.001)
+            
+	    #bin_data_I1 = bin_data_I1 + self.roach.read('snapI1_bram', 4*L)
+	    
+	    #bin_data_Q1 = bin_data_Q1 + self.roach.read('snapQ1_bram', 4*L)
 		
 
 	#for n in range(steps):
@@ -413,91 +446,109 @@ class AppForm(QMainWindow):
         for m in range(steps*L):
             phase.append(struct.unpack('>h', bin_data_phase[m*4+2:m*4+4])[0])
             phase.append(struct.unpack('>h', bin_data_phase[m*4+0:m*4+2])[0])
-        phase = numpy.array(phase)*360./2**16*4/numpy.pi
+	phase = numpy.array(phase)*360./2**16*4/numpy.pi
+	#phase = numpy.array(phase)
 	print 'phase: ', phase
-
-	I0 = []
-        for m in range(steps*L):
-            I0.append(struct.unpack('>h', bin_data_I0[m*4+2:m*4+4])[0])
-            I0.append(struct.unpack('>h', bin_data_I0[m*4+0:m*4+2])[0])
-	I0 = numpy.array(I0)
-
-	I0_tidied = numpy.zeros(len(I0) / 2)
-	n = 0
-	for i in I0_tidied:
-		I0_tidied[n] = I0[n*2]
-		n = n + 1
-
-	I1 = []
-        for m in range(steps*L):
-            I1.append(struct.unpack('>h', bin_data_I1[m*4+2:m*4+4])[0])
-            I1.append(struct.unpack('>h', bin_data_I1[m*4+0:m*4+2])[0])
-	I1 = numpy.array(I1)
-
-	I1_tidied = numpy.zeros(len(I1) / 2)
-	n = 0
-	for i in I1_tidied:
-		I1_tidied[n] = I1[n*2]
-		n = n + 1
-
-	Q0 = []
-        for m in range(steps*L):
-            Q0.append(struct.unpack('>h', bin_data_Q0[m*4+2:m*4+4])[0])
-            Q0.append(struct.unpack('>h', bin_data_Q0[m*4+0:m*4+2])[0])
-	Q0 = numpy.array(Q0)
 	
-	Q0_tidied = numpy.zeros(len(Q0) / 2)
-	n = 0
-	for i in Q0_tidied:
-		Q0_tidied[n] = Q0[n*2]
-		n = n + 1
 
-	Q1 = []
+	Iraw = []
         for m in range(steps*L):
-            Q1.append(struct.unpack('>h', bin_data_Q1[m*4+2:m*4+4])[0])
-            Q1.append(struct.unpack('>h', bin_data_Q1[m*4+0:m*4+2])[0])
-	Q1 = numpy.array(Q1)
+            Iraw.append(struct.unpack('>l', bin_data_I[m:m+4])[0])
+            #Iraw.append(struct.unpack('>h', bin_data_I[m*4+0:m*4+2])[0])
+	#I = numpy.array(I)/2**16
+	Iraw = numpy.array(Iraw)
+	print('Iraw = ', Iraw)	
+	print('Iraw length = ', len(Iraw))
 
-	Q1_tidied = numpy.zeros(len(Q1) / 2)
-	n = 0
-	for i in Q1_tidied:
-		Q1_tidied[n] = Q1[n*2]
-		n = n + 1
+	#I1 = []
+        #for m in range(steps*L):
+        #    I1.append(struct.unpack('>h', bin_data_I1[m*4+2:m*4+4])[0])
+        #    I1.append(struct.unpack('>h', bin_data_I1[m*4+0:m*4+2])[0])
+	#I0 = numpy.array(I0)/2**16
+	#I1 = numpy.array(I1)
+	#print 'I1: ', I1	
+
+
+	#I0_tidied = numpy.zeros(len(I0) / 2)
+	#n = 0
+	#for i in I0_tidied:
+	#	I0_tidied[n] = I0[n*2]
+	#	n = n + 1
+
+	#I1 = []
+        #for m in range(steps*L):
+        #    I1.append(struct.unpack('>h', bin_data_I1[m*4+2:m*4+4])[0])
+        #    I1.append(struct.unpack('>h', bin_data_I1[m*4+0:m*4+2])[0])
+	#I1 = numpy.array(I1)
+
+	#I1_tidied = numpy.zeros(len(I1) / 2)
+	#n = 0
+	#for i in I1_tidied:
+	#	I1_tidied[n] = I1[n*2]
+	#	n = n + 1
+
+	#Q0 = []
+        #for m in range(steps*L):
+        #    Q0.append(struct.unpack('>h', bin_data_Q0[m*4+2:m*4+4])[0])
+        #    Q0.append(struct.unpack('>h', bin_data_Q0[m*4+0:m*4+2])[0])
+	#Q0 = numpy.array(Q0)
+	
+	#Q0_tidied = numpy.zeros(len(Q0) / 2)
+	#n = 0
+	#for i in Q0_tidied:
+	#	Q0_tidied[n] = Q0[n*2]
+	#	n = n + 1
+
+	#Q1 = []
+        #for m in range(steps*L):
+        #    Q1.append(struct.unpack('>h', bin_data_Q1[m*4+2:m*4+4])[0])
+        #    Q1.append(struct.unpack('>h', bin_data_Q1[m*4+0:m*4+2])[0])
+	#Q1 = numpy.array(Q1)
+
+	#Q1_tidied = numpy.zeros(len(Q1) / 2)
+	#n = 0
+	#for i in Q1_tidied:
+	#	Q1_tidied[n] = Q1[n*2]
+	#	n = n + 1
 
 
 	self.axes0.clear()
         self.axes1.clear()
         #self.axes1.plot(phase, '.-', [self.thresholds[ch_we]]*2*L*steps, 'r.', [self.medians[ch_we]]*2*L*steps, 'g.')
         saveDir = str('/home/labuser/Desktop/SDR-master/DataReadout/IQSnapshots/') #saves IQ data here
-        if saveDir != '':
-            I0filename = saveDir + 'I0_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + '.txt'
-            numpy.savetxt(I0filename,I0,fmt='%.8e')
+        #if saveDir != '':
+            #I0filename = saveDir + 'I0_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + '.txt'
+            #numpy.savetxt(I0filename,I0,fmt='%.8e')
 
-	    I1filename = saveDir + 'I1_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + '.txt'
-            numpy.savetxt(I1filename,I1,fmt='%.8e')
+	    #I1filename = saveDir + 'I1_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + '.txt'
+            #numpy.savetxt(I1filename,I1,fmt='%.8e')
 
-	    Q0filename = saveDir + 'Q0_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + '.txt'
-            numpy.savetxt(Q0filename,Q0,fmt='%.8e')
+	    #Q0filename = saveDir + 'Q0_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + '.txt'
+            #numpy.savetxt(Q0filename,Q0,fmt='%.8e')
 
-	    Q1filename = saveDir + 'Q1_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + '.txt'
-            numpy.savetxt(Q1filename,Q1,fmt='%.8e')
+	    #Q1filename = saveDir + 'Q1_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + '.txt'
+            #numpy.savetxt(Q1filename,Q1,fmt='%.8e')
 
 
 
         if steps <= 1000:
-       	    self.axes0.plot(I0, 'b.', markersize=1) #changed to plot I0 versus time
-	    self.axes0.axis([0, len(I0), 4090, 4100])
-	    self.axes1.plot(I1, 'b.', markersize=1) #changed to plot I1 versus time
-	    self.axes1.axis([0, len(I1), 4090, 4100])
+       	    self.axes0.plot(phase, 'b.', markersize=1) #changed to plot I0 versus time
+	    #self.axes0.axis([0, len(I0), 0, 10])
+
+	    self.axes1.plot(Iraw, 'b.', markersize=1) #changed to plot I0 versus time
+	    #self.axes1.axis([0, len(I1), 0, 10])
+
+	    #self.axes1.plot(I1, 'b.', markersize=1) #changed to plot I1 versus time
+	    #self.axes1.axis([0, len(I1), 4090, 4100])
 	    #self.axes0.plot(Q0_tidied, 'r.', markersize=1) 
 	    #self.axes1.plot(I1,'r.') #changed to plot I0
 
 
 	print 'Phase length = ', len(phase)
-	print 'I0 length = ', len(I0)
-	print 'I1 length = ', len(I1)
-	print 'Q0 length = ', len(Q0)
-	print 'Q1 length = ', len(Q1)	
+	#print 'I0 length = ', len(I0)
+	#print 'I1 length = ', len(I1)
+	#print 'Q0 length = ', len(Q0)
+	#print 'Q1 length = ', len(Q1)	
         	
         med=numpy.median(phase)
 	sd = numpy.std(phase) #added to see if shifting LO has any effect on data
@@ -514,18 +565,6 @@ class AppForm(QMainWindow):
         #self.axes1.plot([thresh+med]*2*L*steps,'r.',[med]*2*L*steps,'g.',alpha=1)
 
         med=self.medians[ch_we]
-        #self.axes1.plot([thresh+med]*2*L*steps,'y.',[med]*2*L*steps,'y.',alpha=0.2)
-        #print "Threshold: ",self.thresholds[ch_we]
-
-        #print "Channel: ",ch_we," median: " ,self.medians[ch_we], 
-        #if self.customThresholds[ch_we] != 360.0:
-        #    self.axes1.plot(phase, '.-', [self.customThresholds[ch_we]+self.medians[ch_we]]*2*L*steps, 'r.', [self.medians[ch_we]]*2*L*steps, 'g.',alpha=0.3)
-        #    print "Custom Threshold: ",self.customThresholds[ch_we]," Threshold: ",self.thresholds[ch_we]
-        #else:
-        #   self.axes1.plot(phase, '.-', [self.thresholds[ch_we]+self.medians[ch_we]]*2*L*steps, 'r.', [self.medians[ch_we]]*2*L*steps, 'g.',alpha=0)
-        #   print "Threshold: ",self.thresholds[ch_we]
-        #print " "
-
         self.canvas.draw()
         print "snapshot taken"
 
@@ -1236,7 +1275,7 @@ class AppForm(QMainWindow):
         label_DACfreqs = QLabel('DAC Freqs:')
     
         # File with frequencies/attens
-        self.textbox_freqFile = QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file 
+        self.textbox_freqFile = QLineEdit('/home/labuser/MKIDS/MKIDS_SDR/DataReadout/ChannelizerControls/LUT/1tones.txt') #changed file 
         self.textbox_freqFile.setMaximumWidth(200) 
 
         # Import freqs from file.

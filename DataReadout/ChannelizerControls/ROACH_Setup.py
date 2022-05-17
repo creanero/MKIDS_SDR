@@ -11,7 +11,7 @@ import matplotlib, corr, time, struct, numpy
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-from tables import *
+#from tables import *
 from lib import iqsweep
 
 
@@ -91,11 +91,17 @@ class AppForm(QtG.QMainWindow):
         #self.QApplication.processEvents()
         print 'connecting...'
         self.roach = corr.katcp_wrapper.FpgaClient(self.textbox_roachIP.text(),7147)
-	self.roach.progdev('chan_snap_v3_2012_Oct_30_1216.bof') # 'chan_512_2012_Jul_30_1754.bof' original boffile. 
-									#Last working: chan_snap_v3_2012_Oct_30_1216.bof
-                                                                        #trying chan_snap_v4_20_12_2018_May_29_1235.bof and chan_snap_v4_20_12_2018_Jun_07_1106.bof
+	time.sleep(2)
+	print 'programming roach...'
+	self.roach.progdev('pulse_trigger_2022_Jan_24_1322.bof') 
+	# 12/12/2021: snap_raw_iq_20211204_2021_Dec_05_1816.bof
+	# 'chan_512_2012_Jul_30_1754.bof' original boffile. 
+	#Last working: chan_snap_v3_2012_Oct_30_1216.bof
+        #trying chan_snap_v4_20_12_2018_May_29_1235.bof and chan_snap_v4_20_12_2018_Jun_07_1106.bof
+	# snap_raw_iq_0303_2021_Mar_03_1222.bof samples I and Q but did not correctyl filter out wrong FFT bins
+	# snap_raw_iq_20211123_2021_Nov_30_2105.bof trying to fix above issue
 
-        time.sleep(2)
+        #time.sleep(2)
         self.status_text.setText('connection established')
         print 'connection established to',self.textbox_roachIP.text()
         self.button_openClient.setDisabled(True)
@@ -583,8 +589,16 @@ class AppForm(QtG.QMainWindow):
             self.roach.write_int('conv_phase_load_centers', 0)
         
             centers_for_file[ch] = [self.iq_centers[ch].real, self.iq_centers[ch].imag]
-            
+	    #print"Icentre = ", self.iq_centers[ch].real, "Qcentre = ", self.iq_centers[ch].imag
+        
+	    
         numpy.savetxt(os.path.join(saveDir,'centers.dat'), centers_for_file)
+
+	centresavearray = [self.iq_centers[0].real, self.iq_centers[0].imag]
+	saveDirIQsweep = str('/home/labuser/Data/IQSweeps') #saves data here
+        
+        IQcentrefilename = saveDirIQsweep + '/IQcentre'+'.txt'
+        numpy.savetxt(IQcentrefilename,numpy.column_stack(centresavearray),fmt='%i,' '%i' )                       #saves phase data 
 
     def findIQcenters(self, I, Q):
         I_0 = (I.max()+I.min())/2.
@@ -813,7 +827,7 @@ class AppForm(QtG.QMainWindow):
         except ValueError:
             pass
             
-        self.axes1.plot(I, Q, '.-', self.iq_centers.real[0:self.N_freqs], self.iq_centers.imag[0:self.N_freqs], '.', self.I_on_res, self.Q_on_res, '.')
+        self.axes1.plot(I, Q, '.-', self.iq_centers.real[0:self.N_freqs], self.iq_centers.imag[0:self.N_freqs], '.', self.I_on_res, self.Q_on_res, '.', I[0], Q[0], '.')
 	self.axes1.set_xlabel('I (In-Phase)')
 	self.axes1.set_ylabel('Q (In-Quadrature)')
 
@@ -826,12 +840,18 @@ class AppForm(QtG.QMainWindow):
 	self.axes3.set_xlabel('Freq [Hz]')
 	self.axes3.set_ylabel('I (green) Q (blue)')
 
-	#saveDir = str('/home/cbracken/Desktop/SDR-master/DataReadout/LO_Sweep_Data') #saves data here
-        #if saveDir != '':
-            #phasefilename = saveDir + '/IQdata_'+time.strftime("%Y%m%d-%H%M%S",time.localtime()) + str(self.textbox_roachIP.text())+'.txt'
-            #numpy.savetxt(phasefilename,f_span,fmt='%.8f')                       #saves phase data #changed %e to %f
+
+
+	savearray = [I, Q]
+	
+
+	saveDirIQsweep = str('/home/labuser/Data/IQSweeps') #saves data here
+        
+        IQsweepfilename = saveDirIQsweep + '/IQsweep'+'.txt'
+        numpy.savetxt(IQsweepfilename,numpy.column_stack(savearray),fmt='%i,' '%i' )                       #saves phase data #changed %e to %f
         
 	self.canvas.draw()
+	print("Bins register = ", self.roach.read_int('bins'))
 
 
 
@@ -1114,7 +1134,7 @@ class AppForm(QtG.QMainWindow):
         self.connect(self.button_openClient, QtC.SIGNAL('clicked()'), self.openClient)
         
         # LO frequency.
-        self.textbox_loFreq = QtG.QLineEdit('4.75e9')
+        self.textbox_loFreq = QtG.QLineEdit('4.41208e9')
         self.textbox_loFreq.setMaximumWidth(100)
         label_loFreq = QtG.QLabel('LO frequency:')
 
@@ -1124,7 +1144,7 @@ class AppForm(QtG.QMainWindow):
         label_freqOffset = QtG.QLabel('Freq Offset:')
 
         # Sweep span
-        self.textbox_loSpan = QtG.QLineEdit('0.5e6')
+        self.textbox_loSpan = QtG.QLineEdit('2e6')
         self.textbox_loSpan.setMaximumWidth(50)
         label_loSpan = QtG.QLabel('LO Sweep Span:')
 
@@ -1179,7 +1199,7 @@ class AppForm(QtG.QMainWindow):
         label_saveDir.setMaximumWidth(150)
     
         # File with frequencies/attens
-        self.textbox_freqFile = QtG.QLineEdit('/home/labuser/Desktop/SDR-master/DataReadout/ChannelizerControls/LUT/1tones.txt')
+        self.textbox_freqFile = QtG.QLineEdit('/home/labuser/MKIDS/MKIDS_SDR/DataReadout/ChannelizerControls/LUT/1tones.txt')
         self.textbox_freqFile.setMaximumWidth(200)
 
         # Load freqs and attens from file.
