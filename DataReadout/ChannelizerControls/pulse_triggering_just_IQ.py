@@ -25,8 +25,8 @@ def twos_comp(val, bits):
         val = val - (1 << bits)        # compute negative value
     return val                         # return positive value as is
 
-savedirIQ = '/home/labuser/Data/2022/Ty210617-A_4_10_4__annealed/2022_04_14/4453/700nm/IQ/'
-savedirPhase = '/home/labuser/Data/2022/Ty210617-A_4_10_4__annealed/2022_04_14/4453/700nm/Phase/'
+savedirIQ = '/home/labuser/Data/2022/20220517/2463/400nm/IQ/'
+savedirPhase = '/home/labuser/Data/2022/20220517/2463/400nm/Phase/'
 
 roach = corr.katcp_wrapper.FpgaClient('192.168.4.10')
 time.sleep(2)
@@ -39,8 +39,8 @@ L_IQ = 16384 #must be greater than 4
 steps_IQ = 1
 meanlength = 20
 pulselength = 1000
-phase_threshold =  8
-number_of_seconds = 600
+phase_threshold =  15
+number_of_seconds = 300
 
 time_completed = 0 #counting time that has run 
 
