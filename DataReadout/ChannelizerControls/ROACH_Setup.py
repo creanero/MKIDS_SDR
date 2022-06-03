@@ -605,7 +605,7 @@ class AppForm(QtG.QMainWindow):
             self.roach.write_int('conv_phase_load_centers', 0)
         
             centers_for_file[ch] = [self.iq_centers[ch].real, self.iq_centers[ch].imag]
-	    #print"Icentre = ", self.iq_centers[ch].real, "Qcentre = ", self.iq_centers[ch].imag
+            # print"Icentre = ", self.iq_centers[ch].real, "Qcentre = ", self.iq_centers[ch].imag
 
 
         numpy.savetxt(os.path.join(saveDir,'centers.dat'), centers_for_file)
@@ -715,7 +715,7 @@ class AppForm(QtG.QMainWindow):
         #else:
         self.programRFswitches('10110')          #only need this setting 
         #    print 'LO normal operation.'
-        loSpan = float(self.textbox_loSpan.value())
+        loSpan = float(self.spinbox_loSpan.value())
         # df = float(self.textbox_df.text())
         # df = float(self.textbox_df.value())
         steps = self.spinbox_steps.value() # int(loSpan/df)
@@ -843,7 +843,7 @@ class AppForm(QtG.QMainWindow):
         try:
             self.axes0.plot(f_span, (I**2 + Q**2)**.5, '.-')
             self.axes0.set_xlabel('Freq [Hz]')
-            self.axes0.set_ylabel('Transmission [uV (rms)]')
+            self.axes0.set_ylabel('Transmission [Arbitrary Units]')#('Transmission [uV (rms)]')
         except ValueError:
             pass
             
@@ -1214,18 +1214,25 @@ class AppForm(QtG.QMainWindow):
         # Sweep span
         # keeping old text version for rollback if needed
         # self.textbox_loSpan = QtG.QLineEdit('0.5e6')
-        self.textbox_loSpan = SIPrefixSpinbox ()
-        self.textbox_loSpan.setRange(0,5.12e8)
-        self.textbox_loSpan.setSingleStep(1e6)
-        self.textbox_loSpan.setValue(2e6)
-        self.textbox_loSpan.setSuffix('Hz')
-        self.textbox_loSpan.setDecimals(0)
-        self.textbox_loSpan.setMaximumWidth(200) # retain this even for text
+        self.spinbox_loSpan = SIPrefixSpinbox ()
+        self.spinbox_loSpan.setRange(0, 5.12e8)
+        self.spinbox_loSpan.setSingleStep(1e6)
+        self.spinbox_loSpan.setValue(2e6)
+        self.spinbox_loSpan.setSuffix('Hz')
+        self.spinbox_loSpan.setDecimals(0)
+        self.spinbox_loSpan.setMaximumWidth(200) # retain this even for text
         label_loSpan = QtG.QLabel('LO Sweep Span:')
 
-        # # Sweep resolution
-        # # keeping old text version for rollback if needed
+        # # Sweep stepsize
         # # self.textbox_df = QtG.QLineEdit('1e4')
+        self.spinbox_step_size = SIPrefixSpinbox()
+        self.spinbox_step_size.setRange(0, 5.12e8)
+        self.spinbox_step_size.setSingleStep(1e4)
+        self.spinbox_step_size.setValue(2e4)
+        self.spinbox_step_size.setSuffix('Hz')
+        self.spinbox_step_size.setDecimals(0)
+        self.spinbox_step_size.setMaximumWidth(200)  # retain this even for text
+        label_step_size = QtG.QLabel('Size of LO Sweep steps:')
         # self.textbox_df = QtG.QDoubleSpinBox ()
         # self.textbox_df.setRange(-1e6,1e6)
         # self.textbox_df.setSingleStep(1e2)
@@ -1243,6 +1250,11 @@ class AppForm(QtG.QMainWindow):
         self.spinbox_steps.setSuffix(' Steps')
         self.spinbox_steps.setMaximumWidth(200)  # retain this even for text
         label_steps = QtG.QLabel('Number of steps for sweep:')
+
+        self.spinbox_loSpan.valueChanged.connect(self.calculate_step_size)
+        self.spinbox_step_size.valueChanged.connect(self.calculate_steps)
+        self.spinbox_steps.valueChanged.connect(self.calculate_step_size)
+
 
         # Frequency span shift
         # A span shift of 0.75 shifts 75% of sweep span to the lower portion of the range.
@@ -1508,9 +1520,13 @@ class AppForm(QtG.QMainWindow):
         hbox220.addWidget(label_steps)
         hbox220.addWidget(self.spinbox_steps)
         gbox2.addLayout(hbox220)
+        hbox221 = QtG.QHBoxLayout()
+        hbox221.addWidget(label_step_size)
+        hbox221.addWidget(self.spinbox_step_size)
+        gbox2.addLayout(hbox221)
         hbox21 = QtG.QHBoxLayout()
         hbox21.addWidget(label_loSpan)
-        hbox21.addWidget(self.textbox_loSpan)
+        hbox21.addWidget(self.spinbox_loSpan)
         gbox2.addLayout(hbox21)
         hbox211 = QtG.QHBoxLayout()
         hbox211.addWidget(self.button_sweepLO)
@@ -1571,6 +1587,14 @@ class AppForm(QtG.QMainWindow):
     # calculates the offset in frequency between DAC and LO
     def calculate_LOFreq(self):
         self.spinBox_loFreq.setValue(self.spinBox_DACfreq.value() - self.spinBox_offset.value())
+
+    def calculate_step_size(self):
+        self.spinbox_step_size.setValue(self.spinbox_loSpan.value()/self.spinbox_steps.value())
+        pass
+
+    def calculate_steps(self):
+        self.spinbox_steps.setValue(self.spinbox_loSpan.value()/self.spinbox_step_size.value())
+
 
     def LUT_and_DAC(self):
         self.define_LUTs()
