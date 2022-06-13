@@ -1039,7 +1039,7 @@ class AppForm(QtG.QMainWindow):
         print ch
         self.iq_centers.real[ch] = I
         self.iq_centers.imag[ch] = Q
-        self.axes1.plot(I, Q, '.')
+        self.axes1.plot(I, Q, 'yx')
         self.axes1.set_xlabel('I (In-Phase)')
         self.axes1.set_ylabel('Q (In-Quadrature)')
         self.canvas.draw()
