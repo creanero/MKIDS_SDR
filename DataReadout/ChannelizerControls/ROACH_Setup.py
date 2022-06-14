@@ -1597,12 +1597,9 @@ class AppForm(QtG.QMainWindow):
 
 
     def LUT_and_DAC(self):
-        if self.dacStatus == 'off':
-            self.define_LUTs()
-            time.sleep(2)
-            self.toggleDAC()
-        else: #if self.dacStatus == 'on':
-            self.toggleDAC()
+        self.define_LUTs()
+        time.sleep(2)
+        self.toggleDAC()
 
     # creates the menubar at the top of the window
     def create_menu(self):        
