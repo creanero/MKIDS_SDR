@@ -1,3 +1,7 @@
+MKIDS SDR:
+
+This is a heavily modified fork of SDR by Strader et al.  Documentation is currently under extensive redevelopment which is not yet complete.
+
 SDR
 ===
 
